@@ -28,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0dc6749a-cb3d-4fe0-80aa-f2a7ba811017"
+      }
+    },
+    "owner": "ushiradineth"
   }
 }
