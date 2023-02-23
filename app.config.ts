@@ -26,16 +26,11 @@ export default {
         backgroundColor: "#FFFFFF"
       }
     },
-    web: {
-      favicon: "./assets/favicon.png",
-      bundler: "metro"
-    },
     extra: {
       eas: {
         projectId: process.env.PROJECT_ID
       },
     },
     owner: "ushiradineth",
-    scheme: "acme",
   }
 }
