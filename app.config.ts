@@ -28,7 +28,7 @@ export default {
     },
     extra: {
       eas: {
-        projectId: process.env.PROJECT_ID
+        projectId: "0dc6749a-cb3d-4fe0-80aa-f2a7ba811017"
       },
     },
     owner: "ushiradineth",
