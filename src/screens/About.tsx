@@ -5,12 +5,7 @@ import { Layout, Text } from "react-native-rapi-ui";
 export default function ({ navigation }: any) {
   return (
     <Layout>
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text>This is the About tab</Text>
       </View>
     </Layout>

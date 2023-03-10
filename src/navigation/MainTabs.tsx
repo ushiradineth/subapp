@@ -1,10 +1,8 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
 import { themeColor, useTheme } from "react-native-rapi-ui";
 import TabBarIcon from "../components/TabBarIcon";
 import TabBarText from "../components/TabBarText";
-
 import Home from "../screens/Home";
 import About from "../screens/About";
 import Profile from "../screens/Profile";
@@ -12,6 +10,7 @@ import Profile from "../screens/Profile";
 const Tabs = createBottomTabNavigator();
 const MainTabs = () => {
   const { isDarkmode } = useTheme();
+
   return (
     <Tabs.Navigator
       screenOptions={{
@@ -21,7 +20,6 @@ const MainTabs = () => {
           backgroundColor: isDarkmode ? themeColor.dark200 : "#ffffff",
         },
       }}>
-      {/* these icons using Ionicons */}
       <Tabs.Screen
         name="Home"
         component={Home}
