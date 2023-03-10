@@ -1,7 +1,5 @@
 import React from "react";
 import { View } from "react-native";
-import { MainStackParamList } from "../types/navigation";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Layout, Text } from "react-native-rapi-ui";
 
 export default function ({ navigation }: any) {

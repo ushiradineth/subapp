@@ -1,7 +1,5 @@
 import React from "react";
 import { View, Linking } from "react-native";
-import { MainStackParamList } from "../types/navigation";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { supabase } from "../utils/supabase";
 import { Layout, Button, Text, TopNav, Section, SectionContent, useTheme, themeColor } from "react-native-rapi-ui";
 import { Ionicons } from "@expo/vector-icons";
