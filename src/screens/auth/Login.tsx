@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
 import { supabase } from "../../utils/supabase";
-import { AuthStackParamList } from "../../types/navigation";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
 
 export default function Login({ navigation }: any) {

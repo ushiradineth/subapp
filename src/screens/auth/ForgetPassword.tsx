@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
 import { supabase } from "../../utils/supabase";
-import { AuthStackParamList } from "../../types/navigation";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
 
 export default function ({ navigation }: any) {
@@ -13,9 +10,7 @@ export default function ({ navigation }: any) {
 
   async function forget() {
     setLoading(true);
-    const { data, error } = await supabase.auth.resetPasswordForEmail(
-      email
-    );
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email);
 
     if (!error) {
       setLoading(false);
