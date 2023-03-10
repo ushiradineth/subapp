@@ -30,26 +30,11 @@ export default function ({ navigation }: any) {
           }}>
           <View
             style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
-            }}>
-            <Image
-              resizeMode="contain"
-              style={{
-                height: 220,
-                width: 220,
-              }}
-              // source={require("../../../assets/images/forget.png")}
-            />
-          </View>
-          <View
-            style={{
               flex: 3,
               paddingHorizontal: 20,
               paddingBottom: 20,
               backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+              justifyContent: "center",
             }}>
             <Text
               size="h3"

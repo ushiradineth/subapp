@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView } from "react-native";
 import { supabase } from "../../utils/supabase";
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
 
@@ -33,26 +33,11 @@ export default function Login({ navigation }: any) {
           }}>
           <View
             style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
-            }}>
-            <Image
-              resizeMode="contain"
-              style={{
-                height: 220,
-                width: 220,
-              }}
-              // source={require("../../../assets/images/login.png")}
-            />
-          </View>
-          <View
-            style={{
               flex: 3,
               paddingHorizontal: 20,
               paddingBottom: 20,
               backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+              justifyContent: "center",
             }}>
             <Text
               fontWeight="bold"
