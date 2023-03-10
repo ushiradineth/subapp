@@ -7,7 +7,7 @@ import { ThemeProvider } from "react-native-rapi-ui";
 
 function App() {
   return (
-    <ThemeProvider>
+    <ThemeProvider theme="dark">
       <NativeBaseProvider>
         <AuthProvider>
           <Navigation />
