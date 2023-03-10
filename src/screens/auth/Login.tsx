@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView } from "react-native";
 import { supabase } from "../../utils/supabase";
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
+import { TEST_PASSWORD, TEST_USERNAME } from "@env";
 
 export default function Login({ navigation }: any) {
   const { isDarkmode, setTheme } = useTheme();
@@ -98,6 +99,25 @@ export default function Login({ navigation }: any) {
                 }}>
                 <Text size="md" fontWeight="bold">
                   Forget password
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+                justifyContent: "center",
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  supabase.auth.signInWithPassword({
+                    email: TEST_USERNAME,
+                    password: TEST_PASSWORD,
+                  });
+                }}>
+                <Text size="md" fontWeight="bold">
+                  Auto login
                 </Text>
               </TouchableOpacity>
             </View>
