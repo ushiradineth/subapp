@@ -3,6 +3,7 @@ import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView } from "react-
 import { supabase } from "../../utils/supabase";
 import { Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
 import { TEST_PASSWORD, TEST_USERNAME } from "@env";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Login({ navigation }: any) {
   const { isDarkmode, setTheme } = useTheme();
@@ -65,7 +66,7 @@ export default function Login({ navigation }: any) {
           <View style={{ flexDirection: "row", alignItems: "center", marginTop: 30, justifyContent: "center" }}>
             <TouchableOpacity onPress={() => (isDarkmode ? setTheme("light") : setTheme("dark"))}>
               <Text size="md" fontWeight="bold" style={{ marginLeft: 5 }}>
-                {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                <Ionicons name={isDarkmode ? "sunny" : "moon"} size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />
               </Text>
             </TouchableOpacity>
           </View>
