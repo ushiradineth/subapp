@@ -12,6 +12,7 @@
     "lint": "tsc --noEmit && eslint --ext .js,.jsx,.ts,.tsx ./"
   },
   "dependencies": {
+    "@eva-design/eva": "^2.1.1",
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.4",
@@ -23,6 +24,7 @@
     "@tamagui/font-inter": "^1.9.17",
     "@tamagui/lucide-icons": "^1.9.17",
     "@tamagui/theme-base": "^1.9.17",
+    "@ui-kitten/components": "^5.1.2",
     "burnt": "^0.10.0",
     "expo": "~47.0.12",
     "expo-font": "^11.1.1",
