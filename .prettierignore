@@ -1,0 +1,7 @@
+.next
+node_modules
+README.md
+yarn.lock
+serverless.yaml
+*-lock.json      # package-lock.json
+.prettierrc.js

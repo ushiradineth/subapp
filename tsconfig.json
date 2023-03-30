@@ -3,5 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "typeRoots": ["./src/types"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }
