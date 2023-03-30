@@ -28,6 +28,14 @@ module.exports = function (api) {
           path: ".env",
         },
       ],
+      [
+        "module-resolver",
+        {
+          alias: {
+            "@": "./src",
+          },
+        },
+      ],
     ],
   };
 };

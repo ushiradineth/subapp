@@ -4,7 +4,9 @@
     "strict": true,
     "typeRoots": ["./src/types"],
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["src/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["./**/*", "./*", ".eslintrc.js"]
 }
