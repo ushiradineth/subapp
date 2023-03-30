@@ -1,49 +1,66 @@
 import React from "react";
-import { View, Linking } from "react-native";
-import { supabase } from "../utils/supabase";
-import { Layout, Button, Text, TopNav, Section, SectionContent, useTheme, themeColor } from "react-native-rapi-ui";
-import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/utils/Theme";
+import { useFonts } from "expo-font";
+import { StatusBar } from "expo-status-bar";
+import { Adapt, Button, Dialog, Fieldset, Input, Label, Paragraph, Sheet, Unspaced, YStack } from "tamagui";
 
-export default function ({ navigation }: any) {
-  const { isDarkmode, setTheme } = useTheme();
+export default function App() {
+  const { theme } = useTheme();
+  const [loaded] = useFonts({
+    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
-    <Layout>
-      <TopNav
-        middleContent="Home"
-        rightContent={<Ionicons name={isDarkmode ? "sunny" : "moon"} size={20} color={isDarkmode ? themeColor.white100 : themeColor.dark} />}
-        rightAction={() => {
-          if (isDarkmode) {
-            setTheme("light");
-          } else {
-            setTheme("dark");
-          }
-        }}
-      />
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Section style={{ marginTop: 20 }}>
-          <SectionContent>
-            <Text fontWeight="bold" style={{ textAlign: "center" }}>
-              These UI components provided by Rapi UI
-            </Text>
-            <Button style={{ marginTop: 10 }} text="Rapi UI Documentation" status="info" onPress={() => Linking.openURL("https://rapi-ui.kikiding.space/")} />
-            <Button text="Go to second screen" onPress={() => navigation.navigate("SecondScreen")} style={{ marginTop: 10 }} />
-            <Button
-              status="danger"
-              text="Logout"
-              onPress={async () => {
-                const { error } = await supabase.auth.signOut();
-                if (!error) {
-                  alert("Signed out!");
-                }
-                if (error) {
-                  alert(error.message);
-                }
-              }}
-              style={{ marginTop: 10 }}
-            />
-          </SectionContent>
-        </Section>
-      </View>
-    </Layout>
+    <YStack f={1} jc="center" ai="center" backgroundColor={"$backgroundSoft"}>
+      <Paragraph color="$color" jc="center">
+        {theme}
+      </Paragraph>
+      <Dialog modal>
+        <Dialog.Trigger asChild>
+          <Button theme="blue_Button">Edit Profile</Button>
+        </Dialog.Trigger>
+
+        <Adapt when="sm" platform="touch">
+          <Sheet zIndex={200000} modal dismissOnSnapToBottom>
+            <Sheet.Frame padding="$4" space>
+              <Adapt.Contents />
+            </Sheet.Frame>
+            <Sheet.Overlay />
+          </Sheet>
+        </Adapt>
+
+        <Dialog.Portal>
+          <Dialog.Overlay key="overlay" animation="quick" o={0.5} enterStyle={{ o: 0 }} exitStyle={{ o: 0 }} />
+
+          <Dialog.Content bordered elevate key="content" animation={["quick", { opacity: { overshootClamping: true } }]} enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }} exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }} space>
+            <Dialog.Title>Edit profile</Dialog.Title>
+            <Dialog.Description>Make changes to your profile here. Click save when you&apos;re done.</Dialog.Description>
+            <Fieldset>
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" defaultValue="Nate Wienert" />
+            </Fieldset>
+            <YStack alignItems="flex-end" marginTop="$2">
+              <Dialog.Close displayWhenAdapted asChild>
+                <Button theme="green_Button" aria-label="Close">
+                  Save changes
+                </Button>
+              </Dialog.Close>
+            </YStack>
+
+            <Unspaced>
+              <Dialog.Close asChild>
+                <Button pos="absolute" top="$3" right="$3" size="$2" circular />
+              </Dialog.Close>
+            </Unspaced>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+      <StatusBar style="auto" />
+    </YStack>
   );
 }

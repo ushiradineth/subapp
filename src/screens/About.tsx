@@ -1,13 +1,10 @@
 import React from "react";
-import { View } from "react-native";
-import { Layout, Text } from "react-native-rapi-ui";
+import { Stack, Text } from "tamagui";
 
 export default function ({ navigation }: any) {
   return (
-    <Layout>
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Text>This is the About tab</Text>
-      </View>
-    </Layout>
+    <Stack margin={10}>
+      <Text color="$color">This is the About tab</Text>
+    </Stack>
   );
 }

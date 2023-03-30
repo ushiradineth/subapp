@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 import MainTabs from "./MainTabs";
+
 // import SecondScreen from "../screens/SecondScreen";
 
 const MainStack = createNativeStackNavigator();
