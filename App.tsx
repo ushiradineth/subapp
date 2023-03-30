@@ -2,16 +2,20 @@ import React from "react";
 import { AuthProvider } from "./src/utils/AuthProvider";
 import Navigation from "./src/navigation";
 import { StatusBar } from "expo-status-bar";
-import { ThemeProvider } from "react-native-rapi-ui";
+import { TamaguiProvider } from "tamagui";
+import config from "./tamagui.config";
+import { ThemeProvider } from "./src/utils/Theme";
 
 function App() {
   return (
-    <ThemeProvider theme="dark">
+    <TamaguiProvider config={config}>
+      <ThemeProvider>
         <AuthProvider>
           <Navigation />
         </AuthProvider>
         <StatusBar />
-    </ThemeProvider>
+      </ThemeProvider>
+    </TamaguiProvider>
   );
 }
 
