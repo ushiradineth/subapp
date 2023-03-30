@@ -1,8 +1,11 @@
 import React from "react";
-import { Theme } from "tamagui";
 import { useColorScheme } from "react-native";
+import { Theme } from "tamagui";
 
-const ThemeContext = React.createContext<{ theme: "light" | "dark"; setTheme: (theme: "light" | "dark") => void }>({
+const ThemeContext = React.createContext<{
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
+}>({
   theme: "light",
   setTheme: (theme) => console.warn("no theme provided"),
 });

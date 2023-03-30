@@ -1,10 +1,10 @@
 import React from "react";
-import { AuthProvider } from "./src/utils/AuthProvider";
 import Navigation from "./src/navigation";
+import { AuthProvider } from "./src/utils/AuthProvider";
+import { ThemeProvider } from "./src/utils/Theme";
+import config from "./tamagui.config";
 import { StatusBar } from "expo-status-bar";
 import { TamaguiProvider } from "tamagui";
-import config from "./tamagui.config";
-import { ThemeProvider } from "./src/utils/Theme";
 
 function App() {
   return (
