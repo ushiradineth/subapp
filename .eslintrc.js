@@ -1,16 +1,21 @@
-module.exports = {
+/** @type {import("eslint").Linter.Config} */
+const config = {
   root: true,
-  extends: ["eslint-config-prettier"],
+  extends: ["@acme/eslint-config"], // uses the config in `packages/config/eslint`
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "react", "react-native"],
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    project: "./tsconfig.json",
+    ecmaVersion: "latest",
+    tsconfigRootDir: __dirname,
+    project: [
+      "./tsconfig.json",
+      "./apps/*/tsconfig.json",
+      "./packages/*/tsconfig.json",
+    ],
   },
-  env: {
-    "react-native/react-native": true,
+  settings: {
+    next: {
+      rootDir: ["apps/nextjs"],
+    },
   },
   rules: {
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -25,3 +30,5 @@ module.exports = {
     ],
   },
 };
+
+module.exports = config;
