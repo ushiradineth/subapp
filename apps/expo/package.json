@@ -4,7 +4,7 @@
   "main": "index.tsx",
   "scripts": {
     "clean": "git clean -xdf .expo .turbo node_modules",
-    "dev": "expo start --android'/;",
+    "dev": "expo start --android",
     "dev:android": "expo start --android",
     "dev:ios": "expo start --ios",
     "lint": "eslint .",
@@ -12,6 +12,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@eva-design/eva": "^2.2.0",
     "@expo/metro-config": "^0.7.1",
     "@shopify/flash-list": "1.4.3",
     "@tamagui/animations-react-native": "^1.16.5",
@@ -25,6 +26,7 @@
     "@trpc/client": "^10.20.0",
     "@trpc/react-query": "^10.20.0",
     "@trpc/server": "^10.20.0",
+    "@ui-kitten/components": "^5.3.1",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "expo": "^48.0.15",
     "expo-constants": "~14.2.1",
@@ -40,6 +42,7 @@
     "react-native-reanimated": "~2.14.4",
     "react-native-safe-area-context": "4.5.1",
     "react-native-screens": "~3.20.0",
+    "react-native-svg": "^13.9.0",
     "react-native-web": "^0.19.4",
     "superjson": "1.9.1",
     "tamagui": "^1.16.5"

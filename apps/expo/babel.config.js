@@ -1,3 +1,5 @@
+process.env.TAMAGUI_TARGET = "native";
+
 /** @type {import("@babel/core").ConfigFunction} */
 module.exports = function (api) {
   api.cache.forever();
@@ -12,6 +14,21 @@ module.exports = function (api) {
       "nativewind/babel",
       "expo-router/babel",
       ["module-resolver", { alias: { "~": "./src" } }],
+      [
+        "transform-inline-environment-variables",
+        {
+          include: "TAMAGUI_TARGET",
+        },
+      ],
+      [
+        "@tamagui/babel-plugin",
+        {
+          components: ["tamagui"],
+          config: "./tamagui.config.ts",
+          logTimings: true,
+        },
+      ],
+      "react-native-reanimated/plugin",
     ],
   };
 };
