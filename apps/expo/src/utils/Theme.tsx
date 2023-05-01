@@ -29,8 +29,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   const [loaded] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+    Montserrat: require("../../assets/Montserrat-Regular.ttf"),
+    MontserratBold: require("../../assets/Montserrat-Bold.ttf"),
   });
 
   return (
@@ -42,7 +42,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               children
             ) : (
               <YStack flex={1} alignItems="center" justifyContent="center" space={4}>
-                <Spinner size="large" color="$green10" />
+                <Spinner size="large" color="$accent" />
               </YStack>
             )}
           </Theme>

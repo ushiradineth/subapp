@@ -20,6 +20,7 @@
     "@tamagui/babel-plugin": "^1.16.5",
     "@tamagui/config": "^1.16.5",
     "@tamagui/font-inter": "^1.16.5",
+    "@tamagui/lucide-icons": "^1.22.3",
     "@tamagui/react-native-media-driver": "^1.16.5",
     "@tamagui/theme-base": "^1.16.5",
     "@tamagui/themes": "^1.16.5",
