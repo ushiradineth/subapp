@@ -4,6 +4,7 @@ import * as eva from "@eva-design/eva";
 import { ApplicationProvider } from "@ui-kitten/components";
 import config from "../../tamagui.config";
 import { TamaguiProvider, Theme } from "tamagui";
+import { ToastProvider } from "@tamagui/toast";
 
 const ThemeContext = React.createContext<{
   theme: "light" | "dark" | "useColorScheme";
@@ -30,6 +31,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       <TamaguiProvider config={config}>
         <ApplicationProvider {...eva} theme={internal === "light" ? eva.light : eva.dark}>
           <Theme name={internal}>{children}</Theme>
+          <ToastProvider />
         </ApplicationProvider>
       </TamaguiProvider>
     </ThemeContext.Provider>

@@ -14,12 +14,10 @@ const RootLayout = () => {
     <ClerkProvider publishableKey={Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string} tokenCache={tokenCache}>
       <TRPCProvider>
         <ThemeProvider>
-          <SafeAreaProvider>
+          <SafeAreaProvider style={{ flex: 1 }}>
             <Stack
               screenOptions={{
-                headerStyle: {
-                  backgroundColor: "#f472b6",
-                },
+                headerShown: false,
               }}
             />
             <StatusBar />
