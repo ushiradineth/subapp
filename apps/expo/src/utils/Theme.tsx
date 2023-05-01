@@ -4,9 +4,10 @@ import { useFonts } from "expo-font";
 import * as eva from "@eva-design/eva";
 import { ToastProvider } from "@tamagui/toast";
 import { ApplicationProvider } from "@ui-kitten/components";
-import { Spinner, TamaguiProvider, Theme, YStack } from "tamagui";
+import { TamaguiProvider, Theme } from "tamagui";
 
 import config from "../../tamagui.config";
+import { SpinnerComponent } from "~/components/Spinner";
 
 const ThemeContext = React.createContext<{
   theme: "light" | "dark" | "useColorScheme";
@@ -41,9 +42,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             {loaded ? (
               children
             ) : (
-              <YStack flex={1} alignItems="center" justifyContent="center" space={4}>
-                <Spinner size="large" color="$accent" />
-              </YStack>
+              <SpinnerComponent />
             )}
           </Theme>
           <ToastProvider />
