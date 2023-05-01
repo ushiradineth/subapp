@@ -1,10 +1,12 @@
 import React from "react";
 import { useColorScheme } from "react-native";
+import { useFonts } from "expo-font";
 import * as eva from "@eva-design/eva";
-import { ApplicationProvider } from "@ui-kitten/components";
-import config from "../../tamagui.config";
-import { TamaguiProvider, Theme } from "tamagui";
 import { ToastProvider } from "@tamagui/toast";
+import { ApplicationProvider } from "@ui-kitten/components";
+import { Spinner, TamaguiProvider, Theme, YStack } from "tamagui";
+
+import config from "../../tamagui.config";
 
 const ThemeContext = React.createContext<{
   theme: "light" | "dark" | "useColorScheme";
@@ -20,17 +22,30 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const color = useColorScheme();
   const [theme, setTheme] = React.useState<"light" | "dark" | "uCS">(color === "light" ? "light" : "dark");
   const [internal, setInternal] = React.useState<"light" | "dark">(color === "light" ? "light" : "dark");
-  
+
   React.useEffect(() => {
-    if(theme === "uCS") setInternal(color === "light" ? "light" : "dark")
-    else setInternal(theme)
-  }, [theme])
+    if (theme === "uCS") setInternal(color === "light" ? "light" : "dark");
+    else setInternal(theme);
+  }, [theme]);
+
+  const [loaded] = useFonts({
+    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+  });
 
   return (
     <ThemeContext.Provider value={{ theme: internal, setTheme }}>
       <TamaguiProvider config={config}>
         <ApplicationProvider {...eva} theme={internal === "light" ? eva.light : eva.dark}>
-          <Theme name={internal}>{children}</Theme>
+          <Theme name={internal}>
+            {loaded ? (
+              children
+            ) : (
+              <YStack flex={1} alignItems="center" justifyContent="center" space={4}>
+                <Spinner size="large" color="$green10" />
+              </YStack>
+            )}
+          </Theme>
           <ToastProvider />
         </ApplicationProvider>
       </TamaguiProvider>

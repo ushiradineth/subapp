@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Constants from "expo-constants";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -14,14 +14,14 @@ const RootLayout = () => {
     <ClerkProvider publishableKey={Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY as string} tokenCache={tokenCache}>
       <TRPCProvider>
         <ThemeProvider>
-          <SafeAreaProvider style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1 }}>
             <Stack
               screenOptions={{
                 headerShown: false,
               }}
             />
             <StatusBar />
-          </SafeAreaProvider>
+          </SafeAreaView>
         </ThemeProvider>
       </TRPCProvider>
     </ClerkProvider>
