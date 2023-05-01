@@ -2,7 +2,7 @@ import { createAnimations } from "@tamagui/animations-react-native";
 import { createMedia } from "@tamagui/react-native-media-driver";
 import { shorthands } from "@tamagui/shorthands";
 import { color, radius, size, space, themes, zIndex } from "@tamagui/themes";
-import { createFont, createTamagui, createTokens } from "tamagui";
+import { createFont, createTamagui, createTokens, getVariableValue } from "tamagui";
 
 const animations = createAnimations({
   bouncy: {
@@ -24,32 +24,28 @@ const animations = createAnimations({
   },
 });
 
+const sizeLineHeight = (size: number) => size + 10;
+const sizeSize = (size: number) => size * 1;
+
 const createMontserratFont = () =>
   createFont({
     family: "Montserrat",
-    size: {
-      true: 14,
-      1: 12,
-      2: 14,
-      3: 15,
-    },
-    lineHeight: {
-      1: 17,
-      2: 22,
-      3: 25,
-    },
+    size: Object.fromEntries(
+      Object.entries({
+        size,
+      }).map(([k, v]) => [k, sizeSize(+v)]),
+    ),
+    lineHeight: { 2: 22 },
     weight: {
       4: "300",
-      6: "600",
     },
     letterSpacing: {
-      4: 0,
-      8: -1,
+      1: 0,
+      2: -1,
     },
     face: {
-      700: { normal: "MontserratBold", italic: "MontserratBold-Italic" },
-      800: { normal: "MontserratBold", italic: "MontserratBold-Italic" },
-      900: { normal: "MontserratBold", italic: "MontserratBold-Italic" },
+      true: "Montserrat",
+      600: { normal: "MontserratBold", italic: "MontserratBold-Italic" },
     },
   });
 
