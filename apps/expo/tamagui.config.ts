@@ -24,33 +24,34 @@ const animations = createAnimations({
   },
 });
 
-const sizeLineHeight = (size: number) => size + 10;
-const sizeSize = (size: number) => size * 1;
-
 const createMontserratFont = () =>
   createFont({
     family: "Montserrat",
-    size: Object.fromEntries(
-      Object.entries({
-        size,
-      }).map(([k, v]) => [k, sizeSize(+v)]),
-    ),
-    lineHeight: { 2: 22 },
+    size: {
+      1: 12,
+      2: 14,
+      3: 15,
+    },
+    lineHeight: {
+      1: 17,
+      2: 22,
+      3: 25,
+    },
     weight: {
       4: "300",
+      6: "600",
     },
     letterSpacing: {
-      1: 0,
-      2: -1,
+      4: 0,
+      8: -1,
     },
     face: {
-      true: "Montserrat",
+      $true: "Montserrat",
       600: { normal: "MontserratBold", italic: "MontserratBold-Italic" },
     },
   });
 
 const headingFont = createMontserratFont();
-
 const bodyFont = createMontserratFont();
 
 const tokens = createTokens({
