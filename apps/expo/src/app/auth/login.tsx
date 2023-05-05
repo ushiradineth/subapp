@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/clerk-expo";
 import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
@@ -6,8 +6,9 @@ import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
 export default function Login() {
   const router = useRouter();
   const { signIn, setSession, isLoaded } = useSignIn();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const onSignInPress = async () => {
     if (!isLoaded) {
@@ -23,7 +24,7 @@ export default function Login() {
       await setSession(signin.createdSessionId);
     } catch (err) {
       // @ts-ignore
-      console.log("Error:> " + (err.errors ? err.errors[0].message : err));
+      setError(`Error: ${err.errors ? err.errors[0].message : err}`);
     }
   };
 
@@ -40,6 +41,8 @@ export default function Login() {
         <H6 className="font-bold">Password</H6>
         <Input className="w-full" value={password} placeholder="Enter your Password" secureTextEntry={true} onChangeText={(password) => setPassword(password)} />
       </YStack>
+
+      {error && <Text color={'red'}>{error}</Text>}
 
       <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={onSignInPress} className={"w-full"}>
         Log in
