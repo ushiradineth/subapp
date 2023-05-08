@@ -9,9 +9,8 @@ const defineConfig = (): ExpoConfig => ({
   icon: "./assets/icon.png",
   userInterfaceStyle: "light",
   splash: {
-    image: "./assets/icon.png",
+    image: "./assets/splashscreen.png",
     resizeMode: "contain",
-    backgroundColor: "#1F104A",
   },
   updates: {
     fallbackToCacheTimeout: 0,
@@ -23,16 +22,15 @@ const defineConfig = (): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: "./assets/icon.png",
-      backgroundColor: "#1F104A",
+      backgroundImage: "./assets/icon.png",
+      backgroundColor: "#ffffff",
     },
   },
   extra: {
     eas: {
       projectId: "0dc6749a-cb3d-4fe0-80aa-f2a7ba811017",
     },
-    CLERK_PUBLISHABLE_KEY:
-      "pk_test_c2VsZWN0LXN0YXJsaW5nLTQ5LmNsZXJrLmFjY291bnRzLmRldiQ",
+    CLERK_PUBLISHABLE_KEY: "pk_test_c2VsZWN0LXN0YXJsaW5nLTQ5LmNsZXJrLmFjY291bnRzLmRldiQ",
   },
   owner: "ushiradineth",
   plugins: ["./expo-plugins/with-modify-gradle.js"],
