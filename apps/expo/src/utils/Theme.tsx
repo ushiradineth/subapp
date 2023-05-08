@@ -1,9 +1,7 @@
 import React from "react";
 import { useColorScheme } from "react-native";
 import { useFonts } from "expo-font";
-import * as eva from "@eva-design/eva";
 import { ToastProvider } from "@tamagui/toast";
-import { ApplicationProvider } from "@ui-kitten/components";
 import { TamaguiProvider, Theme } from "tamagui";
 
 import config from "../../tamagui.config";
@@ -37,7 +35,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ThemeContext.Provider value={{ theme: internal, setTheme }}>
       <TamaguiProvider config={config}>
-        <ApplicationProvider {...eva} theme={internal === "light" ? eva.light : eva.dark}>
           <Theme name={internal}>
             {loaded ? (
               children
@@ -46,7 +43,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             )}
           </Theme>
           <ToastProvider />
-        </ApplicationProvider>
       </TamaguiProvider>
     </ThemeContext.Provider>
   );

@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.16.4",
-    "@eva-design/eva": "^2.2.0",
     "@expo/metro-config": "^0.7.1",
     "@shopify/flash-list": "1.4.3",
     "@tamagui/animations-react-native": "^1.16.5",
@@ -28,7 +27,6 @@
     "@trpc/client": "^10.20.0",
     "@trpc/react-query": "^10.20.0",
     "@trpc/server": "^10.20.0",
-    "@ui-kitten/components": "^5.3.1",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "burnt": "^0.10.0",
     "expo": "^48.0.15",

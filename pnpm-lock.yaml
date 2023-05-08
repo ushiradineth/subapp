@@ -37,9 +37,6 @@ importers:
       '@clerk/clerk-expo':
         specifier: ^0.16.4
         version: 0.16.4(@babel/core@7.21.4)(@types/react@18.2.0)(expo-auth-session@4.0.3)(expo-web-browser@12.1.1)(react-dom@18.2.0)(react-native@0.71.7)(react@18.2.0)
-      '@eva-design/eva':
-        specifier: ^2.2.0
-        version: 2.2.0
       '@expo/metro-config':
         specifier: ^0.7.1
         version: 0.7.1
@@ -82,9 +79,6 @@ importers:
       '@trpc/server':
         specifier: ^10.20.0
         version: 10.20.0
-      '@ui-kitten/components':
-        specifier: ^5.3.1
-        version: 5.3.1(react-native-svg@13.4.0)
       babel-plugin-transform-inline-environment-variables:
         specifier: ^0.4.4
         version: 0.4.4
@@ -2174,18 +2168,6 @@ packages:
   /@eslint/js@8.38.0:
     resolution: {integrity: sha512-IoD2MfUnOV58ghIHCiil01PcohxjbYR/qCxsoC+xNgUwh1EY8jOOrYmu3d3a71+tJJ23uscEV4X2HJWMsPJu4g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-
-  /@eva-design/dss@2.2.0:
-    resolution: {integrity: sha512-ip+iLpe8WFR1IyPGR9puJtXhkZQrWV9p+Xgg3u/3ruDNaObh/YlnfZdS0i29m6YZduW3I+lLuXSXwq5f4pAbRA==}
-    dev: false
-
-  /@eva-design/eva@2.2.0:
-    resolution: {integrity: sha512-Wh98ex5cCK+YYSQNpthX1bT4CA3zDRR1WnJv0YlyvULAkmjaEvqtoGMCXzu5DH8v1fGIggu/OpAokLS7UVPe+A==}
-    dev: false
-
-  /@eva-design/processor@2.2.0:
-    resolution: {integrity: sha512-fEvjvilmF/R9dqXDiMoaoXxrPIb5s1APVXbacXKAxjlWl231rzOxc5sdTtJPoFTTEon5KeaKwLHtbQvz5eVvIA==}
-    dev: false
 
   /@expo/bunyan@4.0.0:
     resolution: {integrity: sha512-Ydf4LidRB/EBI+YrB+cVLqIseiRfjUI/AeHBgjGMtq3GroraDu81OV7zqophRgupngoL3iS3JUMDMnxO7g39qA==}
@@ -4880,19 +4862,6 @@ packages:
       eslint-visitor-keys: 3.4.0
     dev: false
 
-  /@ui-kitten/components@5.3.1(react-native-svg@13.4.0):
-    resolution: {integrity: sha512-Oj1WePUQtpNfH7ftXGdkkFVmJI+JcR3cBryPJV0E+JAUdH2dbJ0oG/VA+UAgk27/u0K0OZSUkdMFuGnkDAVuYA==}
-    peerDependencies:
-      react-native-svg: '*'
-    dependencies:
-      '@eva-design/dss': 2.2.0
-      '@eva-design/processor': 2.2.0
-      fecha: 3.0.3
-      hoist-non-react-statics: 3.3.2
-      lodash.merge: 4.6.2
-      react-native-svg: 13.4.0(react-native@0.71.7)(react@18.2.0)
-    dev: false
-
   /@urql/core@2.3.6(graphql@15.8.0):
     resolution: {integrity: sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw==}
     peerDependencies:
@@ -7372,10 +7341,6 @@ packages:
       ua-parser-js: 0.7.32
     transitivePeerDependencies:
       - encoding
-    dev: false
-
-  /fecha@3.0.3:
-    resolution: {integrity: sha512-6LQK/1jud/FZnfEEZJ7y81vw7ge81DNd/XEsX0hgMUjhS+QMljkb1C0czBaP7dMNRVrd5mw/J2J7qI2Nw+TWZw==}
     dev: false
 
   /fetch-retry@4.1.1:
