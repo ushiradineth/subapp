@@ -7,7 +7,7 @@ import { ApplicationProvider } from "@ui-kitten/components";
 import { TamaguiProvider, Theme } from "tamagui";
 
 import config from "../../tamagui.config";
-import { SpinnerComponent } from "~/components/Spinner";
+import { SplashScreen } from "expo-router";
 
 const ThemeContext = React.createContext<{
   theme: "light" | "dark" | "useColorScheme";
@@ -42,7 +42,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             {loaded ? (
               children
             ) : (
-              <SpinnerComponent />
+              <SplashScreen />
             )}
           </Theme>
           <ToastProvider />

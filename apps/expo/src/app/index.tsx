@@ -1,18 +1,17 @@
 import React from "react";
-import { useRouter } from "expo-router";
+import { Redirect } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 
-import { SpinnerComponent } from "~/components/Spinner";
+import { SplashScreen } from "expo-router";
 
 const Index = () => {
-  const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
 
   if (isLoaded) {
-    isSignedIn ? router.push("/home") : router.push("auth/login");
+    return isSignedIn ? <Redirect href="/home" /> : <Redirect href="/auth/login" />
   }
 
-  return <SpinnerComponent />;
+  return <SplashScreen />;
 };
 
 export default Index;
