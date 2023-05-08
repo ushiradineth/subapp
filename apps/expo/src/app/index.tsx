@@ -8,7 +8,7 @@ const Index = () => {
   const { isSignedIn, isLoaded } = useAuth();
 
   if (isLoaded) {
-    return isSignedIn ? <Redirect href="/home" /> : <Redirect href="/auth/login" />
+    return isSignedIn ? <Redirect href="/home" /> : <Redirect href="/auth" />
   }
 
   return <SplashScreen />;
