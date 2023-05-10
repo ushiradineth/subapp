@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Adapt, Button, Dialog, Fieldset, H2, H6, Input, Sheet, Text, Unspaced, XStack, YStack } from "tamagui";
@@ -11,6 +11,10 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    error !== "" && setError("");
+  }, [email, password]);
+
   const onSignUpPress = async () => {
     if (!isLoaded) {
       return;
@@ -22,7 +26,8 @@ export default function Register() {
         password,
       });
 
-      signUp.prepareEmailAddressVerification().then(() => setEmailSent(true));
+      signUp.prepareEmailAddressVerification();
+      setEmailSent(true);
     } catch (err) {
       // @ts-ignore
       setError(`Error: ${err.errors ? err.errors[0].message : err}`);
@@ -59,7 +64,7 @@ export default function Register() {
         <Input className="w-full" value={password} placeholder="Enter your Password" secureTextEntry={true} onChangeText={(password) => setPassword(password)} />
       </YStack>
 
-      {error && <Text color={'red'}>{error}</Text>}
+      {error && <Text color={"red"}>{error}</Text>}
 
       <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={onSignUpPress} className={"w-full"}>
         Register
@@ -79,8 +84,11 @@ export default function Register() {
 
 const EmailSentPopup = (props: { onConfirm: (code: string) => boolean; open: boolean }) => {
   const [code, setCode] = useState("");
-  const router = useRouter();
-  const [error, setError] = useState("asdasd");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    error !== "" && setError("");
+  }, [code]);
 
   async function handleConfirm() {
     const result = props.onConfirm(code);
@@ -125,7 +133,7 @@ const EmailSentPopup = (props: { onConfirm: (code: string) => boolean; open: boo
             <Input flex={1} defaultValue="******" value={code} onChangeText={(code) => setCode(code)} placeholder="Verification Code" />
           </Fieldset>
           <YStack alignItems="center" marginTop="$2">
-            {error && <Text color={'red'}>{error}</Text>}
+            {error && <Text color={"red"}>{error}</Text>}
           </YStack>
           <YStack alignItems="flex-end" marginTop="$2">
             <Dialog.Close displayWhenAdapted asChild>

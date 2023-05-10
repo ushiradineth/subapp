@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { useSignIn } from "@clerk/clerk-expo";
 import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
@@ -9,6 +9,10 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    error !== "" && setError("");
+  }, [email, password]);
 
   const onSignInPress = async () => {
     if (!isLoaded) {
@@ -42,7 +46,7 @@ export default function Login() {
         <Input className="w-full" value={password} placeholder="Enter your Password" secureTextEntry={true} onChangeText={(password) => setPassword(password)} />
       </YStack>
 
-      {error && <Text color={'red'}>{error}</Text>}
+      {error && <Text color={"red"}>{error}</Text>}
 
       <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={onSignInPress} className={"w-full"}>
         Log in
@@ -55,8 +59,8 @@ export default function Login() {
             Register here
           </Text>
         </XStack>
-        <Text className="font-bold" onPress={() => router.push("auth/forgot-password")}>
-          Forgot Password
+        <Text className="font-bold" onPress={() => router.push("auth/password-reset")}>
+          Reset password
         </Text>
       </YStack>
     </YStack>
