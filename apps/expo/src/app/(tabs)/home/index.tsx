@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <YStack className="flex-1 items-center justify-center p-8" space>
-      <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={() => signOut()} className={"w-full"}>
+      <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={() => signOut().then(() => router.push("/"))} className={"w-full"}>
         Log out
       </Button>
     </YStack>
