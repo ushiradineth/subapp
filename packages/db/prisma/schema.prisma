@@ -2,18 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
-}
-
-model Post {
-    id      String @id @default(cuid())
-    title   String
-    content String
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // NextAuth.js Models
@@ -21,45 +16,196 @@ model Post {
 // uncomment the @db.Text annotations below
 // @see https://next-auth.js.org/schemas/models
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? // @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              Vendor  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         Vendor   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+model Vendor {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  products      Product[] @relation("vendorProducts")
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+model User {
+  id                   String         @id @default(cuid())
+  email                String         @unique
+  subscriptions        Subscription[] @relation("userSubscriptions")
+  reviews              Review[]       @relation("userReviews")
+  likedReviews         Review[]       @relation("likedReviews")
+  dislikedReviews      Review[]       @relation("dislikedReviews")
+  comments             Comment[]      @relation("userComments")
+  likedComments        Comment[]      @relation("likedComment")
+  dislikedComments     Comment[]      @relation("dislikedComment")
+  wishlist             Product[]      @relation("wishlist")
+  productsInterested   Product[]      @relation("productsInterested")
+  productsUninterested Product[]      @relation("productsUninterested")
+  templates            Product[]      @relation("userTemplates")
+  categoriesFollowing  Category[]     @relation("categoriesFollowing")
+  categoriesHidden     Category[]     @relation("categoriesHidden")
+  notifications        Notification[] @relation("notifications")
+  userNotifications    Notification[] @relation("notificationUsers")
+}
+
+model Subscription {
+  id                 String    @id @default(cuid())
+  user               User      @relation("userSubscriptions", fields: [userId], references: [id])
+  tiers              Tier[]    @relation("subscriptionTiers")
+  product            Product   @relation("productSubscriptions", fields: [productId], references: [id])
+  dateOfSubscription DateTime
+  dateOfTermination  DateTime?
+  active             Boolean
+  reccuring          Boolean
+  userId             String
+  productId          String
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model Tier {
+  id             String       @id @default(cuid())
+  product        Product      @relation(fields: [productId], references: [id])
+  productId      String
+  subscription   Subscription @relation("subscriptionTiers", fields: [subscriptionId], references: [id])
+  period         Int
+  price          Float
+  description    String?
+  name           String?
+  date           DateTime
+  link           String?
+  subscriptionId String
+
+  @@index([subscriptionId])
+  @@index([productId])
+}
+
+model Product {
+  id                String         @id @default(cuid())
+  name              String
+  logo              String
+  description       String
+  tiers             Tier[]
+  vendor            Vendor         @relation("vendorProducts", fields: [vendorId], references: [id])
+  wishlistedUsers   User[]         @relation("wishlist")
+  subscriptions     Subscription[] @relation("productSubscriptions")
+  usersInterested   User[]         @relation("productsInterested")
+  usersUninterested User[]         @relation("productsUninterested")
+  category          Category[]
+  date              DateTime
+  link              String
+  reviews           Review[]       @relation("productReviews")
+
+  userTemplate         User           @relation("userTemplates", fields: [userId], references: [id])
+  productNotifications Notification[] @relation("notificationsProduct")
+
+  vendorId String
+  userId   String
+
+  @@index([vendorId])
+  @@index([userId])
+}
+
+model Review {
+  id                  String         @id @default(cuid())
+  user                User           @relation("userReviews", fields: [userId], references: [id])
+  product             Product        @relation("productReviews", fields: [productId], references: [id])
+  date                DateTime
+  rating              Float
+  review              String?
+  likes               User[]         @relation("likedReviews")
+  dislikes            User[]         @relation("dislikedReviews")
+  comments            Comment[]      @relation("reviewComments")
+  reviewNotifications Notification[] @relation("notificationsReview")
+  userId              String
+  productId           String
+
+  @@index([productId])
+  @@index([userId])
+}
+
+model Comment {
+  id                   String         @id @default(cuid())
+  user                 User           @relation("userComments", fields: [userId], references: [id])
+  review               Review         @relation("reviewComments", fields: [reviewId], references: [id])
+  date                 DateTime
+  likes                User[]         @relation("likedComment")
+  dislikes             User[]         @relation("dislikedComment")
+  comment              String
+  commentNotifications Notification[] @relation("notificationsComment")
+  userId               String
+  reviewId             String
+
+  @@index([reviewId])
+  @@index([userId])
+}
+
+model Category {
+  id                    String         @id @default(cuid())
+  name                  String
+  description           String
+  date                  DateTime
+  usersInterested       User[]         @relation("categoriesFollowing")
+  usersUninterested     User[]         @relation("categoriesHidden")
+  products              Product[]
+  categoryNotifications Notification[] @relation("notificationsCategory")
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  user       User[]    @relation("notifications")
+  date       DateTime
+  product    Product?  @relation("notificationsProduct", fields: [productId], references: [id])
+  review     Review?   @relation("notificationsReview", fields: [reviewId], references: [id])
+  comment    Comment?  @relation("notificationsComment", fields: [commentId], references: [id])
+  category   Category? @relation("notificationsCategory", fields: [categoryId], references: [id])
+  users      User[]    @relation("notificationUsers")
+  type       String
+  text       String
+  preview    String?
+  productId  String?
+  reviewId   String?
+  commentId  String?
+  categoryId String?
+
+  @@index([productId])
+  @@index([reviewId])
+  @@index([commentId])
+  @@index([categoryId])
 }
