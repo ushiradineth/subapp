@@ -5,6 +5,7 @@ import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 
 import { api } from "~/utils/api";
+import NavigationBar from "~/components/NavigationBar";
 
 const CalSans = localFont({
   src: "../../public/CalSans-SemiBold.ttf",
@@ -14,9 +15,10 @@ const CalSans = localFont({
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <SessionProvider session={session}>
-      <div className={`${CalSans.variable} font-sans`}>
+      <main className={`${CalSans.variable} font-sans`}>
+        <NavigationBar />
         <Component {...pageProps} />
-      </div>
+      </main>
     </SessionProvider>
   );
 };
