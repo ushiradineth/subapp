@@ -21,7 +21,8 @@ export default {
         },
         extend: {
           colors: {
-            brand: "#5D76CC",
+            bgc: "rgb(4,7,17)",
+            bc: "rgb(31,40,57)",
             border: "hsl(var(--border))",
             input: "hsl(var(--input))",
             ring: "hsl(var(--ring))",
