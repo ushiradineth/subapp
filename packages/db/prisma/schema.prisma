@@ -66,6 +66,7 @@ model VerificationToken {
 model User {
   id                   String         @id @default(cuid())
   email                String         @unique
+  password             String
   subscriptions        Subscription[] @relation("userSubscriptions")
   reviews              Review[]       @relation("userReviews")
   likedReviews         Review[]       @relation("likedReviews")
