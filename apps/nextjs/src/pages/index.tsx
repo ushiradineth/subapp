@@ -1,11 +1,10 @@
-import type { NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
-const Home: NextPage = () => {
-  const { data: session } = useSession();
-
-
+export default function Index() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   return (
     <>
@@ -13,12 +12,12 @@ const Home: NextPage = () => {
         <title>SubApp</title>
       </Head>
       <main className="flex flex-col items-center">
-       
-       <p>Email: {session?.user.email}</p>
-       <p>Role: {session?.user.role}</p>
+        <div className="flex flex-col items-center justify-center">
+          <p className="text-3xl font-semibold">Welcome to SubM</p>
+          <p>Promote your business on our App</p>
+          <p>Create an account and get started</p>
+        </div>
       </main>
     </>
   );
-};
-
-export default Home;
+}
