@@ -5,13 +5,14 @@
 /** @type { PrettierConfig | SortImportsConfig | TailwindConfig } */
 const config = {
   arrowParens: "always",
-  printWidth: 80,
+  printWidth: 99999,
   singleQuote: false,
   jsxSingleQuote: false,
   semi: true,
   trailingComma: "all",
   tabWidth: 2,
-  // pluginSearchDirs: false,
+  bracketSameLine: true,
+  singleAttributePerLine: false,
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss",
