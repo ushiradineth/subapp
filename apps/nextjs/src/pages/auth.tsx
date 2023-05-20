@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 import { api } from "~/utils/api";
 import { LoginSchema, RegisterSchema, type LoginFormData, type RegisterFormData } from "~/utils/validators";
@@ -26,7 +27,7 @@ export default function Auth() {
       <Head>
         <title>SubApp - Authentication</title>
       </Head>
-      <main className="flex flex-col items-center justify-center h-screen">
+      <main className="flex h-screen flex-col items-center justify-center">
         <Tabs defaultValue="login" className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
@@ -48,7 +49,20 @@ function Login() {
   } = useForm<LoginFormData>({
     resolver: yupResolver(LoginSchema),
   });
-  const onSubmit = (data: LoginFormData) => signIn("credentials", { email: data.Email, password: data.Password, redirect: true, callbackUrl: "/" });
+
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (data: LoginFormData) => {
+    setLoading(true);
+    const auth = await signIn("credentials", { email: data.Email, password: data.Password, redirect: false, callbackUrl: "/" });
+    auth?.status === 401 && toast.error("Incorrect Credentials");
+    if (auth?.status !== 401 && auth?.error) {
+      console.error(auth.error);
+      toast.error("An unknown error has occured");
+    }
+    setLoading(false);
+  };
+
   return (
     <TabsContent value="login">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -70,7 +84,9 @@ function Login() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit">Login</Button>
+            <Button type="submit" loading={loading}>
+              Login
+            </Button>
           </CardFooter>
         </Card>
       </form>
@@ -87,7 +103,8 @@ function Registration() {
     resolver: yupResolver(RegisterSchema),
   });
 
-  const { mutate } = api.vendor.register.useMutation();
+  const [loading, setLoading] = useState(false);
+  const { mutate } = api.vendor.register.useMutation({ onMutate: () => setLoading(true), onSettled: () => setLoading(false), onError: () => toast.error("Failed to create account"), onSuccess: () => toast.success("Account has been created") });
   const onSubmit = (data: RegisterFormData) => mutate({ name: data.Name, email: data.Email, password: data.Password });
 
   return (
@@ -121,7 +138,7 @@ function Registration() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button>Register</Button>
+            <Button loading={loading}>Register</Button>
           </CardFooter>
         </Card>
       </form>
