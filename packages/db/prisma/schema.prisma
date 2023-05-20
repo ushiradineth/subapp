@@ -44,15 +44,25 @@ model Session {
   @@index([userId])
 }
 
+model Admin {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String?   @unique
+  password        String
+  image           String?
+}
+
 model Vendor {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  products      Product[] @relation("vendorProducts")
+  id              String    @id @default(cuid())
+  name            String
+  email           String?   @unique
+  password        String
+  emailVerified   DateTime?
+  accountVerified Boolean
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  products        Product[] @relation("vendorProducts")
 }
 
 model VerificationToken {
@@ -64,24 +74,26 @@ model VerificationToken {
 }
 
 model User {
-  id                   String         @id @default(cuid())
-  email                String         @unique
-  password             String
-  subscriptions        Subscription[] @relation("userSubscriptions")
-  reviews              Review[]       @relation("userReviews")
-  likedReviews         Review[]       @relation("likedReviews")
-  dislikedReviews      Review[]       @relation("dislikedReviews")
-  comments             Comment[]      @relation("userComments")
-  likedComments        Comment[]      @relation("likedComment")
-  dislikedComments     Comment[]      @relation("dislikedComment")
-  wishlist             Product[]      @relation("wishlist")
-  productsInterested   Product[]      @relation("productsInterested")
-  productsUninterested Product[]      @relation("productsUninterested")
-  templates            Product[]      @relation("userTemplates")
-  categoriesFollowing  Category[]     @relation("categoriesFollowing")
-  categoriesHidden     Category[]     @relation("categoriesHidden")
-  notifications        Notification[] @relation("notifications")
-  userNotifications    Notification[] @relation("notificationUsers")
+  id                    String         @id @default(cuid())
+  email                 String         @unique
+  name                  String
+  password              String
+  image                 String?
+  subscriptions         Subscription[] @relation("userSubscriptions")
+  reviews               Review[]       @relation("userReviews")
+  likedReviews          Review[]       @relation("likedReviews")
+  dislikedReviews       Review[]       @relation("dislikedReviews")
+  comments              Comment[]      @relation("userComments")
+  likedComments         Comment[]      @relation("likedComment")
+  dislikedComments      Comment[]      @relation("dislikedComment")
+  wishlist              Product[]      @relation("wishlist")
+  productsInterested    Product[]      @relation("productsInterested")
+  productsUninterested  Product[]      @relation("productsUninterested")
+  templates             Product[]      @relation("userTemplates")
+  categoriesFollowing   Category[]     @relation("categoriesFollowing")
+  categoriesHidden      Category[]     @relation("categoriesHidden")
+  notifications         Notification[] @relation("notifications")
+  userNotifications     Notification[] @relation("notificationUsers")
 }
 
 model Subscription {
