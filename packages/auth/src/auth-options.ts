@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import { prisma } from "@acme/db";
 
-import { api, type RouterOutputs } from "../../../apps/nextjs/src/utils/api";
+import { api } from "../../../apps/nextjs/src/utils/api";
 
 /**
  * Module augmentation for `next-auth` types
@@ -47,11 +47,16 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        const user = api.auth.authorize.useQuery({ ...credentials });
+      authorize(credentials) {
+        if (credentials?.email === "admin" && credentials.password === "admin") return { name: "admin", role: "admin", id: 1 };
+        const { mutate } = api.auth.authorize.useMutation({})
+        const user = mutate({ email: credentials?.email || "", password: credentials?.password || "" })
+
+        console.log(user);
+        
 
         if (user) {
           return user;

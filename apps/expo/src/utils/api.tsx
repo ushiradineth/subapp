@@ -5,7 +5,6 @@ import { httpBatchLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import superjson from "superjson";
 import { type AppRouter } from "@acme/api";
-import { useAuth } from "@clerk/clerk-expo";
 
 
 /**
@@ -47,7 +46,6 @@ const getBaseUrl = () => {
 export const TRPCProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { getToken } = useAuth();
   const [queryClient] = React.useState(() => new QueryClient());
   const [trpcClient] = React.useState(() =>
     api.createClient({
@@ -55,9 +53,8 @@ export const TRPCProvider: React.FC<{
       links: [ 
         httpBatchLink({
           async headers() {
-            const authToken = await getToken();
             return {
-              Authorization: authToken ?? undefined,
+              Authorization: undefined,
             };
           },
           url: `${getBaseUrl()}/api/trpc`,

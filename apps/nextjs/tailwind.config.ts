@@ -2,8 +2,6 @@ import type { Config } from "tailwindcss";
 
 import baseConfig from "@acme/tailwind-config";
 
-const { fontFamily } = require("tailwindcss/defaultTheme");
-
 export default {
   content: ["./src/**/*.tsx"],
   presets: [
@@ -63,7 +61,7 @@ export default {
             sm: "calc(var(--radius) - 4px)",
           },
           fontFamily: {
-            sans: ["var(--font-sans)", "Cal Sans", "san-serif", ...fontFamily.sans],
+            sans: ["san-serif"],
           },
           keyframes: {
             "accordion-down": {

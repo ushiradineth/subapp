@@ -1,17 +1,14 @@
 import React from "react";
-import { Redirect } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
-
-import { SplashScreen } from "expo-router";
+import { Redirect, SplashScreen } from "expo-router";
+import { api } from "~/utils/api";
 
 const Index = () => {
-  const { isSignedIn, isLoaded } = useAuth();
 
-  if (isLoaded) {
-    return isSignedIn ? <Redirect href="/home" /> : <Redirect href="/auth" />
-  }
-
-  return <SplashScreen />;
+  // if (isLoaded) {
+  //   return isSignedIn ? <Redirect href="/home" /> : <Redirect href="/auth" />
+  // } 
+  
+  return <Redirect href="/home" />;
 };
 
 export default Index;
