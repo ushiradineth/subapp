@@ -12,14 +12,19 @@ function Layout(props: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (status === "unauthenticated" && router.pathname !== "/auth") router.push("/auth");
+  const ALLOWED_UNAUTHED_PATHS = ["/auth", "/"];
+
+  if (status === "unauthenticated" && !ALLOWED_UNAUTHED_PATHS.includes(router.pathname)) router.push("/auth");
+
+  if (status === "authenticated" && router.pathname === "/auth") router.push("/");
 
   return (
-    <main className="bg-bgc">
-      <div className="border-bc flex h-14 items-center border-b">
+    <main className="bg-bgc h-screen">
+      <div className={`border-bc flex h-14 items-center border-b ${router.pathname === "/auth" && "hidden"}`}>
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
         </Link>
+        {/* {router.pathname === "/" && status !== } */}
         <Menubar className="ml-auto mr-4 w-fit">
           <MenubarMenu>
             <MenubarTrigger>
@@ -39,7 +44,7 @@ function Layout(props: { children: React.ReactNode }) {
           </MenubarMenu>
         </Menubar>
       </div>
-      <div className="min-h-screen pb-20 pt-10">{props.children}</div>
+      <div className={`flex flex-grow flex-col items-center justify-center text-white ${router.pathname !== "/auth" && "my-10"}`}>{props.children}</div>
     </main>
   );
 }

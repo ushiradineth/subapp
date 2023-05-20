@@ -26,7 +26,7 @@ export default function Auth() {
       <Head>
         <title>SubApp - Authentication</title>
       </Head>
-      <main className="flex flex-col items-center justify-center">
+      <main className="flex flex-col items-center justify-center h-screen">
         <Tabs defaultValue="login" className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>

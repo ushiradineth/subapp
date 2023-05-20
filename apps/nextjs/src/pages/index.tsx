@@ -4,14 +4,18 @@ import { useSession } from "next-auth/react";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
+
+
+
   return (
     <>
       <Head>
         <title>SubApp</title>
       </Head>
-      <main className="bg-bgc flex flex-col items-center text-white">
+      <main className="flex flex-col items-center">
        
-        Email: {session?.user.email}
+       <p>Email: {session?.user.email}</p>
+       <p>Role: {session?.user.role}</p>
       </main>
     </>
   );
