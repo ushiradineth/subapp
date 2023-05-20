@@ -1,10 +1,9 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import bcrypt from "bcryptjs";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { prisma } from "@acme/db";
-
-import { api } from "../../../apps/nextjs/src/utils/api";
 
 /**
  * Module augmentation for `next-auth` types
@@ -12,12 +11,15 @@ import { api } from "../../../apps/nextjs/src/utils/api";
  * and keep type safety
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  **/
+
+type UserRoles = "Admin" | "Vendor"
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: UserRoles;
     } & DefaultSession["user"];
   }
 
@@ -33,13 +35,32 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  **/
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.user = user;
       }
-      return session;
+      return Promise.resolve(token);
+    },
+    session({ session, token }) {
+      if (token.user) {
+        const t = token.user as {
+          id: string;
+          role: UserRoles;
+        };
+
+        session.user = {
+          id: t.id,
+          email: token.email,
+          image: token.picture,
+          name: token.name,
+          role: t.role,
+        };
+      }
+      return Promise.resolve(session);
     },
   },
   adapter: PrismaAdapter(prisma),
@@ -50,19 +71,44 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize(credentials) {
-        if (credentials?.email === "admin" && credentials.password === "admin") return { name: "admin", role: "admin", id: 1 };
-        const { mutate } = api.auth.authorize.useMutation({})
-        const user = mutate({ email: credentials?.email || "", password: credentials?.password || "" })
+      async authorize(credentials) {
+        const vendor = await prisma.vendor.findUnique({
+          where: { email: credentials?.email },
+        });
 
-        console.log(user);
-        
+        if (vendor) {
+          const vendorVerified = bcrypt.compareSync(credentials?.password || "", vendor.password);
 
-        if (user) {
-          return user;
-        } else {
-          return null;
+          if (vendorVerified) {
+            return {
+              id: vendor.id,
+              email: vendor.email,
+              name: vendor.name,
+              image: vendor.image,
+              role: "Vendor",
+            };
+          }
         }
+
+        const admin = await prisma.admin.findUnique({
+          where: { email: credentials?.email },
+        });
+
+        if (admin) {
+          const adminVerified = bcrypt.compareSync(credentials?.password || "", admin.password);
+
+          if (adminVerified) {
+            return {
+              id: admin.id,
+              email: admin.email,
+              name: admin.name,
+              image: admin.image,
+              role: "Admin",
+            };
+          }
+        }
+
+        return null;
       },
     }),
   ],
