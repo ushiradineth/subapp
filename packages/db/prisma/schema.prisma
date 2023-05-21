@@ -101,9 +101,8 @@ model User {
 
 model Subscription {
   id        String    @id @default(cuid())
-  user      User      @relation("userSubscriptions", fields: [userId], references: [id])
-  tiers     Tier[]    @relation("subscriptionTiers")
-  product   Product   @relation("productSubscriptions", fields: [productId], references: [id])
+  user      User      @relation("userSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  product   Product   @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
   deletedAt DateTime?  
   active    Boolean
@@ -117,18 +116,15 @@ model Subscription {
 
 model Tier {
   id             String       @id @default(cuid())
-  product        Product      @relation(fields: [productId], references: [id])
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId      String
-  subscription   Subscription @relation("subscriptionTiers", fields: [subscriptionId], references: [id])
   period         Int
   price          Float
   description    String?
   name           String?
   createdAt      DateTime  @default(now())
   link           String?
-  subscriptionId String
 
-  @@index([subscriptionId])
   @@index([productId])
 }
 
@@ -138,7 +134,7 @@ model Product {
   logo              String
   description       String
   tiers             Tier[]
-  vendor            Vendor         @relation("vendorProducts", fields: [vendorId], references: [id])
+  vendor            Vendor         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
   wishlistedUsers   User[]         @relation("wishlist")
   subscriptions     Subscription[] @relation("productSubscriptions")
   usersInterested   User[]         @relation("productsInterested")
@@ -148,7 +144,7 @@ model Product {
   link              String
   reviews           Review[]       @relation("productReviews")
 
-  userTemplate         User           @relation("userTemplates", fields: [userId], references: [id])
+  userTemplate         User           @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
   productNotifications Notification[] @relation("notificationsProduct")
 
   vendorId String
@@ -160,8 +156,8 @@ model Product {
 
 model Review {
   id                  String         @id @default(cuid())
-  user                User           @relation("userReviews", fields: [userId], references: [id])
-  product             Product        @relation("productReviews", fields: [productId], references: [id])
+  user                User           @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade)
+  product             Product        @relation("productReviews", fields: [productId], references: [id], onDelete: Cascade)
   createdAt           DateTime  @default(now())
   rating              Float
   review              String?
@@ -178,8 +174,8 @@ model Review {
 
 model Comment {
   id                   String         @id @default(cuid())
-  user                 User           @relation("userComments", fields: [userId], references: [id])
-  review               Review         @relation("reviewComments", fields: [reviewId], references: [id])
+  user                 User           @relation("userComments", fields: [userId], references: [id], onDelete: Cascade)
+  review               Review         @relation("reviewComments", fields: [reviewId], references: [id], onDelete: Cascade)
   createdAt            DateTime  @default(now())
   likes                User[]         @relation("likedComment")
   dislikes             User[]         @relation("dislikedComment")
@@ -207,10 +203,10 @@ model Notification {
   id         String    @id @default(cuid())
   user       User[]    @relation("notifications")
   createdAt  DateTime  @default(now())
-  product    Product?  @relation("notificationsProduct", fields: [productId], references: [id])
-  review     Review?   @relation("notificationsReview", fields: [reviewId], references: [id])
-  comment    Comment?  @relation("notificationsComment", fields: [commentId], references: [id])
-  category   Category? @relation("notificationsCategory", fields: [categoryId], references: [id])
+  product    Product?  @relation("notificationsProduct", fields: [productId], references: [id], onDelete: Cascade)
+  review     Review?   @relation("notificationsReview", fields: [reviewId], references: [id], onDelete: Cascade)
+  comment    Comment?  @relation("notificationsComment", fields: [commentId], references: [id], onDelete: Cascade)
+  category   Category? @relation("notificationsCategory", fields: [categoryId], references: [id], onDelete: Cascade)
   users      User[]    @relation("notificationUsers")
   type       String
   text       String
