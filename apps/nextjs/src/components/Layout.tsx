@@ -11,12 +11,15 @@ import icon from "../../public/logo.svg";
 import { Button } from "./ui/button";
 
 const ALLOWED_UNAUTHED_PATHS = ["/auth", "/"];
+const VENDOR_PROHIBITED_PATHS = ["/vendor", "/category"];
 
 function Layout(props: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   if (status === "unauthenticated" && !ALLOWED_UNAUTHED_PATHS.includes(router.pathname)) router.push("/auth");
+
+  if (session?.user.role === "Vendor" && VENDOR_PROHIBITED_PATHS.includes(router.pathname)) router.push("/");
 
   if (status === "authenticated" && router.pathname === "/auth") router.push("/");
 
