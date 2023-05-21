@@ -7,6 +7,7 @@ import { prisma, type Category } from "@acme/db";
 
 import PageNumbers from "~/components/PageNumbers";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,7 +17,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const categories = await prisma.category.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
   const count = await prisma.category.count();
 
-  return { props: { categories, count } };
+  return {
+    props: {
+      categories: categories.map((category) => ({
+        ...category,
+        createdAt: formalizeDate(category.createdAt),
+      })),
+      count,
+    },
+  };
 };
 
 export default function Index({ categories, count }: { categories: Category[]; count: number }) {
@@ -37,6 +46,7 @@ export default function Index({ categories, count }: { categories: Category[]; c
               <TableRow>
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
                 <TableHead className="text-center">Link</TableHead>
               </TableRow>
             </TableHeader>
@@ -46,6 +56,7 @@ export default function Index({ categories, count }: { categories: Category[]; c
                   <TableRow key={index}>
                     <TableCell className="text-center">{category.id}</TableCell>
                     <TableCell className="text-center">{category.name}</TableCell>
+                    <TableCell className="text-center">{category.createdAt.toString()}</TableCell>
                     <TableCell className="text-center" onClick={() => router.push(`/category/${category.id}`)}>
                       <LinkIcon />
                     </TableCell>

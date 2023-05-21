@@ -50,6 +50,7 @@ model Admin {
   email           String?   @unique
   password        String
   image           String?
+  createdAt       DateTime  @default(now())
 }
 
 model Vendor {
@@ -59,6 +60,7 @@ model Vendor {
   password        String
   emailVerified   DateTime?
   accountVerified Boolean
+  createdAt       DateTime  @default(now())
   image           String?
   accounts        Account[]
   sessions        Session[]
@@ -79,6 +81,7 @@ model User {
   name                  String
   password              String
   image                 String?
+  createdAt             DateTime       @default(now())
   subscriptions         Subscription[] @relation("userSubscriptions")
   reviews               Review[]       @relation("userReviews")
   likedReviews          Review[]       @relation("likedReviews")
@@ -97,16 +100,16 @@ model User {
 }
 
 model Subscription {
-  id                 String    @id @default(cuid())
-  user               User      @relation("userSubscriptions", fields: [userId], references: [id])
-  tiers              Tier[]    @relation("subscriptionTiers")
-  product            Product   @relation("productSubscriptions", fields: [productId], references: [id])
-  dateOfSubscription DateTime
-  dateOfTermination  DateTime?
-  active             Boolean
-  reccuring          Boolean
-  userId             String
-  productId          String
+  id        String    @id @default(cuid())
+  user      User      @relation("userSubscriptions", fields: [userId], references: [id])
+  tiers     Tier[]    @relation("subscriptionTiers")
+  product   Product   @relation("productSubscriptions", fields: [productId], references: [id])
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?  
+  active    Boolean
+  reccuring Boolean
+  userId    String
+  productId String
 
   @@index([userId])
   @@index([productId])
@@ -121,7 +124,7 @@ model Tier {
   price          Float
   description    String?
   name           String?
-  date           DateTime
+  createdAt      DateTime  @default(now())
   link           String?
   subscriptionId String
 
@@ -141,7 +144,7 @@ model Product {
   usersInterested   User[]         @relation("productsInterested")
   usersUninterested User[]         @relation("productsUninterested")
   category          Category[]
-  date              DateTime
+  createdAt         DateTime  @default(now())
   link              String
   reviews           Review[]       @relation("productReviews")
 
@@ -159,7 +162,7 @@ model Review {
   id                  String         @id @default(cuid())
   user                User           @relation("userReviews", fields: [userId], references: [id])
   product             Product        @relation("productReviews", fields: [productId], references: [id])
-  date                DateTime
+  createdAt           DateTime  @default(now())
   rating              Float
   review              String?
   likes               User[]         @relation("likedReviews")
@@ -177,7 +180,7 @@ model Comment {
   id                   String         @id @default(cuid())
   user                 User           @relation("userComments", fields: [userId], references: [id])
   review               Review         @relation("reviewComments", fields: [reviewId], references: [id])
-  date                 DateTime
+  createdAt            DateTime  @default(now())
   likes                User[]         @relation("likedComment")
   dislikes             User[]         @relation("dislikedComment")
   comment              String
@@ -193,7 +196,7 @@ model Category {
   id                    String         @id @default(cuid())
   name                  String
   description           String
-  date                  DateTime
+  createdAt             DateTime  @default(now())
   usersInterested       User[]         @relation("categoriesFollowing")
   usersUninterested     User[]         @relation("categoriesHidden")
   products              Product[]
@@ -203,7 +206,7 @@ model Category {
 model Notification {
   id         String    @id @default(cuid())
   user       User[]    @relation("notifications")
-  date       DateTime
+  createdAt  DateTime  @default(now())
   product    Product?  @relation("notificationsProduct", fields: [productId], references: [id])
   review     Review?   @relation("notificationsReview", fields: [reviewId], references: [id])
   comment    Comment?  @relation("notificationsComment", fields: [commentId], references: [id])

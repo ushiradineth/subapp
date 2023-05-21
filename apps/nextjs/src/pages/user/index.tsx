@@ -7,6 +7,7 @@ import { prisma, type User } from "@acme/db";
 
 import PageNumbers from "~/components/PageNumbers";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,7 +17,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const users = await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
   const count = await prisma.user.count();
 
-  return { props: { users, count } };
+  return {
+    props: {
+      users: users.map((user) => ({
+        ...user,
+        createdAt: formalizeDate(user.createdAt),
+      })),
+      count,
+    },
+  };
 };
 
 export default function Index({ users, count }: { users: User[]; count: number }) {
@@ -38,6 +47,7 @@ export default function Index({ users, count }: { users: User[]; count: number }
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Email</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
                 <TableHead className="text-center">Link</TableHead>
               </TableRow>
             </TableHeader>
@@ -48,6 +58,7 @@ export default function Index({ users, count }: { users: User[]; count: number }
                     <TableCell className="text-center">{user.id}</TableCell>
                     <TableCell className="text-center">{user.name}</TableCell>
                     <TableCell className="text-center">{user.email}</TableCell>
+                    <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
                     <TableCell className="text-center" onClick={() => router.push(`/user/${user.id}`)}>
                       <LinkIcon />
                     </TableCell>

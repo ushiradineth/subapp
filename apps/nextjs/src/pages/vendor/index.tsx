@@ -7,8 +7,9 @@ import { prisma, type Vendor } from "@acme/db";
 
 import PageNumbers from "~/components/PageNumbers";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { formalizeDate } from "~/lib/utils";
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log(context.query);
@@ -16,7 +17,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const vendors = await prisma.vendor.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
   const count = await prisma.vendor.count();
 
-  return { props: { vendors, count } };
+  return {
+    props: {
+      vendors: vendors.map((vendor) => ({
+        ...vendor,
+        createdAt: formalizeDate(vendor.createdAt),
+      })),
+      count,
+    },
+  };
 };
 
 export default function Index({ vendors, count }: { vendors: Vendor[]; count: number }) {
@@ -38,6 +47,7 @@ export default function Index({ vendors, count }: { vendors: Vendor[]; count: nu
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Email</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
                 <TableHead className="text-center">Link</TableHead>
               </TableRow>
             </TableHeader>
@@ -48,6 +58,7 @@ export default function Index({ vendors, count }: { vendors: Vendor[]; count: nu
                     <TableCell className="text-center">{vendor.id}</TableCell>
                     <TableCell className="text-center">{vendor.name}</TableCell>
                     <TableCell className="text-center">{vendor.email}</TableCell>
+                    <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
                     <TableCell className="text-center" onClick={() => router.push(`/vendor/${vendor.id}`)}>
                       <LinkIcon />
                     </TableCell>
