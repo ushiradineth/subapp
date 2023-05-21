@@ -17,10 +17,8 @@ import { formalizeDate } from "~/lib/utils";
 const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession({ ctx: context });
-
-  console.log(session);
-
+  const session = await getSession(context);
+  
   if (session?.user.role !== "Admin") {
     return {
       redirect: {
