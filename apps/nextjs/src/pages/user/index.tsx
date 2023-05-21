@@ -2,6 +2,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { LinkIcon } from "lucide-react";
+import { getSession } from "next-auth/react";
 
 import { prisma, type User } from "@acme/db";
 
@@ -12,8 +13,10 @@ import { formalizeDate } from "~/lib/utils";
 const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const users = await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
-  const count = users.length;
+  const session = await getSession({ ctx: context });
+
+  const users = session?.user.role === "Admin" ? await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 }) : await prisma.user.findMany({ where: { subscriptions: { some: { product: { vendorId: { equals: session?.user.id } } } } } });
+  const count = users?.length;
 
   return {
     props: {
