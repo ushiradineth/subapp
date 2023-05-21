@@ -19,7 +19,9 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (session?.user.role !== "Admin")
+  console.log(session);
+
+  if (session?.user.role !== "Admin") {
     return {
       redirect: {
         permanent: false,
@@ -27,6 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
       props: {},
     };
+  }
 
   const vendors = await prisma.vendor.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
   const count = vendors.length;
