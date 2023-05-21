@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function PageNumbers(props: { pageNumber: number; count: number; itemsPerPage: number; route: string }) {
   const router = useRouter();
+console.log(Math.ceil(props.count / props.itemsPerPage));
 
   return (
     <div className="m-8 flex w-40 select-none justify-center">
@@ -16,7 +17,7 @@ function PageNumbers(props: { pageNumber: number; count: number; itemsPerPage: n
           </button>
         ))}
 
-        {props.pageNumber !== props.count ? <ChevronRight onClick={() => router.push(`${props.route}?page=${props.pageNumber + 1}`)} /> : <p className="w-6"></p>}
+        {props.pageNumber !== Math.ceil(props.count / props.itemsPerPage) ? <ChevronRight onClick={() => router.push(`${props.route}?page=${props.pageNumber + 1}`)} /> : <p className="w-6"></p>}
       </div>
     </div>
   );
