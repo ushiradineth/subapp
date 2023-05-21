@@ -1,14 +1,19 @@
+import { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { LinkIcon } from "lucide-react";
-import { getSession } from "next-auth/react";
+import { LinkIcon, Trash } from "lucide-react";
+import { getSession, useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 import { prisma, type Product, type Vendor } from "@acme/db";
 
+import { api } from "~/utils/api";
+import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
+import { ReloadButton } from "../vendor";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -45,6 +50,8 @@ interface ProductWithVendor extends Product {
 export default function Index({ products, count }: { products: ProductWithVendor[]; count: number }) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
+  const { data: session } = useSession();
+  const [refresh, setRefresh] = useState(false);
 
   return (
     <>
@@ -52,6 +59,7 @@ export default function Index({ products, count }: { products: ProductWithVendor
         <title>Products - Page {router.query.page || 1}</title>
       </Head>
       <main className="flex flex-col items-center">
+        {refresh && <ReloadButton />}
         {products.length === 0 ? (
           <>No data found</>
         ) : (
@@ -63,6 +71,7 @@ export default function Index({ products, count }: { products: ProductWithVendor
                 <TableHead className="text-center">Vendor Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
                 <TableHead className="text-center">Link</TableHead>
+                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -76,6 +85,7 @@ export default function Index({ products, count }: { products: ProductWithVendor
                     <TableCell className="text-center" onClick={() => router.push(`/product/${product.id}`)}>
                       <LinkIcon />
                     </TableCell>
+                    {session?.user.role === "Admin" && <DeleleProduct id={product.id} onSuccess={() => setRefresh(true)} />}
                   </TableRow>
                 );
               })}
@@ -93,3 +103,23 @@ export default function Index({ products, count }: { products: ProductWithVendor
     </>
   );
 }
+
+const DeleleProduct = (props: { id: string; onSuccess: () => void }) => {
+  const [loading, setLoading] = useState(false);
+
+  const { mutate: deleteProduct } = api.product.delete.useMutation({
+    onMutate: () => setLoading(true),
+    onSettled: () => setLoading(false),
+    onError: () => toast.error("Failed to delete product"),
+    onSuccess: () => {
+      props.onSuccess();
+      toast.success("Product has been delete");
+    },
+  });
+
+  return (
+    <TableCell>
+      <div className="ml-2">{loading ? <Loader /> : <Trash onClick={() => deleteProduct({ id: props.id })} />}</div>
+    </TableCell>
+  );
+};

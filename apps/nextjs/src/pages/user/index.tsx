@@ -1,14 +1,19 @@
+import { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { LinkIcon } from "lucide-react";
-import { getSession } from "next-auth/react";
+import { LinkIcon, Trash } from "lucide-react";
+import { getSession, useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 import { prisma, type User } from "@acme/db";
 
+import { api } from "~/utils/api";
+import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
+import { ReloadButton } from "../vendor";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -32,6 +37,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Index({ users, count }: { users: User[]; count: number }) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
+  const { data: session } = useSession();
+  const [refresh, setRefresh] = useState(false);
 
   return (
     <>
@@ -39,6 +46,7 @@ export default function Index({ users, count }: { users: User[]; count: number }
         <title>Users - Page {router.query.page || 1}</title>
       </Head>
       <main className="flex flex-col items-center">
+        {refresh && <ReloadButton />}
         {users.length === 0 ? (
           <>No data found</>
         ) : (
@@ -50,6 +58,7 @@ export default function Index({ users, count }: { users: User[]; count: number }
                 <TableHead className="text-center">Email</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
                 <TableHead className="text-center">Link</TableHead>
+                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -63,6 +72,7 @@ export default function Index({ users, count }: { users: User[]; count: number }
                     <TableCell className="text-center" onClick={() => router.push(`/user/${user.id}`)}>
                       <LinkIcon />
                     </TableCell>
+                    {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
                   </TableRow>
                 );
               })}
@@ -80,3 +90,23 @@ export default function Index({ users, count }: { users: User[]; count: number }
     </>
   );
 }
+
+const DeleteUser = (props: { id: string; onSuccess: () => void }) => {
+  const [loading, setLoading] = useState(false);
+
+  const { mutate: deleteUser } = api.user.delete.useMutation({
+    onMutate: () => setLoading(true),
+    onSettled: () => setLoading(false),
+    onError: () => toast.error("Failed to delete user"),
+    onSuccess: () => {
+      props.onSuccess();
+      toast.success("User has been delete");
+    },
+  });
+
+  return (
+    <TableCell>
+      <div className="ml-2">{loading ? <Loader /> : <Trash onClick={() => deleteUser({ id: props.id })} />}</div>
+    </TableCell>
+  );
+};
