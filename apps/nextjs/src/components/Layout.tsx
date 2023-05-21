@@ -21,7 +21,7 @@ function Layout(props: { children: React.ReactNode }) {
   if (status === "authenticated" && router.pathname === "/auth") router.push("/");
 
   return (
-    <main className="bg-bgc dark h-screen">
+    <main className="bg-bgc dark flex flex-col min-h-screen">
       <div className={`border-bc flex h-14 items-center border-b ${router.pathname === "/auth" && "hidden"}`}>
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
