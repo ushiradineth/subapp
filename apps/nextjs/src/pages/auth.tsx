@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signIn, useSession } from "next-auth/react";
@@ -15,6 +17,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import icon from "../../public/logo.svg";
 
 export default function Auth() {
   const { status } = useSession();
@@ -28,10 +31,13 @@ export default function Auth() {
         <title>SubApp - Authentication</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
-        <Tabs defaultValue="login" className="w-[400px]">
+        <Link href="/" className="absolute left-12 top-12 rounded-full border p-4 hover:bg-gray-800">
+          <Image src={icon} alt="SubM Logo" width={50} />
+        </Link>
+        <Tabs defaultValue={router.query.register ? "register" : "login"} className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="registration">Registration</TabsTrigger>
+            <TabsTrigger value="register">Registration</TabsTrigger>
           </TabsList>
           <Login />
           <Registration />
@@ -108,7 +114,7 @@ function Registration() {
   const onSubmit = (data: RegisterFormData) => mutate({ name: data.Name, email: data.Email, password: data.Password });
 
   return (
-    <TabsContent value="registration">
+    <TabsContent value="register">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card>
           <CardHeader>

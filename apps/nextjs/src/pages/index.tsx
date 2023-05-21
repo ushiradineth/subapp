@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
@@ -11,13 +12,22 @@ export default function Index() {
       <Head>
         <title>SubApp</title>
       </Head>
-      <main className="flex flex-col items-center">
-        <div className="flex flex-col items-center justify-center">
-          <p className="text-3xl font-semibold">Welcome to SubM</p>
-          <p>Promote your business on our App</p>
-          <p>Create an account and get started</p>
+      <div className="flex flex-1 items-center justify-center">
+        <div className="mx-auto max-w-2xl">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-200 sm:text-6xl">The Platform to enrich your subscription business</h1>
+            <p className="mt-6 text-lg leading-8 text-gray-400">Promote your products on SubM and gain data and analytics into the subscription market, develop your business with us!</p>
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+              <Link href="/auth?register=true" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                Get started
+              </Link>
+              <Link href="/learn" className="text-sm font-semibold leading-6 text-gray-500">
+                Learn more <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }
