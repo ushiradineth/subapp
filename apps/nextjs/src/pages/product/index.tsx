@@ -12,10 +12,8 @@ import { formalizeDate } from "~/lib/utils";
 const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log(context.query);
-
   const products = await prisma.product.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0, include: { vendor: true } });
-  const count = await prisma.product.count();
+  const count = products.length;
 
   return {
     props: {
