@@ -110,7 +110,7 @@ function Registration() {
   });
 
   const [loading, setLoading] = useState(false);
-  const { mutate } = api.vendor.register.useMutation({ onMutate: () => setLoading(true), onSettled: () => setLoading(false), onError: () => toast.error("Failed to create account"), onSuccess: () => toast.success("Account has been created") });
+  const { mutate } = api.vendor.register.useMutation({ onMutate: () => setLoading(true), onSettled: () => setLoading(false), onError: (error) => toast.error(error.message), onSuccess: () => toast.success("Account has been created") });
   const onSubmit = (data: RegisterFormData) => mutate({ name: data.Name, email: data.Email, password: data.Password });
 
   return (
