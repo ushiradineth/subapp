@@ -1,13 +1,19 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalDependencies": ["**/.env"],
+  "globalDependencies": [
+    "**/.env"
+  ],
   "pipeline": {
     "db:generate": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
       "cache": false
     },
     "db:push": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
       "cache": false
     },
     "dev": {
@@ -15,8 +21,14 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
-      "outputs": [".next/**", ".expo/**"]
+      "dependsOn": [
+        "^build",
+        "^db:generate"
+      ],
+      "outputs": [
+        ".next/**",
+        ".expo/**"
+      ]
     },
     "lint": {},
     "lint:fix": {},
@@ -27,7 +39,9 @@
       "cache": false
     },
     "type-check": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": [
+        "^db:generate"
+      ],
       "cache": false
     }
   },
@@ -42,6 +56,11 @@
     "NODE_ENV",
     "SKIP_ENV_VALIDATION",
     "VERCEL",
-    "VERCEL_URL"
+    "VERCEL_URL",
+    "NEXT_PUBLIC_SUPABASE_PROJECT",
+    "NEXT_PUBLIC_USER_ICON",
+    "NEXT_PUBLIC_PRODUCT_LOGO",
+    "NEXT_PUBLIC_PRODUCT_IMAGE",
+    "NEXT_PUBLIC_ANON_KEY"
   ]
 }

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -49,7 +49,6 @@ model Admin {
   name            String?
   email           String?   @unique
   password        String
-  image           String?
   createdAt       DateTime  @default(now())
 }
 
@@ -61,7 +60,6 @@ model Vendor {
   emailVerified   DateTime?
   accountVerified Boolean
   createdAt       DateTime  @default(now())
-  image           String?
   accounts        Account[]
   sessions        Session[]
   products        Product[] @relation("vendorProducts")
@@ -80,7 +78,6 @@ model User {
   email                 String         @unique
   name                  String
   password              String
-  image                 String?
   createdAt             DateTime       @default(now())
   subscriptions         Subscription[] @relation("userSubscriptions")
   reviews               Review[]       @relation("userReviews")
@@ -131,24 +128,24 @@ model Tier {
 model Product {
   id                String         @id @default(cuid())
   name              String
-  logo              String
   description       String
+  verified          Boolean
   tiers             Tier[]
-  vendor            Vendor         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
+  vendor            Vendor?         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
   wishlistedUsers   User[]         @relation("wishlist")
   subscriptions     Subscription[] @relation("productSubscriptions")
   usersInterested   User[]         @relation("productsInterested")
   usersUninterested User[]         @relation("productsUninterested")
   category          Category[]
   createdAt         DateTime  @default(now())
-  link              String
+  link              String?
   reviews           Review[]       @relation("productReviews")
 
-  userTemplate         User           @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
+  userTemplate         User?           @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
   productNotifications Notification[] @relation("notificationsProduct")
 
-  vendorId String
-  userId   String
+  vendorId String?
+  userId   String?
 
   @@index([vendorId])
   @@index([userId])
