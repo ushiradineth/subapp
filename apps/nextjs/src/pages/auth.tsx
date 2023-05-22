@@ -109,8 +109,7 @@ function Registration() {
     resolver: yupResolver(RegisterSchema),
   });
 
-  const [loading, setLoading] = useState(false);
-  const { mutate } = api.vendor.register.useMutation({ onMutate: () => setLoading(true), onSettled: () => setLoading(false), onError: (error) => toast.error(error.message), onSuccess: () => toast.success("Account has been created") });
+  const { mutate, isLoading } = api.vendor.register.useMutation({ onError: (error) => toast.error(error.message), onSuccess: () => toast.success("Account has been created") });
   const onSubmit = (data: RegisterFormData) => mutate({ name: data.Name, email: data.Email, password: data.Password });
 
   return (
@@ -144,7 +143,7 @@ function Registration() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button loading={loading}>Register</Button>
+            <Button loading={isLoading}>Register</Button>
           </CardFooter>
         </Card>
       </form>
