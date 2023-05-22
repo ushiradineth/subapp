@@ -40,7 +40,7 @@ export default function Index({ vendors, count }: { vendors: Vendor[]; count: nu
   return (
     <>
       <Head>
-        <title>Vendors - Page {router.query.page || 1}</title>
+      <title>Vendors {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}

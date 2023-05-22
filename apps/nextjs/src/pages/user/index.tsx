@@ -43,7 +43,7 @@ export default function Index({ users, count }: { users: User[]; count: number }
   return (
     <>
       <Head>
-        <title>Users - Page {router.query.page || 1}</title>
+        <title>Users {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
@@ -78,8 +78,8 @@ export default function Index({ users, count }: { users: User[]; count: number }
               })}
             </TableBody>
             <TableCaption>
-              <p>A list of users</p>
-              <p>Currently, a total of {count} users are on SubM</p>
+              <p>A list of Users {session?.user.role === "Vendor" && `that use your products (${count})`}</p>
+              {session?.user.role === "Admin" && <p>Currently, a total of {count} Users are on SubM</p>}
             </TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} route="/user" />

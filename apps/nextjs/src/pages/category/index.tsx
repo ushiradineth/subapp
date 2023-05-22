@@ -33,7 +33,7 @@ export default function Index({ categories, count }: { categories: Category[]; c
   return (
     <>
       <Head>
-        <title>Categories - Page {router.query.page || 1}</title>
+        <title>Categories {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         {categories.length === 0 ? (

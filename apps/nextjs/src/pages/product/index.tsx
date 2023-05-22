@@ -56,7 +56,7 @@ export default function Index({ products, count }: { products: ProductWithVendor
   return (
     <>
       <Head>
-        <title>Products - Page {router.query.page || 1}</title>
+        <title>Products {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
@@ -91,8 +91,8 @@ export default function Index({ products, count }: { products: ProductWithVendor
               })}
             </TableBody>
             <TableCaption>
-              <p>A list of products</p>
-              <p>Currently, a total of {count} products are on SubM</p>
+              <p>A list of Products {session?.user.role === "Vendor" && `you own (${count})`}</p>
+              {session?.user.role === "Admin" && <p>Currently, a total of {count} Products are on SubM</p>}
             </TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} route="/product" />
