@@ -22,7 +22,7 @@ function NewProduct() {
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      toast.success("Account has been created");
+      toast.success("Product has been created");
     },
   });
 
