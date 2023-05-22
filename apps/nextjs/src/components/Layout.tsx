@@ -6,7 +6,7 @@ import { User, UserCircle2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
 import icon from "../../public/logo.svg";
 import { Button } from "./ui/button";
 
@@ -24,7 +24,7 @@ function Layout(props: { children: React.ReactNode }) {
   if (status === "authenticated" && router.pathname === "/auth") router.push("/");
 
   return (
-    <main className="bg-bgc dark flex min-h-screen flex-col">
+    <main className="bg-bgc border-bc dark flex min-h-screen flex-col">
       <div className={`border-bc flex h-14 items-center border-b ${router.pathname === "/auth" && "hidden"}`}>
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
@@ -61,26 +61,51 @@ function NavItems() {
           <NavigationMenuList>
             {session?.user.role === "Admin" && (
               <NavigationMenuItem>
-                <Link href="/vendor" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>Vendors</NavigationMenuLink>
-                </Link>
+                <NavigationMenuTrigger>Vendor</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
+                    <NavigationMenuLink href="/vendor" className={navigationMenuTriggerStyle()}>
+                      All Vendors
+                    </NavigationMenuLink>
+                    <NavigationMenuLink href="/vendor/requests" className={navigationMenuTriggerStyle()}>
+                      Vendor Requests
+                    </NavigationMenuLink>
+                  </div>
+                </NavigationMenuContent>
               </NavigationMenuItem>
             )}
+
+            <NavigationMenuLink href="/user" className={navigationMenuTriggerStyle()}>
+              Users
+            </NavigationMenuLink>
+
             <NavigationMenuItem>
-              <Link href="/user" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>Users</NavigationMenuLink>
-              </Link>
+              <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
+                  <NavigationMenuLink href="/product" className={navigationMenuTriggerStyle()}>
+                    All Products
+                  </NavigationMenuLink>
+                  <NavigationMenuLink href="/product/new" className={navigationMenuTriggerStyle()}>
+                    Create Product
+                  </NavigationMenuLink>
+                </div>
+              </NavigationMenuContent>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link href="/product" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>Products</NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
+
             {session?.user.role === "Admin" && (
               <NavigationMenuItem>
-                <Link href="/category" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>Categories</NavigationMenuLink>
-                </Link>
+                <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
+                    <NavigationMenuLink href="/category" className={navigationMenuTriggerStyle()}>
+                      All Categories
+                    </NavigationMenuLink>
+                    <NavigationMenuLink href="/category/new" className={navigationMenuTriggerStyle()}>
+                      Create Category
+                    </NavigationMenuLink>
+                  </div>
+                </NavigationMenuContent>
               </NavigationMenuItem>
             )}
           </NavigationMenuList>
@@ -102,12 +127,12 @@ function AuthButton() {
         </Button>
       ) : (
         status === "authenticated" && (
-          <Menubar className="dark ml-auto mr-4 w-fit">
+          <Menubar className="dark ml-auto mr-4 w-fit border-bc">
             <MenubarMenu>
               <MenubarTrigger className="m-0 p-2">
                 <User className="text-white" />
               </MenubarTrigger>
-              <MenubarContent className="dark text-white">
+              <MenubarContent className="dark text-white border-bc">
                 <Profile />
                 <MenubarSeparator />
                 <Link href={`/profile/${session?.user.id}`}>
