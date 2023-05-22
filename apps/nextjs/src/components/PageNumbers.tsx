@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function PageNumbers(props: { pageNumber: number; count: number; itemsPerPage: number; route: string }) {
   const router = useRouter();
-console.log(Math.ceil(props.count / props.itemsPerPage));
 
   return (
     <div className="m-8 flex w-40 select-none justify-center">
