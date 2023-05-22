@@ -22,15 +22,44 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const products =
     session?.user.role === "Admin"
-      ? await prisma.product.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0, include: { vendor: true } })
+      ? await prisma.product.findMany({
+          take: ITEMS_PER_PAGE,
+          skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
+          include: {
+            vendor: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        })
       : await prisma.product.findMany({
           where: {
             vendorId: {
               equals: session?.user.id,
             },
           },
+          take: ITEMS_PER_PAGE,
+          skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
+          include: {
+            vendor: {
+              select: {
+                name: true,
+              },
+            },
+          },
         });
-  const count = products.length;
+
+  const count =
+    session?.user.role === "Admin"
+      ? await prisma.product.count()
+      : await prisma.product.count({
+          where: {
+            vendorId: {
+              equals: session?.user.id,
+            },
+          },
+        });
 
   return {
     props: {

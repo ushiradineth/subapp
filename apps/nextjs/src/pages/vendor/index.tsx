@@ -18,7 +18,7 @@ const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const vendors = await prisma.vendor.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
-  const count = vendors.length;
+  const count = await prisma.vendor.count();
 
   return {
     props: {
@@ -40,7 +40,7 @@ export default function Index({ vendors, count }: { vendors: Vendor[]; count: nu
   return (
     <>
       <Head>
-      <title>Vendors {router.query.page && `- Page ${router.query.page}`}</title>
+        <title>Vendors {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}

@@ -13,8 +13,8 @@ const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const categories = await prisma.category.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
-  const count = categories.length;
-
+  const count = await prisma.category.count();
+  
   return {
     props: {
       categories: categories.map((category) => ({

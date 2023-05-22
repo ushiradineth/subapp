@@ -20,8 +20,9 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  const users = session?.user.role === "Admin" ? await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 }) : await prisma.user.findMany({ where: { subscriptions: { some: { product: { vendorId: { equals: session?.user.id } } } } } });
-  const count = users?.length;
+  const users = session?.user.role === "Admin" ? await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 }) : await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0, where: { subscriptions: { some: { product: { vendorId: { equals: session?.user.id } } } } } });
+
+  const count = session?.user.role === "Admin" ? await prisma.user.count() : await prisma.user.count({ where: { subscriptions: { some: { product: { vendorId: { equals: session?.user.id } } } } } });
 
   return {
     props: {
