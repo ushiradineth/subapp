@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        <meta name="description" content="SubApp by Ushira Dineth" />
+        <meta name="description" content="SubM by Ushira Dineth" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <body>

@@ -28,7 +28,7 @@ export default function Auth() {
   return (
     <>
       <Head>
-        <title>SubApp - Authentication</title>
+        <title>SubM - Authentication</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
         <Link href="/" className="absolute left-12 top-12 rounded-full border p-4 hover:bg-gray-800">
@@ -75,12 +75,12 @@ function Login() {
         <Card>
           <CardHeader>
             <CardTitle>Login</CardTitle>
-            <CardDescription>Enter your Vendor credentials for SubApp Here.</CardDescription>
+            <CardDescription>Enter your Vendor credentials for SubM Here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-1">
               <Label htmlFor="name">Email</Label>
-              <Input id="email" placeholder="email@subapp.com" type="email" {...register("Email")} />
+              <Input id="email" placeholder="email@subm.com" type="email" {...register("Email")} />
               <FormFieldError error={errors.Email?.message} />
             </div>
             <div className="space-y-1">
@@ -129,7 +129,7 @@ function Registration() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="email@subapp.com" type="email" {...register("Email")} />
+              <Input id="email" placeholder="email@subm.com" type="email" {...register("Email")} />
               <FormFieldError error={errors.Email?.message} />
             </div>
             <div className="space-y-1">
