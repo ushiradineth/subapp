@@ -4,20 +4,11 @@ import { z } from "zod";
 import { env } from "../../env.mjs";
 import { deleteFile, deleteFiles } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { tierRouter } from "./tier";
-
-const tierCreateValidation = z.object({
-  name: z.string(),
-  period: z.number(),
-  price: z.number(),
-  description: z.string().nullable(),
-  link: z.string().nullable(),
-});
 
 const productCreateValidation = z.object({
   name: z.string(),
   description: z.string(),
-  tiers: tierCreateValidation.array().nullish(),
+  category: z.string(),
   link: z.string().nullable(),
 });
 
@@ -29,15 +20,9 @@ export const productRouter = createTRPCRouter({
         description: input.description,
         link: input.link,
         verified: Boolean(ctx.session.user.role === "Admin"),
-        vendorId: ctx.session.user.role === "Admin" ? "clhz76lha0008vgggn3j8l37q" : ctx.session.user.id,
-        userId: "",
+        vendor: { connect: { id: ctx.session.user.role === "Admin" ? "cli0mjzn60014vgh99xqm9pno" : ctx.session.user.id } },
+        category: { connect: { id: input.category }}
       },
-    });
-
-    const tierCaller = tierRouter.createCaller({ ...ctx });
-
-    input.tiers?.forEach(async (tier) => {
-      await tierCaller.create({ tier: tier, productId: product.id });
     });
 
     return product;

@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const idValidator = yup.string().length(24).required();
+export const idValidator = yup.string().max(30).required();
 export const textValidator = yup.string().min(1).max(500).required();
 export const emailValidator = yup.string().email().required();
 export const nameValidator = yup.string().min(1).max(100).required();
@@ -67,6 +67,7 @@ export const ProductSchema = yup
   .shape({
     Images: fileValidator,
     Link: urlValidator,
+    Category: idValidator,
     Description: textValidator,
     Name: nameValidator,
     Logo: fileValidator,
