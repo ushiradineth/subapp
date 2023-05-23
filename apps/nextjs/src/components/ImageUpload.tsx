@@ -4,7 +4,7 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import ImageUploading, { type ImageListType } from "react-images-uploading";
 
-import { supabase } from "~/lib/supabase";
+import { supabase } from "@acme/api/src/lib/supabase"
 import { Card } from "./ui/card";
 
 type props = {

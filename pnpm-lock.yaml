@@ -239,9 +239,6 @@ importers:
       '@radix-ui/react-toggle':
         specifier: ^1.0.2
         version: 1.0.2(react-dom@18.2.0)(react@18.2.0)
-      '@supabase/supabase-js':
-        specifier: ^2.22.0
-        version: 2.22.0
       '@t3-oss/env-nextjs':
         specifier: ^0.3.1
         version: 0.3.1(typescript@5.0.4)(zod@3.21.4)
@@ -357,6 +354,9 @@ importers:
       '@acme/db':
         specifier: ^0.1.0
         version: link:../db
+      '@supabase/supabase-js':
+        specifier: ^2.22.0
+        version: 2.22.0
       '@trpc/client':
         specifier: ^10.25.0
         version: 10.25.0(@trpc/server@10.25.0)
@@ -3780,8 +3780,8 @@ packages:
       - encoding
     dev: false
 
-  /@supabase/gotrue-js@2.27.0:
-    resolution: {integrity: sha512-KWoo6giZDLuF2wcN+g8DZPnTa6n9k3v7WNWTUpniPjE8H3MPMJcHka+8uHQFpvMFGUNt+ULNNbhGiaVR4PzJyA==}
+  /@supabase/gotrue-js@2.27.1:
+    resolution: {integrity: sha512-rewbfKTC9DZNnPy4rRpr5ViBXre55wEXPWOueh/ZgwunR1TGmntRcraIM6SDKrP6iRD6ucx325a467uZ5U+KWg==}
     dependencies:
       cross-fetch: 3.1.5
     transitivePeerDependencies:
@@ -3818,7 +3818,7 @@ packages:
     resolution: {integrity: sha512-omkgSWL1HwnpXZZy+yshFLx/qqxwk9kx9jbRM6IHNEylKrH/sz6JX7rGyIOmN9niDxMRjsCu1nwuBhD6IiF2xg==}
     dependencies:
       '@supabase/functions-js': 2.1.1
-      '@supabase/gotrue-js': 2.27.0
+      '@supabase/gotrue-js': 2.27.1
       '@supabase/postgrest-js': 1.6.1
       '@supabase/realtime-js': 2.7.2
       '@supabase/storage-js': 2.5.1
