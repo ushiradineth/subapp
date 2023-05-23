@@ -139,7 +139,7 @@ export default function Index({ products, count }: { products: ProductWithVendor
           <>No data found</>
         ) : (
           <>
-            <Search search={String(router.query.search) || ""} />
+            <Search search={router.query.search as string} />
             <Table className="border">
               <TableHeader>
                 <TableRow>
