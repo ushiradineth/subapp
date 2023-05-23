@@ -74,3 +74,13 @@ export const ProductSchema = yup
   .required();
 
 export type ProductFormData = yup.InferType<typeof ProductSchema>;
+
+export const CategorySchema = yup
+  .object()
+  .shape({
+    Description: textValidator,
+    Name: nameValidator,
+  })
+  .required();
+
+export type CategoryFormData = yup.InferType<typeof ProductSchema>;
