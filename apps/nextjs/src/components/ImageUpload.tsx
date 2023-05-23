@@ -38,10 +38,9 @@ export function ImageUpload(props: props) {
     images.forEach(async (image, index) => {
       if (image.file) {
         const { data, error } = await supabase.storage.from(props.bucket).upload(`/${props.itemId}/${index}.${image.file.name.split(".").pop()}`, image.file);
-        console.log(data, error);
+
         if (error) {
           const { data, error } = await supabase.storage.from(props.bucket).update(`/${props.itemId}/${index}.${image.file.name.split(".").pop()}`, image.file);
-          console.log(data, error);
         }
       }
     });
