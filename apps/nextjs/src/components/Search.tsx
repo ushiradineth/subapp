@@ -14,6 +14,7 @@ function Search(props: { search: string }) {
   return (
     <form
       onSubmit={(e) => {
+        e.preventDefault()
         router.push(`/product?search=${intenalSearch}`);
       }}
       className="flex items-center justify-center gap-2 py-8 w-full">
