@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { env } from "../../env.mjs";
-import { deleteFiles } from "../lib/supabase";
+import { deleteFile } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const vendorRouter = createTRPCRouter({
@@ -33,7 +33,7 @@ export const vendorRouter = createTRPCRouter({
 
     const user = await ctx.prisma.vendor.delete({ where: { id: input.id } });
 
-    await deleteFiles(env.USER_ICON, input.id);
+    await deleteFile(env.USER_ICON, input.id);
 
     return user;
   }),

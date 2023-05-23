@@ -2,11 +2,33 @@ import { createClient } from "@supabase/supabase-js";
 
 import { env } from "../../env.mjs";
 
-export const supabase = createClient(`https://${env.SUPABASE_PROJECT}.supabase.co`, env.SUPABASE_ANON_KEY);
+export const supabase = createClient(`https://${env.NEXT_PUBLIC_SUPABASE_PROJECT}.supabase.co`, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export const deleteFiles = async (bucket: string, path: string) => {
-  const { data } = await supabase.storage.from(bucket).list(path);
-  const filesToRemove = data?.map((x) => `${path}/${x.name}`);
+  const { data: list } = await supabase.storage.from(bucket).list(path);
+  const filesToRemove = list?.map((x) => `${path}/${x.name}`);
 
-  if (filesToRemove) await supabase.storage.from(bucket).remove(filesToRemove);
+  if (filesToRemove) {
+    const { data, error } = await supabase.storage.from(bucket).remove(filesToRemove);
+
+    if (data) {
+      console.log(`Deleted file ${path} from ${bucket}`);
+    }
+
+    if (error) {
+      console.log(`Failed deleting file ${path} from ${bucket}`);
+    }
+  }
+};
+
+export const deleteFile = async (bucket: string, path: string) => {
+  const { data, error } = await supabase.storage.from(bucket).list(path);
+
+  if (data) {
+    console.log(`Deleted file ${path} from ${bucket}`);
+  }
+
+  if (error) {
+    console.log(`Failed deleting file ${path} from ${bucket}`);
+  }
 };
