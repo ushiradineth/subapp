@@ -11,6 +11,7 @@ import { prisma, type Product, type Vendor } from "@acme/db";
 import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
+import Search from "~/components/Search";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 import { ReloadButton } from "../vendor";
@@ -20,35 +21,80 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  const products =
-    session?.user.role === "Admin"
-      ? await prisma.product.findMany({
-          take: ITEMS_PER_PAGE,
-          skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
-          include: {
-            vendor: {
-              select: {
-                name: true,
+  let products;
+
+  if (session?.user.role === "Admin") {
+    if (context.query.search !== "") {
+      products = await prisma.product.findMany({
+        where: {
+          OR: [
+            { name: { search: context.query.search } },
+            {
+              category: {
+                some: {
+                  OR: [
+                    {
+                      name: {
+                        search: context.query.search,
+                      },
+                    },
+                    {
+                      description: {
+                        search: context.query.search,
+                      },
+                    },
+                  ],
+                },
               },
             },
-          },
-        })
-      : await prisma.product.findMany({
-          where: {
-            vendorId: {
-              equals: session?.user.id,
-            },
-          },
-          take: ITEMS_PER_PAGE,
-          skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
-          include: {
-            vendor: {
-              select: {
-                name: true,
+            {
+              vendor: {
+                name: {
+                  search: context.query.search,
+                },
               },
             },
+          ],
+        },
+        include: {
+          vendor: {
+            select: {
+              name: true,
+            },
           },
-        });
+        },
+      });
+    } else {
+      products = await prisma.product.findMany({
+        take: ITEMS_PER_PAGE,
+        skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
+        include: {
+          vendor: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+    }
+  } else {
+    products = await prisma.product.findMany({
+      where: {
+        vendorId: {
+          equals: session?.user.id,
+        },
+      },
+      take: ITEMS_PER_PAGE,
+      skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
+      include: {
+        vendor: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
 
   const count =
     session?.user.role === "Admin"
@@ -92,41 +138,44 @@ export default function Index({ products, count }: { products: ProductWithVendor
         {products.length === 0 ? (
           <>No data found</>
         ) : (
-          <Table className="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">ID</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Vendor Name</TableHead>
-                <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">{product.id}</TableCell>
-                    <TableCell className="text-center">{product.name}</TableCell>
-                    <TableCell className="text-center">{product.vendor.name}</TableCell>
-                    <TableCell className="text-center">{product.createdAt.toString()}</TableCell>
-                    <TableCell className="text-center" onClick={() => router.push(`/product/${product.id}`)}>
-                      <LinkIcon />
-                    </TableCell>
-                    {session?.user.role === "Admin" && <DeleleProduct id={product.id} onSuccess={() => setRefresh(true)} />}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-            <TableCaption>
-              <p>A list of Products {session?.user.role === "Vendor" && `you own (${count})`}</p>
-              {session?.user.role === "Admin" && <p>Currently, a total of {count} Products are on SubM</p>}
-            </TableCaption>
-            <TableCaption>
-              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} route="/product" />
-            </TableCaption>
-          </Table>
+          <>
+            <Search search={String(router.query.search) || ""} />
+            <Table className="border">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Vendor Name</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Link</TableHead>
+                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((product, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="text-center">{product.id}</TableCell>
+                      <TableCell className="text-center">{product.name}</TableCell>
+                      <TableCell className="text-center">{product.vendor.name}</TableCell>
+                      <TableCell className="text-center">{product.createdAt.toString()}</TableCell>
+                      <TableCell className="text-center" onClick={() => router.push(`/product/${product.id}`)}>
+                        <LinkIcon />
+                      </TableCell>
+                      {session?.user.role === "Admin" && <DeleleProduct id={product.id} onSuccess={() => setRefresh(true)} />}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+              <TableCaption>
+                <p>A list of Products {session?.user.role === "Vendor" && `you own (${count})`}</p>
+                {session?.user.role === "Admin" && <p>Currently, a total of {count} Products are on SubM</p>}
+              </TableCaption>
+              <TableCaption>
+                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} route="/product" />
+              </TableCaption>
+            </Table>
+          </>
         )}
       </main>
     </>
