@@ -2,6 +2,8 @@ import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
+import { env } from "../../env.mjs";
+import { deleteFiles } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const vendorRouter = createTRPCRouter({
@@ -22,11 +24,17 @@ export const vendorRouter = createTRPCRouter({
   }),
 
   delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    return ctx.session.user.role === "Admin"
-      ? await ctx.prisma.vendor.delete({ where: { id: input.id } })
-      : new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Unauthorized Request",
-        });
+    if (ctx.session.user.role !== "Admin") {
+      return new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Unauthorized Request",
+      });
+    }
+
+    const user = await ctx.prisma.vendor.delete({ where: { id: input.id } });
+
+    await deleteFiles(env.USER_ICON, input.id);
+
+    return user;
   }),
 });

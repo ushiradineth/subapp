@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { tierRouter } from "./tier";
+import { env } from "../../env.mjs";
+import { deleteFiles } from "../lib/supabase";
 
 const tierCreateValidation = z.object({
   name: z.string(),
@@ -42,11 +44,19 @@ export const productRouter = createTRPCRouter({
   }),
 
   delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    return ctx.session.user.role === "Admin"
-      ? await ctx.prisma.product.delete({ where: { id: input.id } })
-      : new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Unauthorized Request",
-        });
+    if (ctx.session.user.role !== "Admin"){
+      return new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Unauthorized Request",
+      })
+    }
+
+    const product = await ctx.prisma.product.delete({ where: { id: input.id } });
+    
+    
+    await deleteFiles(env.PRODUCT_IMAGE, input.id)
+    await deleteFiles(env.PRODUCT_LOGO, input.id)
+
+    return product;
   }),
 });
