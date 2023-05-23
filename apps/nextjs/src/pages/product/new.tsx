@@ -13,7 +13,7 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { env } from "~/env.mjs";
 
-function NewProduct() {
+export default function NewProduct() {
   const form = useForm<ProductFormData>({
     resolver: yupResolver(ProductSchema),
   });
@@ -115,5 +115,3 @@ function NewProduct() {
     </>
   );
 }
-
-export default NewProduct;
