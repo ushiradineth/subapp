@@ -61,7 +61,7 @@ function NavItems() {
           <NavigationMenuList>
             {session?.user.role === "Admin" && (
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Vendor</NavigationMenuTrigger>
+                <NavigationMenuTrigger>Vendors</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
                     <NavigationMenuLink href="/vendor" className={navigationMenuTriggerStyle()}>
