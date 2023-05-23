@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -46,11 +46,11 @@ model Session {
 }
 
 model Admin {
-  id              String    @id @default(cuid())
-  name            String?
-  email           String?   @unique
-  password        String
-  createdAt       DateTime  @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  password  String
+  createdAt DateTime @default(now())
 }
 
 model Vendor {
@@ -75,26 +75,26 @@ model VerificationToken {
 }
 
 model User {
-  id                    String         @id @default(cuid())
-  email                 String         @unique
-  name                  String
-  password              String
-  createdAt             DateTime       @default(now())
-  subscriptions         Subscription[] @relation("userSubscriptions")
-  reviews               Review[]       @relation("userReviews")
-  likedReviews          Review[]       @relation("likedReviews")
-  dislikedReviews       Review[]       @relation("dislikedReviews")
-  comments              Comment[]      @relation("userComments")
-  likedComments         Comment[]      @relation("likedComment")
-  dislikedComments      Comment[]      @relation("dislikedComment")
-  wishlist              Product[]      @relation("wishlist")
-  productsInterested    Product[]      @relation("productsInterested")
-  productsUninterested  Product[]      @relation("productsUninterested")
-  templates             Product[]      @relation("userTemplates")
-  categoriesFollowing   Category[]     @relation("categoriesFollowing")
-  categoriesHidden      Category[]     @relation("categoriesHidden")
-  notifications         Notification[] @relation("notifications")
-  userNotifications     Notification[] @relation("notificationUsers")
+  id                   String         @id @default(cuid())
+  email                String         @unique
+  name                 String
+  password             String
+  createdAt            DateTime       @default(now())
+  subscriptions        Subscription[] @relation("userSubscriptions")
+  reviews              Review[]       @relation("userReviews")
+  likedReviews         Review[]       @relation("likedReviews")
+  dislikedReviews      Review[]       @relation("dislikedReviews")
+  comments             Comment[]      @relation("userComments")
+  likedComments        Comment[]      @relation("likedComment")
+  dislikedComments     Comment[]      @relation("dislikedComment")
+  wishlist             Product[]      @relation("wishlist")
+  productsInterested   Product[]      @relation("productsInterested")
+  productsUninterested Product[]      @relation("productsUninterested")
+  templates            Product[]      @relation("userTemplates")
+  categoriesFollowing  Category[]     @relation("categoriesFollowing")
+  categoriesHidden     Category[]     @relation("categoriesHidden")
+  notifications        Notification[] @relation("notifications")
+  userNotifications    Notification[] @relation("notificationUsers")
 }
 
 model Subscription {
@@ -102,7 +102,7 @@ model Subscription {
   user      User      @relation("userSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
   product   Product   @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
-  deletedAt DateTime?  
+  deletedAt DateTime?
   active    Boolean
   reccuring Boolean
   userId    String
@@ -113,15 +113,15 @@ model Subscription {
 }
 
 model Tier {
-  id             String       @id @default(cuid())
-  product        Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId      String
-  period         Int
-  price          Float
-  description    String?
-  name           String?
-  createdAt      DateTime  @default(now())
-  link           String?
+  id          String   @id @default(cuid())
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  period      Int
+  price       Float
+  description String?
+  name        String?
+  createdAt   DateTime @default(now())
+  link        String?
 
   @@index([productId])
 }
@@ -132,22 +132,24 @@ model Product {
   description       String
   verified          Boolean
   tiers             Tier[]
-  vendor            Vendor?         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
+  vendor            Vendor?        @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
   wishlistedUsers   User[]         @relation("wishlist")
   subscriptions     Subscription[] @relation("productSubscriptions")
   usersInterested   User[]         @relation("productsInterested")
   usersUninterested User[]         @relation("productsUninterested")
-  category          Category[]
-  createdAt         DateTime  @default(now())
+  category          Category       @relation("productCategory", fields: [categoryId], references: [id])
+  createdAt         DateTime       @default(now())
   link              String?
   reviews           Review[]       @relation("productReviews")
 
-  userTemplate         User?           @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
+  userTemplate         User?          @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
   productNotifications Notification[] @relation("notificationsProduct")
 
-  vendorId String?
-  userId   String?
+  vendorId   String?
+  userId     String?
+  categoryId String
 
+  @@index([categoryId])
   @@index([vendorId])
   @@index([userId])
 }
@@ -156,7 +158,7 @@ model Review {
   id                  String         @id @default(cuid())
   user                User           @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade)
   product             Product        @relation("productReviews", fields: [productId], references: [id], onDelete: Cascade)
-  createdAt           DateTime  @default(now())
+  createdAt           DateTime       @default(now())
   rating              Float
   review              String?
   likes               User[]         @relation("likedReviews")
@@ -174,7 +176,7 @@ model Comment {
   id                   String         @id @default(cuid())
   user                 User           @relation("userComments", fields: [userId], references: [id], onDelete: Cascade)
   review               Review         @relation("reviewComments", fields: [reviewId], references: [id], onDelete: Cascade)
-  createdAt            DateTime  @default(now())
+  createdAt            DateTime       @default(now())
   likes                User[]         @relation("likedComment")
   dislikes             User[]         @relation("dislikedComment")
   comment              String
@@ -190,10 +192,10 @@ model Category {
   id                    String         @id @default(cuid())
   name                  String
   description           String
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime       @default(now())
   usersInterested       User[]         @relation("categoriesFollowing")
   usersUninterested     User[]         @relation("categoriesHidden")
-  products              Product[]
+  products              Product[]      @relation("productCategory")
   categoryNotifications Notification[] @relation("notificationsCategory")
 }
 
