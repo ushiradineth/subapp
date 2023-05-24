@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { LinkIcon, Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
@@ -11,6 +12,7 @@ import { prisma, type User } from "@acme/db";
 import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
+import Search from "~/components/Search";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 import { ReloadButton } from "../vendor";
@@ -20,9 +22,68 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  const users = session?.user.role === "Admin" ? await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 }) : await prisma.user.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0, where: { subscriptions: { some: { product: { vendorId: { equals: session?.user.id } } } } } });
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
 
-  const count = session?.user.role === "Admin" ? await prisma.user.count() : await prisma.user.count({ where: { subscriptions: { some: { product: { vendorId: { equals: session?.user.id } } } } } });
+  const search = context.query.search ? (context.query.search as string).split(" ").join(" | ") : "";
+
+  const searchQuery = {
+    OR: [{ name: { search: search } }],
+  };
+
+  const vendorQuery = {
+    subscriptions: {
+      some: {
+        product: {
+          vendorId: { equals: session?.user.id },
+        },
+      },
+    },
+  };
+
+  const where =
+    search !== ""
+      ? session.user.role === "Admin"
+        ? searchQuery
+        : {
+            vendorQuery,
+            searchQuery,
+          }
+      : session.user.role === "Admin"
+      ? {}
+      : {
+          subscriptions: {
+            some: {
+              product: {
+                vendorId: { equals: session?.user.id },
+              },
+            },
+          },
+        };
+
+  const users = await prisma.user.findMany({
+    take: ITEMS_PER_PAGE,
+    skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
+    where,
+  });
+
+  const count = await prisma.user.count({
+    where,
+  });
+
+  const total =
+    session?.user.role === "Admin"
+      ? await prisma.user.count()
+      : await prisma.user.count({
+          where: vendorQuery,
+        });
 
   return {
     props: {
@@ -31,11 +92,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: formalizeDate(user.createdAt),
       })),
       count,
+      total,
     },
   };
 };
 
-export default function Index({ users, count }: { users: User[]; count: number }) {
+export default function Index({ users, count, total }: { users: User[]; count: number; total: number }) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -48,44 +110,44 @@ export default function Index({ users, count }: { users: User[]; count: number }
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
+        <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
         {users.length === 0 ? (
           <>No data found</>
         ) : (
-          <Table className="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">ID</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Email</TableHead>
-                <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">{user.id}</TableCell>
-                    <TableCell className="text-center">{user.name}</TableCell>
-                    <TableCell className="text-center">{user.email}</TableCell>
-                    <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                    <TableCell className="text-center" onClick={() => router.push(`/user/${user.id}`)}>
-                      <LinkIcon />
-                    </TableCell>
-                    {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-            <TableCaption>
-              <p>A list of Users {session?.user.role === "Vendor" && `that use your products (${count})`}</p>
-              {session?.user.role === "Admin" && <p>Currently, a total of {count} Users are on SubM</p>}
-            </TableCaption>
-            <TableCaption>
-              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} route="/user" />
-            </TableCaption>
-          </Table>
+          <>
+            <Table className="border">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Link</TableHead>
+                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="text-center">{user.id}</TableCell>
+                      <TableCell className="text-center">{user.name}</TableCell>
+                      <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/user/${user.id}`}>
+                          <LinkIcon />
+                        </Link>
+                      </TableCell>
+                      {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+              <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Users are on SubM</p> : <p>A list of Users you own ({total})</p>}</TableCaption>
+              <TableCaption>
+                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+              </TableCaption>
+            </Table>
+          </>
         )}
       </main>
     </>

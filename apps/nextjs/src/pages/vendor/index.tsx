@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { LinkIcon, RotateCcw, Trash } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
 import { prisma, type Vendor } from "@acme/db";
@@ -11,14 +12,40 @@ import { prisma, type Vendor } from "@acme/db";
 import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
+import Search from "~/components/Search";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const vendors = await prisma.vendor.findMany({ take: ITEMS_PER_PAGE, skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0 });
-  const count = await prisma.vendor.count();
+  const session = await getSession({ ctx: context });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+
+  const search = context.query.search ? (context.query.search as string).split(" ").join(" | ") : "";
+
+  const where = search !== "" ? { OR: [{ name: { search: search } }] } : {};
+
+  const vendors = await prisma.vendor.findMany({
+    take: ITEMS_PER_PAGE,
+    skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
+    where,
+  });
+
+  const count = await prisma.vendor.count({
+    where,
+  });
+
+  const total = await prisma.vendor.count();
 
   return {
     props: {
@@ -27,11 +54,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: formalizeDate(vendor.createdAt),
       })),
       count,
+      total,
     },
   };
 };
 
-export default function Index({ vendors, count }: { vendors: Vendor[]; count: number }) {
+export default function Index({ vendors, count, total }: { vendors: Vendor[]; count: number; total: number }) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -44,44 +72,44 @@ export default function Index({ vendors, count }: { vendors: Vendor[]; count: nu
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
+        <Search search={router.query.search as string} placeholder="Search for vendors" path={router.asPath} params={router.query} count={count} />
         {vendors.length === 0 ? (
           <>No data found</>
         ) : (
-          <Table className="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">ID</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Email</TableHead>
-                <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {vendors.map((vendor, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">{vendor.id}</TableCell>
-                    <TableCell className="text-center">{vendor.name}</TableCell>
-                    <TableCell className="text-center">{vendor.email}</TableCell>
-                    <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                    <TableCell className="text-center" onClick={() => router.push(`/vendor/${vendor.id}`)}>
-                      <LinkIcon />
-                    </TableCell>
-                    {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setRefresh(true)} />}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-            <TableCaption>
-              <p>A list of vendors</p>
-              <p>Currently, a total of {count} vendors are on SubM</p>
-            </TableCaption>
-            <TableCaption>
-              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} route="/vendor" />
-            </TableCaption>
-          </Table>
+          <>
+            <Table className="border">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Link</TableHead>
+                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {vendors.map((vendor, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell className="text-center">{vendor.id}</TableCell>
+                      <TableCell className="text-center">{vendor.name}</TableCell>
+                      <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/vendor/${vendor.id}`}>
+                          <LinkIcon />
+                        </Link>
+                      </TableCell>
+                      {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setRefresh(true)} />}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+              <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Vendors are on SubM</p> : <p>A list of Vendors you own ({total})</p>}</TableCaption>
+              <TableCaption>
+                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+              </TableCaption>
+            </Table>
+          </>
         )}
       </main>
     </>
