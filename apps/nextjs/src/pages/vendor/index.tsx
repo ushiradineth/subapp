@@ -21,7 +21,7 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session) {
+  if (!session || session.user.role === "Vendor") {
     return {
       redirect: {
         destination: "/",
