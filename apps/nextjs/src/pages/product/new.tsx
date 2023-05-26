@@ -148,7 +148,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
                 </FormItem>
               )}
             />
-            <Button type="submit" onClick={() => console.log(form.getValues())} loading={isLoading || loading}>
+            <Button type="submit" loading={isLoading || loading}>
               Submit
             </Button>
           </form>

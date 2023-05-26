@@ -9,8 +9,6 @@ function Search(props: { search: string; path: string; params: { [key: string]: 
   const router = useRouter();
   const [intenalSearch, setIntenalSearch] = useState(props.search === "undefined" ? "" : props.search);
 
-  console.log(props.search);
-
   return (
     <form
       onSubmit={(e) => {
