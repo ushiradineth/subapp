@@ -1,3 +1,4 @@
+import { adminRouter } from "./router/admin";
 import { categoryRouter } from "./router/category";
 import { productRouter } from "./router/product";
 import { tierRouter } from "./router/tier";
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   product: productRouter,
   tier: tierRouter,
   category: categoryRouter,
+  admin: adminRouter,
 });
 
 // export type definition of API

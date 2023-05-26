@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { env } from "../../env.mjs";
-import { deleteFile } from "../lib/supabase";
+import { deleteFiles } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const vendorRouter = createTRPCRouter({
@@ -23,6 +23,19 @@ export const vendorRouter = createTRPCRouter({
     return ctx.prisma.vendor.create({ data: { name: input.name, email: input.email, password: hashedPassword, accountVerified: false } });
   }),
 
+  update: protectedProcedure.input(z.object({ id: z.string(), name: z.string() })).mutation(async ({ ctx, input }) => {
+    const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data: { name: input.name } });
+
+    if (!vendor) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Account doesnt exists",
+      });
+    }
+
+    return vendor;
+  }),
+
   delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     if (ctx.session.user.role !== "Admin") {
       return new TRPCError({
@@ -33,7 +46,7 @@ export const vendorRouter = createTRPCRouter({
 
     const user = await ctx.prisma.vendor.delete({ where: { id: input.id } });
 
-    await deleteFile(env.USER_ICON, input.id);
+    await deleteFiles(env.USER_ICON, input.id);
 
     return user;
   }),

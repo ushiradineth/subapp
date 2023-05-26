@@ -84,4 +84,15 @@ export const CategorySchema = yup
   })
   .required();
 
-export type CategoryFormData = yup.InferType<typeof ProductSchema>;
+export type CategoryFormData = yup.InferType<typeof CategorySchema>;
+
+export const UserSchema = yup
+  .object()
+  .shape({
+    Image: fileValidator,
+    Name: nameValidator,
+    Email: emailValidator,
+  })
+  .required();
+
+export type UserFormData = yup.InferType<typeof UserSchema>;
