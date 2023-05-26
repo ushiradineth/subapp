@@ -1,19 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { User, UserCircle2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
+import { supabase } from "@acme/api/src/lib/supabase";
+
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
+import { env } from "~/env.mjs";
 import icon from "../../public/logo.svg";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
 const ALLOWED_UNAUTHED_PATHS = ["/auth", "/"];
 
 function Layout(props: { children: React.ReactNode }) {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   if (status === "unauthenticated" && !ALLOWED_UNAUTHED_PATHS.includes(router.pathname)) router.push("/auth");
@@ -35,18 +39,6 @@ function Layout(props: { children: React.ReactNode }) {
 }
 
 export default Layout;
-
-function Profile() {
-  const { data: session } = useSession();
-
-  return (
-    <div className="flex flex-col items-center justify-center p-4">
-      {session?.user.image ? <Image src={session?.user.image} alt={`${session?.user.name}'s profile image`} width={100} height={100} /> : <UserCircle2 width={100} height={100} />}
-      <p>{session?.user.name}</p>
-      <p>{session?.user.email}</p>
-    </div>
-  );
-}
 
 function NavItems() {
   const { data: session, status } = useSession();
@@ -124,12 +116,12 @@ function AuthButton() {
         </Button>
       ) : (
         status === "authenticated" && (
-          <Menubar className="dark ml-auto mr-4 w-fit border-bc">
+          <Menubar className="border-bc dark ml-auto mr-4 w-fit">
             <MenubarMenu>
               <MenubarTrigger className="m-0 p-2">
                 <User className="text-white" />
               </MenubarTrigger>
-              <MenubarContent className="dark text-white border-bc">
+              <MenubarContent className="border-bc dark text-white">
                 <Profile />
                 <MenubarSeparator />
                 <Link href={`/profile/${session?.user.id}`}>
@@ -145,5 +137,45 @@ function AuthButton() {
         )
       )}
     </>
+  );
+}
+
+function Profile() {
+  const { data: session } = useSession();
+  const [image, setImage] = useState("");
+
+  useEffect(() => {
+    getImage();
+  }, []);
+
+  const getImage = async () => {
+    const { data: image } = await supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).list(session?.user.id, { limit: 1 });
+    if (image) {
+      const { data: url } = supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).getPublicUrl(`${session?.user.id}/${image[0]?.name}`);
+
+      if (url.publicUrl) {
+        try {
+          const result = await fetch(url.publicUrl, { method: "HEAD" });
+          if (result) {
+            if (result.status === 200) {
+              setImage(url.publicUrl);
+            }
+          }
+        } catch (error) {}
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center p-4">
+      <Avatar>
+        <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
+        <AvatarFallback>
+          <UserCircle2 width={100} height={100} />
+        </AvatarFallback>
+      </Avatar>
+      <p>{session?.user.name}</p>
+      <p>{session?.user.email}</p>
+    </div>
   );
 }
