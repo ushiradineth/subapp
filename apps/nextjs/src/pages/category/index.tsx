@@ -40,6 +40,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     take: ITEMS_PER_PAGE,
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
     where,
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   const count = await prisma.category.count({ where });
