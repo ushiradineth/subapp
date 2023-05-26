@@ -20,15 +20,3 @@ export const deleteFiles = async (bucket: string, path: string) => {
     }
   }
 };
-
-export const deleteFile = async (bucket: string, path: string) => {
-  const { data, error } = await supabase.storage.from(bucket).list(path);
-
-  if (data) {
-    console.log(`Deleted file ${path} from ${bucket}`);
-  }
-
-  if (error) {
-    console.log(`Failed deleting file ${path} from ${bucket}`);
-  }
-};

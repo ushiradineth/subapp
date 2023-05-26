@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { env } from "../../env.mjs";
-import { deleteFile, deleteFiles } from "../lib/supabase";
+import { deleteFiles } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 const productCreateValidation = z.object({
@@ -39,7 +39,7 @@ export const productRouter = createTRPCRouter({
     const product = await ctx.prisma.product.delete({ where: { id: input.id } });
 
     await deleteFiles(env.PRODUCT_IMAGE, input.id);
-    await deleteFile(env.PRODUCT_LOGO, input.id);
+    await deleteFiles(env.PRODUCT_LOGO, input.id);
 
     return product;
   }),
