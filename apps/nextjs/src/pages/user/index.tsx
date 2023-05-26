@@ -110,23 +110,21 @@ export default function Index({ users, count, total }: { users: User[]; count: n
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
-        <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
-        {users.length === 0 ? (
-          <>No data found</>
-        ) : (
-          <>
-            <Table className="border">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">ID</TableHead>
-                  <TableHead className="text-center">Name</TableHead>
-                  <TableHead className="text-center">Created At</TableHead>
-                  <TableHead className="text-center">Link</TableHead>
-                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user, index) => {
+
+        <>
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">ID</TableHead>
+                <TableHead className="text-center">Name</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
+                <TableHead className="text-center">Link</TableHead>
+                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.length !== 0 ? (
+                users.map((user, index) => {
                   return (
                     <TableRow key={index}>
                       <TableCell className="text-center">{user.id}</TableCell>
@@ -140,15 +138,21 @@ export default function Index({ users, count, total }: { users: User[]; count: n
                       {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
                     </TableRow>
                   );
-                })}
-              </TableBody>
-              <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Users are on SubM</p> : <p>A list of Users you own ({total})</p>}</TableCaption>
-              <TableCaption>
-                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-              </TableCaption>
-            </Table>
-          </>
-        )}
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={session?.user.role === "Admin" ? 5 : 4} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Users are on SubM</p> : <p>A list of Users you own ({total})</p>}</TableCaption>
+            <TableCaption>
+              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+            </TableCaption>
+          </Table>
+        </>
       </main>
     </>
   );

@@ -60,6 +60,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     take: ITEMS_PER_PAGE,
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
     where,
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       vendor: {
         select: {
@@ -120,24 +123,22 @@ export default function Index({ products, count, total }: { products: ProductWit
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
         <Search search={router.query.search as string} placeholder="Search for products" path={router.asPath} params={router.query} count={count} />
-        {products.length === 0 ? (
-          <>No data found</>
-        ) : (
-          <>
-            <Table className="border">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">ID</TableHead>
-                  <TableHead className="text-center">Name</TableHead>
-                  <TableHead className="text-center">Vendor Name</TableHead>
-                  <TableHead className="text-center">Category</TableHead>
-                  <TableHead className="text-center">Created At</TableHead>
-                  <TableHead className="text-center">Link</TableHead>
-                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product, index) => {
+        <>
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">ID</TableHead>
+                <TableHead className="text-center">Name</TableHead>
+                <TableHead className="text-center">Vendor Name</TableHead>
+                <TableHead className="text-center">Category</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
+                <TableHead className="text-center">Link</TableHead>
+                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.length !== 0 ? (
+                products.map((product, index) => {
                   return (
                     <TableRow key={index}>
                       <TableCell className="text-center">{product.id}</TableCell>
@@ -157,15 +158,19 @@ export default function Index({ products, count, total }: { products: ProductWit
                       {session?.user.role === "Admin" && <DeleleProduct id={product.id} onSuccess={() => setRefresh(true)} />}
                     </TableRow>
                   );
-                })}
-              </TableBody>
-              <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Products are on SubM</p> : <p>A list of Products you own ({total})</p>}</TableCaption>
-              <TableCaption>
-                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-              </TableCaption>
-            </Table>
-          </>
-        )}
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={session?.user.role === "Admin" ? 7 : 6} className="h-24 text-center">No results.</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Products are on SubM</p> : <p>A list of Products you own ({total})</p>}</TableCaption>
+            <TableCaption>
+              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+            </TableCaption>
+          </Table>
+        </>
       </main>
     </>
   );

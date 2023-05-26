@@ -73,22 +73,21 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
         <Search search={router.query.search as string} placeholder="Search for vendors" path={router.asPath} params={router.query} count={count} />
-        {vendors.length === 0 ? (
-          <>No data found</>
-        ) : (
-          <>
-            <Table className="border">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">ID</TableHead>
-                  <TableHead className="text-center">Name</TableHead>
-                  <TableHead className="text-center">Created At</TableHead>
-                  <TableHead className="text-center">Link</TableHead>
-                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {vendors.map((vendor, index) => {
+
+        <>
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">ID</TableHead>
+                <TableHead className="text-center">Name</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
+                <TableHead className="text-center">Link</TableHead>
+                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {vendors.length !== 0 ? (
+                vendors.map((vendor, index) => {
                   return (
                     <TableRow key={index}>
                       <TableCell className="text-center">{vendor.id}</TableCell>
@@ -102,15 +101,21 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
                       {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setRefresh(true)} />}
                     </TableRow>
                   );
-                })}
-              </TableBody>
-              <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Vendors are on SubM</p> : <p>A list of Vendors you own ({total})</p>}</TableCaption>
-              <TableCaption>
-                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-              </TableCaption>
-            </Table>
-          </>
-        )}
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={session?.user.role === "Admin" ? 5 : 4} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Vendors are on SubM</p> : <p>A list of Vendors you own ({total})</p>}</TableCaption>
+            <TableCaption>
+              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+            </TableCaption>
+          </Table>
+        </>
       </main>
     </>
   );

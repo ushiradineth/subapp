@@ -70,21 +70,20 @@ export default function Index({ categories, count, total }: { categories: Catego
       </Head>
       <main className="flex flex-col items-center">
         <Search search={router.query.search as string} placeholder="Search for categories" path={router.asPath} params={router.query} count={count} />
-        {categories.length === 0 ? (
-          <>No data found</>
-        ) : (
-          <>
-            <Table className="border">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">ID</TableHead>
-                  <TableHead className="text-center">Name</TableHead>
-                  <TableHead className="text-center">Created At</TableHead>
-                  <TableHead className="text-center">Link</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category, index) => {
+
+        <>
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center">ID</TableHead>
+                <TableHead className="text-center">Name</TableHead>
+                <TableHead className="text-center">Created At</TableHead>
+                <TableHead className="text-center">Link</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.length !== 0 ? (
+                categories.map((category, index) => {
                   return (
                     <TableRow key={index}>
                       <TableCell className="text-center">{category.id}</TableCell>
@@ -97,15 +96,21 @@ export default function Index({ categories, count, total }: { categories: Catego
                       </TableCell>
                     </TableRow>
                   );
-                })}
-              </TableBody>
-              <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Categories are on SubM</p> : <p>A list of Categories you own ({total})</p>}</TableCaption>
-              <TableCaption>
-                <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-              </TableCaption>
-            </Table>
-          </>
-        )}
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Categories are on SubM</p> : <p>A list of Categories you own ({total})</p>}</TableCaption>
+            <TableCaption>
+              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+            </TableCaption>
+          </Table>
+        </>
       </main>
     </>
   );
