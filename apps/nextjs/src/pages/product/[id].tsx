@@ -19,7 +19,7 @@ import { formalizeDate } from "~/lib/utils";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session) {
     return {
       redirect: {
         destination: "/",
