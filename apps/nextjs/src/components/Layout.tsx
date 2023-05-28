@@ -8,7 +8,7 @@ import { signOut, useSession } from "next-auth/react";
 import { supabase } from "@acme/api/src/lib/supabase";
 
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
 import { env } from "~/env.mjs";
 import icon from "../../public/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -53,31 +53,31 @@ function NavItems() {
                 <NavigationMenuTrigger>Vendors</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <NavigationMenuLink href="/vendor" className={navigationMenuTriggerStyle()}>
-                      All Vendors
-                    </NavigationMenuLink>
-                    <NavigationMenuLink href="/vendor/requests" className={navigationMenuTriggerStyle()}>
-                      Vendor Requests
-                    </NavigationMenuLink>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                      <Link href={"/vendor"}>All Vendors</Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                      <Link href={"/vendor/requests"}>Vendor Requests</Link>
+                    </NavigationMenuItem>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             )}
 
-            <NavigationMenuLink href="/user" className={navigationMenuTriggerStyle()}>
-              Users
-            </NavigationMenuLink>
+            <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+              <Link href={"/user"}>Users</Link>
+            </NavigationMenuItem>
 
             <NavigationMenuItem>
               <NavigationMenuTrigger>Products</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                  <NavigationMenuLink href="/product" className={navigationMenuTriggerStyle()}>
-                    All Products
-                  </NavigationMenuLink>
-                  <NavigationMenuLink href="/product/new" className={navigationMenuTriggerStyle()}>
-                    Create Product
-                  </NavigationMenuLink>
+                  <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                    <Link href={"/product"}>All Products</Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                    <Link href={"/product/new"}>Create Product</Link>
+                  </NavigationMenuItem>
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -87,12 +87,12 @@ function NavItems() {
                 <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <NavigationMenuLink href="/category" className={navigationMenuTriggerStyle()}>
-                      All Categories
-                    </NavigationMenuLink>
-                    <NavigationMenuLink href="/category/new" className={navigationMenuTriggerStyle()}>
-                      Create Category
-                    </NavigationMenuLink>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                      <Link href={"/category"}>All Categories</Link>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                      <Link href={"/category/new"}>Create Category</Link>
+                    </NavigationMenuItem>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
