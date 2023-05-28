@@ -1,6 +1,7 @@
-import { prisma } from "@acme/db";
 import { type GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+
+import { prisma } from "@acme/db";
 
 import Products, { type ProductWithDetails } from "~/components/Products";
 import { formalizeDate } from "~/lib/utils";
@@ -53,6 +54,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
     include: {
       vendor: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+      user: {
         select: {
           name: true,
           id: true,
