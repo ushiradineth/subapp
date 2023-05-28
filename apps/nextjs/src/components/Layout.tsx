@@ -116,12 +116,12 @@ function AuthButton() {
         </Button>
       ) : (
         status === "authenticated" && (
-          <Menubar className="border-bc dark ml-auto mr-4 w-fit">
+          <Menubar className="border-bc ml-auto mr-4 w-fit">
             <MenubarMenu>
               <MenubarTrigger className="m-0 p-2">
                 <User className="text-white" />
               </MenubarTrigger>
-              <MenubarContent className="border-bc dark text-white">
+              <MenubarContent className="border-bc text-white">
                 <Profile />
                 <MenubarSeparator />
                 <Link href={`/profile/${session?.user.id}`}>
