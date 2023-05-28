@@ -17,14 +17,13 @@ import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescript
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
-import { ReloadButton } from "../vendor";
 
 const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session ) {
+  if (!session) {
     return {
       redirect: {
         destination: "/",
@@ -102,11 +101,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ users, count, total }: { users: User[]; count: number; total: number }) {
+export default function Index({ users: serverUsers, count, total }: { users: User[]; count: number; total: number }) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
-  const [refresh, setRefresh] = useState(false);
+  const [users, setUsers] = useState<User[]>(serverUsers);
 
   return (
     <>
@@ -114,9 +113,7 @@ export default function Index({ users, count, total }: { users: User[]; count: n
         <title>Users {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        {refresh && <ReloadButton />}
         <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
-
         <>
           <Table className="border">
             <TableHeader>
@@ -137,7 +134,7 @@ export default function Index({ users, count, total }: { users: User[]; count: n
                       </TableCell>
                       <TableCell className="text-center">{user.name}</TableCell>
                       <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                      {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
+                      {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setUsers(users.filter((p) => p.id !== user.id))} />}
                     </TableRow>
                   );
                 })
