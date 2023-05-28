@@ -107,7 +107,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
                       <SelectTrigger className="w-[400px]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="dark w-max">
+                      <SelectContent className="w-max">
                         {categories.map((category, index) => {
                           return (
                             <SelectItem key={index} value={category.id}>
