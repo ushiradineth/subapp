@@ -113,6 +113,7 @@ export default function Index({ users, count, total }: { users: User[]; count: n
       </Head>
       <main className="flex flex-col items-center">
         {refresh && <ReloadButton />}
+        <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
 
         <>
           <Table className="border">
