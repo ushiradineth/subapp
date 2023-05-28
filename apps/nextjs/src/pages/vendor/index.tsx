@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { RotateCcw, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -64,11 +64,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ vendors, count, total }: { vendors: Vendor[]; count: number; total: number }) {
+export default function Index({ vendors: serverVendors, count, total }: { vendors: Vendor[]; count: number; total: number }) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
-  const [refresh, setRefresh] = useState(false);
+  const [vendors, setVendors] = useState<Vendor[]>(serverVendors);
 
   return (
     <>
@@ -76,9 +76,7 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
         <title>Vendors {router.query.page && `- Page ${router.query.page}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        {refresh && <ReloadButton />}
         <Search search={router.query.search as string} placeholder="Search for vendors" path={router.asPath} params={router.query} count={count} />
-
         <>
           <Table className="border">
             <TableHeader>
@@ -99,7 +97,7 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
                       </TableCell>
                       <TableCell className="text-center">{vendor.name}</TableCell>
                       <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                      {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setRefresh(true)} />}
+                      {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />}
                     </TableRow>
                   );
                 })
@@ -159,15 +157,5 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
         </button>
       </TableCell>
     </>
-  );
-};
-
-export const ReloadButton = () => {
-  const router = useRouter();
-
-  return (
-    <button onClick={() => router.reload()} className="absolute right-12 top-24 rounded-full border p-4 hover:bg-gray-800">
-      <RotateCcw />
-    </button>
   );
 };

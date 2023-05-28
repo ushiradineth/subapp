@@ -20,7 +20,7 @@ export const productRouter = createTRPCRouter({
         description: input.description,
         link: input.link,
         verified: Boolean(ctx.session.user.role === "Admin"),
-        vendor: { connect: { email: ctx.session.user.role === "Admin" ? "ushiradineth@gmail.com" : ctx.session.user.email || "" } },
+        vendor: { connect: { email: ctx.session.user.role === "Admin" ? "subm@subm.com" : ctx.session.user.email || "" } },
         category: { connect: { id: input.category } },
       },
     });
