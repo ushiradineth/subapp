@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -19,6 +19,18 @@ import { Textarea } from "~/components/ui/textarea";
 import { env } from "~/env.mjs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ ctx: context });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+
   const categories = await prisma.category.findMany({ select: { name: true, id: true } });
 
   return {

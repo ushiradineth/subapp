@@ -21,6 +21,16 @@ import { formalizeDate } from "~/lib/utils";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+
   const user = session?.user.role === "Admin" ? await prisma.admin.findUnique({ where: { id: session?.user.id } }) : await prisma.vendor.findUnique({ where: { id: session?.user.id } });
 
   return {
