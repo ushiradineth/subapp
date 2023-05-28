@@ -2,7 +2,6 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LinkIcon } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 
 import { prisma, type Category } from "@acme/db";
@@ -73,7 +72,6 @@ export default function Index({ categories, count, total }: { categories: Catego
       </Head>
       <main className="flex flex-col items-center">
         <Search search={router.query.search as string} placeholder="Search for categories" path={router.asPath} params={router.query} count={count} />
-
         <>
           <Table className="border">
             <TableHeader>
@@ -81,7 +79,6 @@ export default function Index({ categories, count, total }: { categories: Catego
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,20 +86,17 @@ export default function Index({ categories, count, total }: { categories: Catego
                 categories.map((category, index) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="text-center">{category.id}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/category/${category.id}`}>{category.id}</Link>
+                      </TableCell>
                       <TableCell className="text-center">{category.name}</TableCell>
                       <TableCell className="text-center">{category.createdAt.toString()}</TableCell>
-                      <TableCell className="text-center">
-                        <Link href={`/category/${category.id}`}>
-                          <LinkIcon />
-                        </Link>
-                      </TableCell>
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={3} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

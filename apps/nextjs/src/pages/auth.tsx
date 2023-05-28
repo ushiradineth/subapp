@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { signIn, useSession } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -18,6 +19,24 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import icon from "../../public/logo.svg";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ ctx: context });
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
 
 export default function Auth() {
   const { status } = useSession();

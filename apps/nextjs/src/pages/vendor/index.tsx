@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LinkIcon, RotateCcw, Trash } from "lucide-react";
+import { RotateCcw, Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -86,7 +86,6 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
                 {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
               </TableRow>
             </TableHeader>
@@ -95,21 +94,18 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
                 vendors.map((vendor, index) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="text-center">{vendor.id}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
+                      </TableCell>
                       <TableCell className="text-center">{vendor.name}</TableCell>
                       <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                      <TableCell className="text-center">
-                        <Link href={`/vendor/${vendor.id}`}>
-                          <LinkIcon />
-                        </Link>
-                      </TableCell>
                       {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setRefresh(true)} />}
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={session?.user.role === "Admin" ? 5 : 4} className="h-24 text-center">
+                  <TableCell colSpan={session?.user.role === "Admin" ? 4 : 3} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

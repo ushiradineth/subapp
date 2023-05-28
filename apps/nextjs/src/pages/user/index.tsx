@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LinkIcon, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -124,7 +124,6 @@ export default function Index({ users, count, total }: { users: User[]; count: n
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
                 {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
               </TableRow>
             </TableHeader>
@@ -133,21 +132,18 @@ export default function Index({ users, count, total }: { users: User[]; count: n
                 users.map((user, index) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="text-center">{user.id}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/user/${user.id}`}>{user.id}</Link>
+                      </TableCell>
                       <TableCell className="text-center">{user.name}</TableCell>
                       <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                      <TableCell className="text-center">
-                        <Link href={`/user/${user.id}`}>
-                          <LinkIcon />
-                        </Link>
-                      </TableCell>
                       {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={session?.user.role === "Admin" ? 5 : 4} className="h-24 text-center">
+                  <TableCell colSpan={session?.user.role === "Admin" ? 4 : 3} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>
