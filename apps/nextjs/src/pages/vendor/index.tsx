@@ -13,6 +13,8 @@ import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 
@@ -126,6 +128,7 @@ export default function Index({ vendors, count, total }: { vendors: Vendor[]; co
 
 const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
+  const [deleteMenu, setDeleteMenu] = useState(false);
 
   const { mutate: deleteVendor } = api.vendor.delete.useMutation({
     onMutate: () => setLoading(true),
@@ -133,14 +136,33 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
     onError: () => toast.error("Failed to delete vendor"),
     onSuccess: () => {
       props.onSuccess();
+      setDeleteMenu(false);
       toast.success("Vendor has been delete");
     },
   });
 
   return (
-    <TableCell>
-      <div className="ml-2">{loading ? <Loader /> : <Trash onClick={() => deleteVendor({ id: props.id })} />}</div>
-    </TableCell>
+    <>
+      {deleteMenu && (
+        <AlertDialog defaultOpen>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>This action cannot be undone. This will permanently delete the vendor.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
+              <Button onClick={() => deleteVendor({ id: props.id })}>{loading ? <Loader /> : <button>Delete</button>}</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+      <TableCell>
+        <button className="ml-2">
+          <Trash onClick={() => setDeleteMenu(true)} />
+        </button>
+      </TableCell>
+    </>
   );
 };
 

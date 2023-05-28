@@ -13,6 +13,8 @@ import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 import { ReloadButton } from "../vendor";
@@ -161,7 +163,9 @@ export default function Index({ products, count, total }: { products: ProductWit
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={session?.user.role === "Admin" ? 7 : 6} className="h-24 text-center">No results.</TableCell>
+                  <TableCell colSpan={session?.user.role === "Admin" ? 7 : 6} className="h-24 text-center">
+                    No results.
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -178,6 +182,7 @@ export default function Index({ products, count, total }: { products: ProductWit
 
 const DeleleProduct = (props: { id: string; onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
+  const [deleteMenu, setDeleteMenu] = useState(false);
 
   const { mutate: deleteProduct } = api.product.delete.useMutation({
     onMutate: () => setLoading(true),
@@ -185,21 +190,32 @@ const DeleleProduct = (props: { id: string; onSuccess: () => void }) => {
     onError: () => toast.error("Failed to delete product"),
     onSuccess: () => {
       props.onSuccess();
+      setDeleteMenu(false);
       toast.success("Product has been delete");
     },
   });
 
   return (
-    <TableCell>
-      <div className="ml-2">
-        {loading ? (
-          <Loader />
-        ) : (
-          <button>
-            <Trash onClick={() => deleteProduct({ id: props.id })} />
-          </button>
-        )}
-      </div>
-    </TableCell>
+    <>
+      {deleteMenu && (
+        <AlertDialog defaultOpen>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>This action cannot be undone. This will permanently delete the product.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
+              <Button onClick={() => deleteProduct({ id: props.id })}>{loading ? <Loader /> : <button>Delete</button>}</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+      <TableCell>
+        <button className="ml-2">
+          <Trash onClick={() => setDeleteMenu(true)} />
+        </button>
+      </TableCell>
+    </>
   );
 };
