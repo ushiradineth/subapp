@@ -53,12 +53,9 @@ function NavItems() {
                 <NavigationMenuTrigger>Vendors</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                      <Link href={"/vendor"}>All Vendors</Link>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                      <Link href={"/vendor/requests"}>Vendor Requests</Link>
-                    </NavigationMenuItem>
+                    <Link href={"/vendor"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Vendors</NavigationMenuItem>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -72,12 +69,12 @@ function NavItems() {
               <NavigationMenuTrigger>Products</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                  <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                    <Link href={"/product"}>All Products</Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                    <Link href={"/product/new"}>Create Product</Link>
-                  </NavigationMenuItem>
+                  <Link href={"/product"}>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Products</NavigationMenuItem>
+                  </Link>
+                  <Link href={"/product/new"}>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Product</NavigationMenuItem>
+                  </Link>
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -87,12 +84,12 @@ function NavItems() {
                 <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                      <Link href={"/category"}>All Categories</Link>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                      <Link href={"/category/new"}>Create Category</Link>
-                    </NavigationMenuItem>
+                    <Link href={"/category"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Categories</NavigationMenuItem>
+                    </Link>
+                    <Link href={"/category/new"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Category</NavigationMenuItem>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -167,15 +164,17 @@ function Profile() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <Avatar>
-        <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
-        <AvatarFallback>
-          <UserCircle2 width={100} height={100} />
-        </AvatarFallback>
-      </Avatar>
-      <p>{session?.user.name}</p>
-      <p>{session?.user.email}</p>
-    </div>
+    <Link href={`/profile/${session?.user.id}`}>
+      <MenubarItem className="flex flex-col items-center justify-center p-4">
+        <Avatar>
+          <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
+          <AvatarFallback>
+            <UserCircle2 width={100} height={100} />
+          </AvatarFallback>
+        </Avatar>
+        <p>{session?.user.name}</p>
+        <p>{session?.user.email}</p>
+      </MenubarItem>
+    </Link>
   );
 }
