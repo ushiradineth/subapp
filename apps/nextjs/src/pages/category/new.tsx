@@ -1,6 +1,8 @@
 import React from "react";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -10,6 +12,24 @@ import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ ctx: context });
+
+  if (!session || session.user.role === "Vendor") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
 
 export default function NewCategory() {
   const form = useForm<CategoryFormData>({
