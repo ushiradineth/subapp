@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -30,6 +31,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default function NewProduct({ categories }: { categories: Category[] }) {
+  const { data: session } = useSession();
+
   const form = useForm<ProductFormData>({
     resolver: yupResolver(ProductSchema),
   });
@@ -38,7 +41,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      toast.success("Product has been created");
+      session?.user.role === "Admin" ? toast.success("Product has been created") : toast.success("Product creation has been requested");
     },
   });
 

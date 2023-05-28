@@ -20,10 +20,23 @@ export const productRouter = createTRPCRouter({
         description: input.description,
         link: input.link,
         verified: Boolean(ctx.session.user.role === "Admin"),
-        vendor: { connect: { id: ctx.session.user.role === "Admin" ? "cli0mjzn60014vgh99xqm9pno" : ctx.session.user.id } },
-        category: { connect: { id: input.category }}
+        vendor: { connect: { email: ctx.session.user.role === "Admin" ? "ushiradineth@gmail.com" : ctx.session.user.email || "" } },
+        category: { connect: { id: input.category } },
       },
     });
+
+    return product;
+  }),
+
+  verify: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    if (ctx.session.user.role !== "Admin") {
+      return new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Unauthorized Request",
+      });
+    }
+
+    const product = await ctx.prisma.product.update({ where: { id: input.id }, data: { verified: true } });
 
     return product;
   }),

@@ -11,7 +11,7 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session) {
+  if (!session || session.user.role === "Vendor") {
     return {
       redirect: {
         destination: "/",
@@ -33,22 +33,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ],
   };
 
-  const where =
-    search !== ""
-      ? session.user.role === "Admin"
-        ? searchQuery
-        : {
-            vendorId: { equals: session?.user.id },
-            searchQuery,
-          }
-      : session.user.role === "Admin"
-      ? {}
-      : { vendorId: { equals: session?.user.id } };
+  const where = search !== "" ? { searchQuery, verified: false } : { verified: false };
 
   const products = await prisma.product.findMany({
     take: ITEMS_PER_PAGE,
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
-    where: { ...where, user: null, verified: true },
+    where: { ...where, user: null, verified: false },
     orderBy: {
       createdAt: "desc",
     },
@@ -68,18 +58,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const count = await prisma.product.count({ where: { ...where, user: null, verified: true } });
+  const count = await prisma.product.count({ where: { ...where, user: null, verified: false } });
 
   const total =
     session?.user.role === "Admin"
-      ? await prisma.product.count({ where: { ...where, user: null, verified: true } })
+      ? await prisma.product.count({ where: { user: null, verified: false } })
       : await prisma.product.count({
           where: {
             vendorId: {
               equals: session?.user.id,
             },
             user: null,
-            verified: true,
+            verified: false,
           },
         });
 
@@ -95,6 +85,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ products, count, total }: { products: ProductWithDetails[]; count: number; total: number; itemsPerPage: number }) {
+export default function Requests({ products, count, total }: { products: ProductWithDetails[]; count: number; total: number }) {
   return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} />;
 }

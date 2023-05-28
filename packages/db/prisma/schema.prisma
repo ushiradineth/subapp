@@ -142,7 +142,7 @@ model Product {
   link              String?
   reviews           Review[]       @relation("productReviews")
 
-  userTemplate         User?          @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
+  user         User?          @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
   productNotifications Notification[] @relation("notificationsProduct")
 
   vendorId   String?

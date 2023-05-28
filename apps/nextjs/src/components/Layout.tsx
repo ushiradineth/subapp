@@ -75,6 +75,11 @@ function NavItems() {
                   <Link href={"/product/new"}>
                     <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Product</NavigationMenuItem>
                   </Link>
+                  {session?.user.role === "Admin" && (
+                    <Link href={"/product/requests"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>Product Requests</NavigationMenuItem>
+                    </Link>
+                  )}
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
