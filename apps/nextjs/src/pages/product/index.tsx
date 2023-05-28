@@ -48,18 +48,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const products = await prisma.product.findMany({
     take: ITEMS_PER_PAGE,
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
-    where,
+    where: { ...where, user: null },
     orderBy: {
       createdAt: "desc",
     },
     include: {
       vendor: {
-        select: {
-          name: true,
-          id: true,
-        },
-      },
-      user: {
         select: {
           name: true,
           id: true,
@@ -74,16 +68,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const count = await prisma.product.count({ where });
+  const count = await prisma.product.count({ where: { ...where, user: null } });
 
   const total =
     session?.user.role === "Admin"
-      ? await prisma.product.count()
+      ? await prisma.product.count({ where: { ...where, user: null } })
       : await prisma.product.count({
           where: {
             vendorId: {
               equals: session?.user.id,
             },
+            user: null 
           },
         });
 

@@ -20,7 +20,6 @@ import { ReloadButton } from "~/pages/vendor";
 export interface ProductWithDetails extends Product {
   vendor: { name: string; id: string };
   category: { name: string; id: string };
-  user: { name: string; id: string };
 }
 
 export default function Products({ products, count, total, itemsPerPage }: { products: ProductWithDetails[]; count: number; total: number; itemsPerPage: number }) {
@@ -59,7 +58,9 @@ export default function Products({ products, count, total, itemsPerPage }: { pro
                         <Link href={`/product/${product.id}`}>{product.id}</Link>
                       </TableCell>
                       <TableCell className="text-center">{product.name}</TableCell>
-                      <TableCell className="text-center">{product.vendor ? <Link href={`/vendor/${product.vendor.id}`}>{product.vendor.name}</Link> : <Link href={`/user/${product.user.id}`}>{product.user.name}</Link>}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/vendor/${product.vendor.id}`}>{product.vendor.name}</Link>
+                      </TableCell>
                       <TableCell className="text-center">
                         <Link href={`/category/${product.category.id}`}>{product.category.name}</Link>
                       </TableCell>
