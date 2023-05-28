@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react";
 
 import { prisma, type Product } from "@acme/db";
 
-import Products from "~/components/Products";
+import Products, { ProductWithDetails } from "~/components/Products";
 import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
@@ -82,11 +82,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-
-interface ProductWithDetails extends Product {
-  vendor: { name: string; id: string };
-  category: { name: string; id: string };
-}
 
 export default function Requests({ products, count, total }: { products: ProductWithDetails[]; count: number; total: number }) {
   return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} />;
