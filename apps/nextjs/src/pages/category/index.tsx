@@ -10,6 +10,7 @@ import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
+import { useEffect } from "react";
 
 const ITEMS_PER_PAGE = 10;
 

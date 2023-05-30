@@ -33,12 +33,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ],
   };
 
-  const where = search !== "" ? { searchQuery, verified: false } : { verified: false };
+  const where = search !== "" ? searchQuery : {};
+
+  const filter = { user: null, verified: false };
 
   const products = await prisma.product.findMany({
     take: ITEMS_PER_PAGE,
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
-    where: { ...where, user: null, verified: false },
+    where: { ...where, ...filter },
     orderBy: {
       createdAt: "desc",
     },
@@ -58,18 +60,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const count = await prisma.product.count({ where: { ...where, user: null, verified: false } });
+  const count = await prisma.product.count({ where: { ...where, ...filter } });
 
   const total =
     session?.user.role === "Admin"
-      ? await prisma.product.count({ where: { user: null, verified: false } })
+      ? await prisma.product.count({ where: filter })
       : await prisma.product.count({
           where: {
             vendorId: {
               equals: session?.user.id,
             },
-            user: null,
-            verified: false,
+            ...filter,
           },
         });
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -69,6 +69,10 @@ export default function Index({ vendors: serverVendors, count, total }: { vendor
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
   const [vendors, setVendors] = useState<Vendor[]>(serverVendors);
+  
+  useEffect(() => {
+    setVendors(serverVendors)
+  }, [serverVendors]);
 
   return (
     <>
