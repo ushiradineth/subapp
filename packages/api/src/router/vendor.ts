@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { env } from "../../env.mjs";
 import { deleteFiles } from "../lib/supabase";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { adminProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const vendorRouter = createTRPCRouter({
   register: publicProcedure.input(z.object({ email: z.string(), password: z.string(), name: z.string() })).mutation(async ({ ctx, input }) => {
@@ -36,14 +36,7 @@ export const vendorRouter = createTRPCRouter({
     return vendor;
   }),
 
-  delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    if (ctx.session.user.role !== "Admin") {
-      return new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "Unauthorized Request",
-      });
-    }
-
+  delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     const user = await ctx.prisma.vendor.delete({ where: { id: input.id } });
 
     await deleteFiles(env.USER_ICON, input.id);
