@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, ChevronLeft, ChevronRight, Circle, LinkIcon } from "lucide-react";
+import { BadgeCheck, ChevronLeft, ChevronRight, Circle, LinkIcon, XCircle } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -15,6 +15,7 @@ import { type ProductWithDetails } from "~/components/Products";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env.mjs";
 import { formalizeDate } from "~/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -48,6 +49,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
   });
+
+  if (session.user.id !== product?.vendorId && session.user.role !== "Admin") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
 
   const { data: imageList } = await supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).list(product?.id);
 
@@ -126,7 +137,13 @@ export default function Requests({ product, images, logo }: { product: ProductWi
         <div className="mb-12 flex items-center gap-8">
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="flex h-fit items-center justify-center gap-8 rounded-2xl border p-8 ">
-              <Image className="h-32 w-32 rounded-full bg-black-200" src={logo || ""} height={200} width={200} alt="Product Logo" priority />
+              <Avatar>
+                <AvatarImage src={logo} alt="Product Avatar" width={200} height={200} />
+                <AvatarFallback>
+                  <XCircle width={200} height={200} />
+                </AvatarFallback>
+              </Avatar>
+              <Image className="bg-black-200 h-32 w-32 rounded-full" src={logo || ""} height={200} width={200} alt="Product Logo" priority />
               <div className="grid grid-flow-row md:h-fit md:gap-3">
                 <div className="max-w-[200px] overflow-hidden truncate text-ellipsis text-xl font-semibold">{product.name}</div>
                 <div className="flex items-center gap-2">

@@ -29,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       {
         category: { OR: [{ name: { search: search } }, { description: { search: search } }] },
       },
-      { vendor: { name: { search: search } } },
+      { vendor: { OR: [{ name: { search: search } }, { id: { search: search } }] } },
     ],
   };
 

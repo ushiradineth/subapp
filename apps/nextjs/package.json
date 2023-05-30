@@ -43,6 +43,7 @@
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "lucide-react": "^0.220.0",
+    "moment": "^2.29.4",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
     "nextjs-progressbar": "^0.0.16",
