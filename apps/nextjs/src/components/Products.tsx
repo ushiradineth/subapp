@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -26,6 +26,10 @@ export default function Products({ products: serverProducts, count, total, items
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
   const [products, setProducts] = useState<ProductWithDetails[]>(serverProducts);
+
+  useEffect(() => {
+    setProducts(serverProducts);
+  }, [serverProducts]);
 
   return (
     <>
@@ -76,7 +80,7 @@ export default function Products({ products: serverProducts, count, total, items
                 </TableRow>
               )}
             </TableBody>
-            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Products are on SubM</p> : <p>A list of Products you own ({total})</p>}</TableCaption>
+            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Product(s) are on SubM</p> : <p>You have {total} Product(s) on total SubM</p>}</TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={itemsPerPage} pageNumber={pageNumber} path={router.asPath} params={router.query} />
             </TableCaption>

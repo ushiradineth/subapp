@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -54,8 +54,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? session.user.role === "Admin"
         ? searchQuery
         : {
-            vendorQuery,
-            searchQuery,
+            ...vendorQuery,
+            ...searchQuery,
           }
       : session.user.role === "Admin"
       ? {}
@@ -106,6 +106,10 @@ export default function Index({ users: serverUsers, count, total }: { users: Use
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
   const [users, setUsers] = useState<User[]>(serverUsers);
+
+  useEffect(() => {
+    setUsers(serverUsers);
+  }, [serverUsers]);
 
   return (
     <>
