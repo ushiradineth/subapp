@@ -143,7 +143,6 @@ export default function Requests({ product, images, logo }: { product: ProductWi
                   <XCircle width={200} height={200} />
                 </AvatarFallback>
               </Avatar>
-              <Image className="bg-black-200 h-32 w-32 rounded-full" src={logo || ""} height={200} width={200} alt="Product Logo" priority />
               <div className="grid grid-flow-row md:h-fit md:gap-3">
                 <div className="max-w-[200px] overflow-hidden truncate text-ellipsis text-xl font-semibold">{product.name}</div>
                 <div className="flex items-center gap-2">
