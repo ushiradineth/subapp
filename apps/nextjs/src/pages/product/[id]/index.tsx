@@ -4,6 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, ChevronLeft, ChevronRight, Circle, LinkIcon, XCircle } from "lucide-react";
+import moment from "moment";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -12,10 +13,9 @@ import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { type ProductWithDetails } from "~/components/Products";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env.mjs";
-import { formalizeDate } from "~/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       product: {
         ...product,
-        createdAt: formalizeDate(product?.createdAt),
+        createdAt: moment(product?.createdAt).fromNow(),
       },
       images,
       logo,
@@ -92,6 +92,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const ImageView = ({ images }: { images: { url: string }[] }) => {
   const [index, setIndex] = useState(0);
+
+  console.log(images);
 
   return (
     <div className={"grid h-full w-[400px] transform select-none place-items-center rounded-2xl border p-8 text-gray-300"}>
@@ -151,6 +153,7 @@ export default function Requests({ product, images, logo }: { product: ProductWi
                   </div>
                   {product.verified && <BadgeCheck className="text-green-500" />}
                 </div>
+                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">Created {String(product.createdAt)}</div>
                 <Link className="flex items-center gap-2 text-sm font-light text-gray-400" href={product.link || ""}>
                   <LinkIcon className="h-4 w-4" /> Visit the product website
                 </Link>

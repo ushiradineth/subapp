@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Trash } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -69,9 +69,9 @@ export default function Index({ vendors: serverVendors, count, total }: { vendor
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
   const [vendors, setVendors] = useState<Vendor[]>(serverVendors);
-  
+
   useEffect(() => {
-    setVendors(serverVendors)
+    setVendors(serverVendors);
   }, [serverVendors]);
 
   return (
@@ -101,7 +101,16 @@ export default function Index({ vendors: serverVendors, count, total }: { vendor
                       </TableCell>
                       <TableCell className="text-center">{vendor.name}</TableCell>
                       <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                      {session?.user.role === "Admin" && <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />}
+                      {session?.user.role === "Admin" && (
+                        <TableCell>
+                          <div className="flex gap-4">
+                            <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
+                            <Link href={`/vendor/${vendor.id}/edit`}>
+                              <Edit />
+                            </Link>
+                          </div>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })
@@ -155,11 +164,7 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
-      <TableCell>
-        <button className="ml-2">
-          <Trash onClick={() => setDeleteMenu(true)} />
-        </button>
-      </TableCell>
+      <Trash onClick={() => setDeleteMenu(true)} />
     </>
   );
 };

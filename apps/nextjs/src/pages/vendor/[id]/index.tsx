@@ -3,14 +3,13 @@ import Head from "next/head";
 import Link from "next/link";
 import { BadgeCheck, LinkIcon, UserCircle2 } from "lucide-react";
 import moment from "moment";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma, type Vendor } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { env } from "~/env.mjs";
-import { formalizeDate } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -64,7 +63,7 @@ interface VendorWithProducts extends Vendor {
   count: number;
 }
 
-export default function Requests({ vendor, avatar }: { vendor: VendorWithProducts; avatar: string }) {
+export default function Vendor({ vendor, avatar }: { vendor: VendorWithProducts; avatar: string }) {
   return (
     <>
       <Head>
