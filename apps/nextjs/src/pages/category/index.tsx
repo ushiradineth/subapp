@@ -2,6 +2,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Edit } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 
 import { prisma, type Category } from "@acme/db";
@@ -10,7 +11,6 @@ import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
-import { useEffect } from "react";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -80,6 +80,7 @@ export default function Index({ categories, count, total }: { categories: Catego
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
+                <TableHead className="text-center">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -92,12 +93,19 @@ export default function Index({ categories, count, total }: { categories: Catego
                       </TableCell>
                       <TableCell className="text-center">{category.name}</TableCell>
                       <TableCell className="text-center">{category.createdAt.toString()}</TableCell>
+                      {session?.user.role === "Admin" && (
+                        <TableCell>
+                            <Link href={`/category/${category.id}/edit`}>
+                              <Edit className="ml-2" />
+                            </Link>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>

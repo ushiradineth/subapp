@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { BadgeCheck, BadgeX, Trash } from "lucide-react";
+import { BadgeCheck, BadgeX, Edit, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -68,7 +68,16 @@ export default function Products({ products: serverProducts, count, total, items
                       </TableCell>
                       <TableCell className="text-center">{product.createdAt.toString()}</TableCell>
                       <TableCell className="mt-1 flex justify-center">{product.verified ? <BadgeCheck className="text-green-500" /> : <BadgeX className="text-red-500" />}</TableCell>
-                      {session?.user.role === "Admin" && <DeleleProduct id={product.id} onSuccess={() => setProducts(products.filter((p) => p.id !== product.id))} />}
+                      {session?.user.role === "Admin" && (
+                        <TableCell>
+                          <div className="flex gap-4">
+                          <DeleleProduct id={product.id} onSuccess={() => setProducts(products.filter((p) => p.id !== product.id))} />
+                          <Link href={`/product/${product.id}/edit`}>
+                            <Edit />
+                          </Link>
+                          </div>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })
@@ -122,11 +131,7 @@ const DeleleProduct = (props: { id: string; onSuccess: () => void }) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
-      <TableCell>
-        <button className="ml-2">
-          <Trash onClick={() => setDeleteMenu(true)} />
-        </button>
-      </TableCell>
+      <Trash onClick={() => setDeleteMenu(true)} />
     </>
   );
 };
