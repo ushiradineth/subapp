@@ -144,7 +144,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
                 <FormItem>
                   <FormLabel>Link</FormLabel>
                   <FormControl>
-                    <Input placeholder="Link" {...field} />
+                    <Input placeholder="Link" type="url" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
