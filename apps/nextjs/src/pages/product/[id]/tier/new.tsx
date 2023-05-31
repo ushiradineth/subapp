@@ -118,7 +118,7 @@ export default function NewTier() {
                 <FormItem>
                   <FormLabel>Period</FormLabel>
                   <FormControl>
-                    <Input placeholder="Periodic Cycle of the Subscription" {...field} />
+                    <Input placeholder="Periodic Cycle of the Subscription" type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
