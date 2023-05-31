@@ -1,9 +1,10 @@
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
-import moment from "moment";
 import { getSession } from "next-auth/react";
 
 import { prisma, type Category } from "@acme/db";
+
+import { generalizeDate } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -28,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       category: {
         ...category,
-        createdAt: moment(category?.createdAt).fromNow(),
+        createdAt: generalizeDate(category?.createdAt),
       },
     },
   };

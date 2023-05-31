@@ -2,7 +2,6 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { BadgeCheck, LinkIcon, UserCircle2 } from "lucide-react";
-import moment from "moment";
 import { getSession } from "next-auth/react";
 
 import { supabase } from "@acme/api/src/lib/supabase";
@@ -10,6 +9,7 @@ import { prisma, type Vendor } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { env } from "~/env.mjs";
+import { generalizeDate } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       vendor: {
         ...vendor,
-        createdAt: moment(vendor?.createdAt).fromNow(),
+        createdAt: generalizeDate(vendor?.createdAt),
       },
       avatar,
     },
