@@ -121,7 +121,6 @@ model Tier {
   description String?
   name        String?
   createdAt   DateTime @default(now())
-  link        String?
 
   @@index([productId])
 }
