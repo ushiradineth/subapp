@@ -4,7 +4,6 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, ChevronLeft, ChevronRight, Circle, LinkIcon, XCircle } from "lucide-react";
-import moment from "moment";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -16,6 +15,7 @@ import { type ProductWithDetails } from "~/components/Products";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env.mjs";
+import { generalizeDate } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       product: {
         ...product,
-        createdAt: moment(product?.createdAt).fromNow(),
+        createdAt: generalizeDate(product?.createdAt),
       },
       images,
       logo,
@@ -173,6 +173,9 @@ export default function Requests({ product, images, logo }: { product: ProductWi
             </Button>
           </div>
         )}
+        <div className="flex items-center justify-center rounded-2xl border p-8">
+          <Link href={`/product/${product.id}/tier`}>See Tiers</Link>
+        </div>
       </main>
     </>
   );
