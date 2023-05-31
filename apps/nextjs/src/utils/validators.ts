@@ -48,16 +48,13 @@ export const RegisterSchema = yup
 export type RegisterFormData = yup.InferType<typeof RegisterSchema>;
 
 export const TierSchema = yup
-  .array()
-  .of(
-    yup.object().shape({
-      link: urlValidator,
-      period: periodValidtor,
-      price: numberValidator,
-      description: textValidator,
-      name: nameValidator,
-    }),
-  )
+  .object()
+  .shape({
+    Period: periodValidtor,
+    Price: numberValidator,
+    Description: textValidator,
+    Name: nameValidator,
+  })
   .required();
 
 export type TierFormData = yup.InferType<typeof TierSchema>;
