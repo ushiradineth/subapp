@@ -17,7 +17,7 @@ import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 
-const PERIODS = [{ period: "1", label: "Daily" }, { period: "7", label: "Weekly" }, , { period: "28", label: "Monthly" }, { period: "365", label: "Anually" }];
+export const PERIODS = [{ period: "1", label: "Daily" }, { period: "7", label: "Weekly" }, , { period: "28", label: "Monthly" }, { period: "365", label: "Annually" }];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });

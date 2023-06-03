@@ -14,8 +14,10 @@ import { TierSchema, type TierFormData } from "~/utils/validators";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import { formalizeDate } from "~/lib/utils";
+import { PERIODS } from "../new";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -137,7 +139,20 @@ export default function EditTier({ tier }: pageProps) {
                 <FormItem>
                   <FormLabel>Period</FormLabel>
                   <FormControl>
-                    <Input placeholder="Periodic Cycle of the Subscription" type="number" {...field} />
+                    <Select onValueChange={field.onChange} defaultValue={PERIODS.find((period) => Number(period?.period) === tier.period)?.period}>
+                      <SelectTrigger className="w-[400px]">
+                        <SelectValue placeholder="Period of the Subscription" />
+                      </SelectTrigger>
+                      <SelectContent className="w-max">
+                        {PERIODS.map((period, index) => {
+                          return (
+                            <SelectItem key={index} value={period?.period || ""}>
+                              {period?.label}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
