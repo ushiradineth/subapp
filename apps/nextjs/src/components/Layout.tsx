@@ -8,7 +8,7 @@ import { signOut, useSession } from "next-auth/react";
 import { supabase } from "@acme/api/src/lib/supabase";
 
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
 import { env } from "~/env.mjs";
 import icon from "../../public/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -53,31 +53,33 @@ function NavItems() {
                 <NavigationMenuTrigger>Vendors</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <NavigationMenuLink href="/vendor" className={navigationMenuTriggerStyle()}>
-                      All Vendors
-                    </NavigationMenuLink>
-                    <NavigationMenuLink href="/vendor/requests" className={navigationMenuTriggerStyle()}>
-                      Vendor Requests
-                    </NavigationMenuLink>
+                    <Link href={"/vendor"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Vendors</NavigationMenuItem>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
             )}
-
-            <NavigationMenuLink href="/user" className={navigationMenuTriggerStyle()}>
-              Users
-            </NavigationMenuLink>
-
+            {session?.user.role === "Admin" && (
+              <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                <Link href={"/user"}>Users</Link>
+              </NavigationMenuItem>
+            )}
             <NavigationMenuItem>
               <NavigationMenuTrigger>Products</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                  <NavigationMenuLink href="/product" className={navigationMenuTriggerStyle()}>
-                    All Products
-                  </NavigationMenuLink>
-                  <NavigationMenuLink href="/product/new" className={navigationMenuTriggerStyle()}>
-                    Create Product
-                  </NavigationMenuLink>
+                  <Link href={"/product"}>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Products</NavigationMenuItem>
+                  </Link>
+                  <Link href={"/product/new"}>
+                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Product</NavigationMenuItem>
+                  </Link>
+                  {session?.user.role === "Admin" && (
+                    <Link href={"/product/requests"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>Product Requests</NavigationMenuItem>
+                    </Link>
+                  )}
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -87,12 +89,12 @@ function NavItems() {
                 <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <NavigationMenuLink href="/category" className={navigationMenuTriggerStyle()}>
-                      All Categories
-                    </NavigationMenuLink>
-                    <NavigationMenuLink href="/category/new" className={navigationMenuTriggerStyle()}>
-                      Create Category
-                    </NavigationMenuLink>
+                    <Link href={"/category"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Categories</NavigationMenuItem>
+                    </Link>
+                    <Link href={"/category/new"}>
+                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Category</NavigationMenuItem>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -116,17 +118,19 @@ function AuthButton() {
         </Button>
       ) : (
         status === "authenticated" && (
-          <Menubar className="border-bc dark ml-auto mr-4 w-fit">
+          <Menubar className="border-bc ml-auto mr-4 w-fit">
             <MenubarMenu>
               <MenubarTrigger className="m-0 p-2">
                 <User className="text-white" />
               </MenubarTrigger>
-              <MenubarContent className="border-bc dark text-white">
+              <MenubarContent className="border-bc text-white">
                 <Profile />
                 <MenubarSeparator />
-                <Link href={`/profile/${session?.user.id}`}>
-                  <MenubarItem>Profile</MenubarItem>
-                </Link>
+                {session.user.role === "Vendor" && (
+                  <Link href={`/vendor/${session?.user.id}`}>
+                    <MenubarItem>Profile</MenubarItem>
+                  </Link>
+                )}
                 <Link href={`/settings`}>
                   <MenubarItem>Settings</MenubarItem>
                 </Link>
@@ -167,15 +171,17 @@ function Profile() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <Avatar>
-        <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
-        <AvatarFallback>
-          <UserCircle2 width={100} height={100} />
-        </AvatarFallback>
-      </Avatar>
-      <p>{session?.user.name}</p>
-      <p>{session?.user.email}</p>
-    </div>
+    <Link href={session?.user.role === "Vendor" ? `/vendor/${session?.user.id}` : `#`}>
+      <MenubarItem className="flex flex-col items-center justify-center p-4">
+        <Avatar>
+          <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
+          <AvatarFallback>
+            <UserCircle2 width={100} height={100} />
+          </AvatarFallback>
+        </Avatar>
+        <p>{session?.user.name}</p>
+        <p>{session?.user.email}</p>
+      </MenubarItem>
+    </Link>
   );
 }

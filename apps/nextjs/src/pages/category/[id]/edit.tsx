@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,12 +6,15 @@ import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
+import { prisma, type Category } from "@acme/db";
+
 import { api } from "~/utils/api";
 import { CategorySchema, type CategoryFormData } from "~/utils/validators";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { formalizeDate } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -26,29 +29,45 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const category = await prisma.category.findUnique({ where: { id: context.params?.id as string } });
+
   return {
-    props: {},
+    props: {
+      category: {
+        ...category,
+        createdAt: formalizeDate(category?.createdAt),
+      },
+    },
   };
 };
 
-export default function NewCategory() {
+interface pageProps {
+  category: Category;
+}
+
+export default function EditCategory({ category }: pageProps) {
   const form = useForm<CategoryFormData>({
     resolver: yupResolver(CategorySchema),
   });
 
-  const { mutate, isLoading } = api.category.create.useMutation({
+  const { mutate, isLoading } = api.category.update.useMutation({
     onError: (error) => toast.error(error.message),
     onSuccess: () => toast.success("Category has been created"),
   });
 
-  const onSubmit = async (data: CategoryFormData) => {
-    mutate({ name: data.Name, description: data.Description });
+  const onSubmit = (data: CategoryFormData) => {
+    mutate({ id: category.id, name: data.Name, description: data.Description });
   };
+
+  useEffect(() => {
+    form.setValue("Name", category.name);
+    form.setValue("Description", category.description);
+  }, [category]);
 
   return (
     <>
       <Head>
-        <title>Create Category - SubM</title>
+        <title>Edit {category.name} - SubM</title>
       </Head>
       <main>
         <Form {...form}>

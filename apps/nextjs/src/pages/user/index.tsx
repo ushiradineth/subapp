@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LinkIcon, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -13,16 +13,17 @@ import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
-import { ReloadButton } from "../vendor";
 
 const ITEMS_PER_PAGE = 10;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session) {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -53,8 +54,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? session.user.role === "Admin"
         ? searchQuery
         : {
-            vendorQuery,
-            searchQuery,
+            ...vendorQuery,
+            ...searchQuery,
           }
       : session.user.role === "Admin"
       ? {}
@@ -100,20 +101,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ users, count, total }: { users: User[]; count: number; total: number }) {
+interface pageProps {
+  users: User[];
+  count: number;
+  total: number;
+}
+
+export default function Index({ users: serverUsers, count, total }: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
-  const [refresh, setRefresh] = useState(false);
+  const [users, setUsers] = useState<User[]>(serverUsers);
+
+  useEffect(() => {
+    setUsers(serverUsers);
+  }, [serverUsers]);
 
   return (
     <>
       <Head>
-        <title>Users {router.query.page && `- Page ${router.query.page}`}</title>
+        <title>Users {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        {refresh && <ReloadButton />}
-
+        <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
         <>
           <Table className="border">
             <TableHeader>
@@ -121,8 +131,7 @@ export default function Index({ users, count, total }: { users: User[]; count: n
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Link</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                <TableHead className="text-center">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,27 +139,26 @@ export default function Index({ users, count, total }: { users: User[]; count: n
                 users.map((user, index) => {
                   return (
                     <TableRow key={index}>
-                      <TableCell className="text-center">{user.id}</TableCell>
+                      <TableCell className="text-center">
+                        <Link href={`/user/${user.id}`}>{user.id}</Link>
+                      </TableCell>
                       <TableCell className="text-center">{user.name}</TableCell>
                       <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                      <TableCell className="text-center">
-                        <Link href={`/user/${user.id}`}>
-                          <LinkIcon />
-                        </Link>
-                      </TableCell>
-                      {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setRefresh(true)} />}
+                      <DeleteUser id={user.id} onSuccess={() => setUsers(users.filter((p) => p.id !== user.id))} />
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={session?.user.role === "Admin" ? 5 : 4} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
-            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Users are on SubM</p> : <p>A list of Users you own ({total})</p>}</TableCaption>
+            <TableCaption>
+              <p>Currently, a total of {total} Users are on SubM</p>{" "}
+            </TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
             </TableCaption>
@@ -163,6 +171,7 @@ export default function Index({ users, count, total }: { users: User[]; count: n
 
 const DeleteUser = (props: { id: string; onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
+  const [deleteMenu, setDeleteMenu] = useState(false);
 
   const { mutate: deleteUser } = api.user.delete.useMutation({
     onMutate: () => setLoading(true),
@@ -170,13 +179,32 @@ const DeleteUser = (props: { id: string; onSuccess: () => void }) => {
     onError: () => toast.error("Failed to delete user"),
     onSuccess: () => {
       props.onSuccess();
+      setDeleteMenu(false);
       toast.success("User has been delete");
     },
   });
 
   return (
-    <TableCell>
-      <div className="ml-2">{loading ? <Loader /> : <Trash onClick={() => deleteUser({ id: props.id })} />}</div>
-    </TableCell>
+    <>
+      {deleteMenu && (
+        <AlertDialog defaultOpen>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>This action cannot be undone. This will permanently delete the user.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
+              <Button onClick={() => deleteUser({ id: props.id })}>{loading ? <Loader /> : <button>Delete</button>}</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+      <TableCell>
+        <button className="ml-2">
+          <Trash onClick={() => setDeleteMenu(true)} />
+        </button>
+      </TableCell>
+    </>
   );
 };

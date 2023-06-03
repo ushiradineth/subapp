@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { signIn, useSession } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -19,6 +20,24 @@ import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import icon from "../../public/logo.svg";
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ ctx: context });
+
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
+
 export default function Auth() {
   const { status } = useSession();
   const router = useRouter();
@@ -28,7 +47,7 @@ export default function Auth() {
   return (
     <>
       <Head>
-        <title>SubM - Authentication</title>
+        <title>Authentication - SubM</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
         <Link href="/" className="absolute left-12 top-12 rounded-full border p-4 hover:bg-gray-800">

@@ -6,7 +6,7 @@ function PageNumbers(props: { pageNumber: number; count: number; itemsPerPage: n
   return (
     <div className="m-8 flex w-40 select-none justify-center">
       <div className="flex">
-        {props.pageNumber !== 1 ? (
+        {props.pageNumber > 1 ? (
           <Link href={{ href: props.path, query: { ...props.params, page: props.pageNumber - 1 } }}>
             <ChevronLeft />
           </Link>
@@ -20,7 +20,7 @@ function PageNumbers(props: { pageNumber: number; count: number; itemsPerPage: n
           </Link>
         ))}
 
-        {props.pageNumber !== Math.ceil(props.count / props.itemsPerPage) ? (
+        {props.pageNumber < Math.ceil(props.count / props.itemsPerPage) ? (
           <Link href={{ href: props.path, query: { ...props.params, page: props.pageNumber + 1 } }}>
             <ChevronRight />
           </Link>

@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { type Session } from "next-auth";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import { prisma, type Admin, type Vendor } from "@acme/db";
+import { prisma, type Vendor } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { UserSchema, type UserFormData } from "~/utils/validators";
@@ -21,7 +20,7 @@ import { formalizeDate } from "~/lib/utils";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session) {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -31,26 +30,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const user = session?.user.role === "Admin" ? await prisma.admin.findUnique({ where: { id: session?.user.id } }) : await prisma.vendor.findUnique({ where: { id: session?.user.id } });
+  const vendor = await prisma.vendor.findUnique({ where: { id: context.params?.id as string } });
 
   return {
     props: {
-      user: {
-        ...user,
-        createdAt: formalizeDate(user?.createdAt),
+      vendor: {
+        ...vendor,
+        createdAt: formalizeDate(vendor?.createdAt),
       },
-      session,
     },
   };
 };
 
 interface pageProps {
-  user: Admin | Vendor;
-  session: Session;
+  vendor: Vendor;
 }
 
-export default function Settings({ user }: pageProps) {
-  const { data: session } = useSession();
+export default function EditVendor({ vendor }: pageProps) {
   const [loading, setLoading] = useState(false);
   const [upload, setUpload] = useState(false);
 
@@ -58,25 +54,17 @@ export default function Settings({ user }: pageProps) {
     resolver: yupResolver(UserSchema),
   });
 
-  const { mutate: mutateVendor, isLoading: isLoadingVendor } = api.vendor.update.useMutation({
+  const { mutate, isLoading } = api.vendor.update.useMutation({
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      toast.success("Account has been updated");
-    },
-  });
-
-  const { mutate: mutateAdmin, isLoading: isLoadingAdmin } = api.admin.update.useMutation({
-    onError: (error) => toast.error(error.message),
-    onSuccess: () => {
-      setUpload(true);
-      toast.success("Account has been updated");
+      toast.success("Vendor has been updated");
     },
   });
 
   const onSubmit = (data: UserFormData) => {
-    if (data.Name !== user.name) {
-      session?.user.role === "Admin" ? mutateAdmin({ id: user.id, name: data.Name }) : mutateVendor({ id: user.id, name: data.Name });
+    if (data.Name !== vendor.name) {
+      mutate({ id: vendor.id, name: data.Name });
     }
     if (typeof form.watch("Image") !== "undefined" && form.watch("Image") !== "") {
       setUpload(true);
@@ -84,16 +72,16 @@ export default function Settings({ user }: pageProps) {
   };
 
   useEffect(() => {
-    if (user.name && user.email) {
-      form.setValue("Name", user.name);
-      form.setValue("Email", user.email);
+    if (vendor.name && vendor.email) {
+      form.setValue("Name", vendor.name);
+      form.setValue("Email", vendor.email);
     }
-  }, [user]);
+  }, [vendor]);
 
   return (
     <>
       <Head>
-        <title>Settings - SubM</title>
+        <title>Edit Vendor {vendor.name}</title>
       </Head>
       <main>
         <Form {...form}>
@@ -105,7 +93,7 @@ export default function Settings({ user }: pageProps) {
                 <FormItem>
                   <FormLabel>User Image</FormLabel>
                   <FormControl>
-                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={user.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} delete={true} />
+                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} delete={true} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,7 +106,7 @@ export default function Settings({ user }: pageProps) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Email of the user" disabled={true} defaultValue={user.email || ""} {...field} />
+                    <Input placeholder="Email of the vendor" disabled={true} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,13 +119,13 @@ export default function Settings({ user }: pageProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name of the user" defaultValue={user.name || ""} {...field} />
+                    <Input placeholder="Name of the vendor" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" loading={isLoadingAdmin || isLoadingVendor || loading} disabled={form.watch("Name") === user.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "")}>
+            <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "")}>
               Submit
             </Button>
           </form>

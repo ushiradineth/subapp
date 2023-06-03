@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -21,7 +21,7 @@ import { env } from "~/env.mjs";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session) {
+  if (!session || session.user.role === "Vendor") {
     return {
       redirect: {
         destination: "/",
@@ -31,10 +31,27 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const product = await prisma.product.findFirst({
+    where: { id: context.params?.id as string },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      link: true,
+      category: {
+        select: {
+          name: true,
+          id: true,
+        },
+      },
+    },
+  });
+
   const categories = await prisma.category.findMany({ select: { name: true, id: true } });
 
   return {
     props: {
+      product,
       categories: categories.map((category) => ({
         ...category,
       })),
@@ -42,27 +59,44 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  link: string;
+  category: {
+    name: string;
+    id: string;
+  };
+}
+
 interface pageProps {
+  product: Product;
   categories: Category[];
 }
 
-export default function NewProduct({ categories }: pageProps) {
-  const { data: session } = useSession();
-
+export default function EditProduct({ product, categories }: pageProps) {
   const form = useForm<ProductFormData>({
     resolver: yupResolver(ProductSchema),
   });
 
-  const { mutate, isLoading, data } = api.product.create.useMutation({
+  useEffect(() => {
+    form.setValue("Name", product.name);
+    form.setValue("Description", product.description);
+    form.setValue("Link", product.link || "");
+    form.setValue("Category", product.category.id);
+  }, []);
+
+  const { mutate, isLoading } = api.product.update.useMutation({
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      session?.user.role === "Admin" ? toast.success("Product has been created") : toast.success("Product creation has been requested");
+      toast.success("Product has been Updated");
     },
   });
 
   const onSubmit = async (data: ProductFormData) => {
-    mutate({ name: data.Name, description: data.Description, link: data.Link, category: data.Category });
+    mutate({ id: product.id, name: data.Name, description: data.Description, link: data.Link, category: data.Category });
   };
 
   const [loading, setLoading] = useState(false);
@@ -71,7 +105,7 @@ export default function NewProduct({ categories }: pageProps) {
   return (
     <>
       <Head>
-        <title>Create Product - SubM</title>
+        <title>Edit Product - {product.name}</title>
       </Head>
       <main>
         <Form {...form}>
@@ -83,7 +117,7 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Product Logo</FormLabel>
                   <FormControl>
-                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={data?.id || ""} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Logo", value)} bucket={env.NEXT_PUBLIC_PRODUCT_LOGO} />
+                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={product.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Logo", value)} bucket={env.NEXT_PUBLIC_PRODUCT_LOGO} delete />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -96,7 +130,7 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name of the Product" {...field} />
+                    <Input placeholder="Name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -109,7 +143,7 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Brief description of the Product" {...field} />
+                    <Textarea placeholder="Description" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,12 +158,12 @@ export default function NewProduct({ categories }: pageProps) {
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger className="w-[400px]">
-                        <SelectValue placeholder="Select a Category" />
+                        <SelectValue placeholder={product.category.name} />
                       </SelectTrigger>
                       <SelectContent className="w-max">
                         {categories.map((category, index) => {
                           return (
-                            <SelectItem key={index} value={category.id}>
+                            <SelectItem key={index} defaultChecked={category.id === product.category.id} value={category.id}>
                               {category.name}
                             </SelectItem>
                           );
@@ -148,7 +182,7 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Link</FormLabel>
                   <FormControl>
-                    <Input placeholder="Link to the Product Home page" type="url" {...field} />
+                    <Input placeholder="Link" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -161,7 +195,7 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Product Images</FormLabel>
                   <FormControl>
-                    <ImageUpload itemId={data?.id || ""} upload={upload} setUpload={(value: boolean) => setUpload(value)} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Images", value)} multiple bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE} />
+                    <ImageUpload itemId={product.id} upload={upload} setUpload={(value: boolean) => setUpload(value)} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Images", value)} multiple bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE} delete />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

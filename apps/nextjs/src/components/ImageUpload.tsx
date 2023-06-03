@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 import ImageUploading, { type ImageListType } from "react-images-uploading";
+import { toast } from "react-toastify";
 
 import { supabase } from "@acme/api/src/lib/supabase";
 
 import Loader from "./Loader";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
 type props = {
@@ -18,14 +21,17 @@ type props = {
   setValue: (value: string) => void;
   setUpload: (value: boolean) => void;
   onUpload?: () => void;
+  delete?: boolean;
 };
 
 const FILE_TYPE = "jpg";
 
 export function ImageUpload(props: props) {
   const [images, setImages] = useState<ImageListType>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const maxNumber = 10;
+  const [deleteMenu, setDeleteMenu] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState(0);
 
   const onChange = (imageList: ImageListType) => {
     props.setUpload(false);
@@ -33,10 +39,6 @@ export function ImageUpload(props: props) {
     if (imageList[0]?.file) props.setValue("Image set");
     else props.setValue("");
   };
-
-  useEffect(() => {
-    if (props.upload) onUpload();
-  }, [props.upload, props.itemId]);
 
   const onUpload = () => {
     if (images.length === 0) return;
@@ -56,29 +58,57 @@ export function ImageUpload(props: props) {
   };
 
   const getImage = async () => {
-    const { data } = await supabase.storage.from(props.bucket).list(`${props.itemId}`);
+    if (props.itemId) {
+      setIsLoading(true);
 
-    data?.forEach(async (image) => {
-      const { data } = supabase.storage.from(props.bucket).getPublicUrl(`${props.itemId}/${image.name}`);
+      const { data } = await supabase.storage.from(props.bucket).list(`${props.itemId}`);
 
-      if (data.publicUrl) {
-        try {
-          const result = await fetch(data.publicUrl, { method: "HEAD" });
-          if (result) {
-            if (result.status === 200) {
-              const file = await convertURLtoFileFormat(data.publicUrl);
-              setImages((prev) => {
-                if (prev.find((item) => item.dataURL === data.publicUrl)) return prev;
-                return [...prev, { dataURL: data.publicUrl, file }];
-              });
+      data?.forEach(async (image) => {
+        const { data } = supabase.storage.from(props.bucket).getPublicUrl(`${props.itemId}/${image.name}`);
+
+        if (data.publicUrl) {
+          try {
+            const result = await fetch(data.publicUrl, { method: "HEAD" });
+            if (result) {
+              if (result.status === 200) {
+                const file = await convertURLtoFileFormat(data.publicUrl);
+                setImages((prev) => {
+                  props.setValue("Image set");
+                  if (prev.find((item) => item.dataURL === data.publicUrl)) return prev;
+                  return [...prev, { dataURL: data.publicUrl, file }];
+                });
+              }
             }
-          }
-        } catch (error) {}
+          } catch (error) {}
+        }
+      });
+
+      setIsLoading(false);
+    }
+  };
+
+  const deleteImage = async ({ index, onDelete }: { index: number; onDelete: (index: number) => any }) => {
+    setIsLoading(true);
+
+    const { data: list } = await supabase.storage.from(props.bucket).list(`${props.itemId}`);
+
+    if (list) {
+      const { error } = await supabase.storage.from(props.bucket).remove([`${props.itemId}/${list[index]?.name}`]);
+      if (!error) {
+        toast.success("Image has been delete");
+        onDelete(index);
+        setImages((prev) => prev.filter((_, i) => i !== index));
+        if (images.length === 0) props.setValue("");
+        setDeleteMenu(false);
       }
-    });
+    }
 
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (props.upload) onUpload();
+  }, [props.upload, props.itemId]);
 
   useEffect(() => {
     getImage();
@@ -88,6 +118,20 @@ export function ImageUpload(props: props) {
     <ImageUploading multiple={props.multiple} value={images} onChange={onChange} maxNumber={maxNumber}>
       {({ imageList, onImageUpload, onImageRemove, dragProps }) => (
         <>
+          {deleteMenu && (
+            <AlertDialog defaultOpen>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>This action cannot be undone. This will permanently delete the image.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
+                  <Button onClick={() => deleteImage({ index: deleteIndex, onDelete: onImageRemove })}>{isLoading ? <Loader /> : <button>Delete</button>}</Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           {images[0]?.file && props.multiple && (
             <>
               <div className="max-w-xl" onClick={onImageUpload} {...dragProps}>
@@ -96,9 +140,14 @@ export function ImageUpload(props: props) {
               <Card>
                 {imageList.map((image, index) => (
                   <div key={index} className="flex items-center justify-center gap-8 p-8">
-                    <Image src={image.dataURL || ""} alt="Product Logo" width={100} height={100} />
+                    <Image src={image.dataURL || ""} alt="image" width={100} height={100} />
                     <div className="flex gap-8">
-                      <X onClick={() => onImageRemove(index)} />
+                      <X
+                        onClick={() => {
+                          setDeleteIndex(index);
+                          setDeleteMenu(true);
+                        }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -115,8 +164,8 @@ export function ImageUpload(props: props) {
                     <div className="flex gap-8">
                       <X
                         onClick={() => {
-                          onImageRemove(index);
-                          props.setValue("");
+                          setDeleteIndex(index);
+                          setDeleteMenu(true);
                         }}
                       />
                     </div>
