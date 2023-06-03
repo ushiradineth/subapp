@@ -84,7 +84,6 @@ export const authOptions: NextAuthOptions = {
               id: vendor.id,
               email: vendor.email,
               name: vendor.name,
-              image: vendor.image,
               role: "Vendor",
             };
           }
@@ -102,7 +101,6 @@ export const authOptions: NextAuthOptions = {
               id: admin.id,
               email: admin.email,
               name: admin.name,
-              image: admin.image,
               role: "Admin",
             };
           }
