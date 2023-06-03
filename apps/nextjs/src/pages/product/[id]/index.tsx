@@ -93,8 +93,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const ImageView = ({ images }: { images: { url: string }[] }) => {
   const [index, setIndex] = useState(0);
 
-  console.log(images);
-
   return (
     <div className={"grid h-full w-[400px] transform select-none place-items-center rounded-2xl border p-8 text-gray-300"}>
       <div className="flex h-[300px] w-full items-center justify-center transition-all duration-300">
