@@ -23,7 +23,7 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session) {
     return {
       redirect: {
         destination: "/",
@@ -37,28 +37,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const where = search !== "" ? { OR: [{ name: { search: search } }] } : {};
 
-  const tiers = await prisma.tier.findMany({
-    take: ITEMS_PER_PAGE,
+  const product = await prisma.product.findFirst({
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
     where: {
-      ...where,
-      id: context.query.tierId as string,
-    },
-    orderBy: {
-      createdAt: "desc",
+      id: context.query.id as string,
     },
     include: {
-      product: {
-        select: {
-          vendorId: true,
-        },
+      tiers: {
+        where,
       },
+      _count: true,
     },
   });
 
-  console.log(tiers);
-
-  if (tiers[0]?.product.vendorId !== session.user.id && session.user.role !== "Admin") {
+  if (product?.vendorId !== session.user.id && session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -68,20 +60,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const count = await prisma.tier.count({
-    where: {
-      ...where,
-      id: context.query.tierId as string,
-    },
-  });
-
   return {
     props: {
-      tiers: tiers.map((tier) => ({
+      tiers: product?.tiers.map((tier) => ({
         ...tier,
         createdAt: generalizeDate(tier.createdAt),
       })),
-      count,
+      count: product?.tiers.length,
     },
   };
 };
