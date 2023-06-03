@@ -23,7 +23,7 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session) {
     return {
       redirect: {
         destination: "/",
@@ -37,28 +37,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const where = search !== "" ? { OR: [{ name: { search: search } }] } : {};
 
-  const tiers = await prisma.tier.findMany({
-    take: ITEMS_PER_PAGE,
+  const product = await prisma.product.findFirst({
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
     where: {
-      ...where,
-      id: context.query.tierId as string,
-    },
-    orderBy: {
-      createdAt: "desc",
+      id: context.query.id as string,
     },
     include: {
-      product: {
-        select: {
-          vendorId: true,
-        },
+      tiers: {
+        where,
       },
+      _count: true,
     },
   });
 
-  console.log(tiers);
-
-  if (tiers[0]?.product.vendorId !== session.user.id && session.user.role !== "Admin") {
+  if (product?.vendorId !== session.user.id && session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -68,25 +60,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const count = await prisma.tier.count({
-    where: {
-      ...where,
-      id: context.query.tierId as string,
-    },
-  });
-
   return {
     props: {
-      tiers: tiers.map((tier) => ({
+      tiers: product?.tiers.map((tier) => ({
         ...tier,
         createdAt: generalizeDate(tier.createdAt),
       })),
-      count,
+      count: product?.tiers.length,
     },
   };
 };
 
-export default function Index({ tiers: serverTier, count }: { tiers: Tier[]; count: number }) {
+interface pageProps {
+  tiers: Tier[];
+  count: number;
+}
+
+export default function Tiers({ tiers: serverTier, count }: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -99,61 +89,61 @@ export default function Index({ tiers: serverTier, count }: { tiers: Tier[]; cou
   return (
     <>
       <Head>
-        <title>Vendors {router.query.page && `- Page ${router.query.page}`}</title>
+        <title>Tiers {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         <Search search={router.query.search as string} placeholder="Search for tiers" path={router.asPath} params={router.query} count={count} />
-        <>
-          <Table className="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">ID</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Created At</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tiers.length !== 0 ? (
-                tiers.map((tier, index) => {
-                  return (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">
-                        <Link href={`/product/${router.query.id}/tier/${tier.id}`}>{tier.id}</Link>
-                      </TableCell>
-                      <TableCell className="text-center">{tier.name}</TableCell>
-                      <TableCell className="text-center">{tier.createdAt.toString()}</TableCell>
+        <Table className="border">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">ID</TableHead>
+              <TableHead className="text-center">Name</TableHead>
+              <TableHead className="text-center">Created At</TableHead>
+              {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {tiers.length !== 0 ? (
+              tiers.map((tier, index) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell className="text-center">
+                      <Link href={`/product/${router.query.id}/tier/${tier.id}`}>{tier.id}</Link>
+                    </TableCell>
+                    <TableCell className="text-center">{tier.name}</TableCell>
+                    <TableCell className="text-center">{tier.createdAt.toString()}</TableCell>
+                    {session?.user.role === "Admin" && (
                       <TableCell>
                         <div className="flex gap-4">
-                          {session?.user.role === "Admin" && <DeleteTier id={tier.id} onSuccess={() => setTiers(tiers.filter((p) => p.id !== tier.id))} />}
+                          <DeleteTier id={tier.id} onSuccess={() => setTiers(tiers.filter((p) => p.id !== tier.id))} />
                           <Link href={`/product/${router.query.id}/tier/${tier.id}/edit`}>
                             <Edit />
                           </Link>
                         </div>
                       </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+                    )}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={session?.user.role === "Admin" ? 4 : 3} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
 
-            <TableCaption>
-              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-            </TableCaption>
+          <TableCaption>
+            <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+          </TableCaption>
 
-            <TableCaption className="gap-8">
-              <Link href={`/product/${router.query.id}/tier/new`}>
-                <Button className="gap-2">Add new Tier</Button>
-              </Link>
-            </TableCaption>
-          </Table>
-        </>
+          <TableCaption className="gap-8">
+            <Link href={`/product/${router.query.id}/tier/new`}>
+              <Button className="gap-2">Add new Tier</Button>
+            </Link>
+          </TableCaption>
+        </Table>
       </main>
     </>
   );

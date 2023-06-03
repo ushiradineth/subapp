@@ -93,8 +93,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const ImageView = ({ images }: { images: { url: string }[] }) => {
   const [index, setIndex] = useState(0);
 
-  console.log(images);
-
   return (
     <div className={"grid h-full w-[400px] transform select-none place-items-center rounded-2xl border p-8 text-gray-300"}>
       <div className="flex h-[300px] w-full items-center justify-center transition-all duration-300">
@@ -119,7 +117,13 @@ const Bullets = ({ count, index, setIndex }: { count: number; index: number; set
   );
 };
 
-export default function Requests({ product, images, logo }: { product: ProductWithDetails; images: { url: string }[]; logo: string }) {
+interface pageProps {
+  product: ProductWithDetails;
+  images: { url: string }[];
+  logo: string;
+}
+
+export default function Product({ product, images, logo }: pageProps) {
   const { data: session } = useSession();
 
   const { mutate: verify, isLoading } = api.product.verify.useMutation({

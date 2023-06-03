@@ -59,11 +59,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-interface VendorWithProducts extends Vendor {
-  count: number;
+interface pageProps {
+  vendor: Vendor & { count: number };
+  avatar: string;
 }
 
-export default function Vendor({ vendor, avatar }: { vendor: VendorWithProducts; avatar: string }) {
+export default function Vendor({ vendor, avatar }: pageProps) {
   return (
     <>
       <Head>

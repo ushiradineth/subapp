@@ -9,7 +9,7 @@ export default function Index() {
     return (
       <>
         <Head>
-          <title>Welcome to SubM</title>
+          <title>Welcome - SubM</title>
         </Head>
         <div className="flex flex-1 items-center justify-center">
           <div className="mx-auto max-w-2xl">
@@ -35,7 +35,7 @@ export default function Index() {
     return (
       <>
         <Head>
-          <title>SubM - Admin Dashboard</title>
+          <title>Admin Dashboard - SubM</title>
         </Head>
         <div className="flex flex-1 items-center justify-center">
           <div className="mx-auto max-w-2xl">Admin Dashboard TODO</div>
@@ -48,7 +48,7 @@ export default function Index() {
     return (
       <>
         <Head>
-          <title>SubM - Vendor Dashboard</title>
+          <title>Vendor Dashboard - SubM</title>
         </Head>
         <div className="flex flex-1 items-center justify-center">
           <div className="mx-auto max-w-2xl">Vendor Dashboard TODO</div>

@@ -60,7 +60,7 @@ export function ImageUpload(props: props) {
   const getImage = async () => {
     if (props.itemId) {
       setIsLoading(true);
-      
+
       const { data } = await supabase.storage.from(props.bucket).list(`${props.itemId}`);
 
       data?.forEach(async (image) => {
@@ -98,6 +98,7 @@ export function ImageUpload(props: props) {
         toast.success("Image has been delete");
         onDelete(index);
         setImages((prev) => prev.filter((_, i) => i !== index));
+        if (images.length === 0) props.setValue("");
         setDeleteMenu(false);
       }
     }
@@ -145,7 +146,6 @@ export function ImageUpload(props: props) {
                         onClick={() => {
                           setDeleteIndex(index);
                           setDeleteMenu(true);
-                          props.setValue("");
                         }}
                       />
                     </div>
@@ -166,7 +166,6 @@ export function ImageUpload(props: props) {
                         onClick={() => {
                           setDeleteIndex(index);
                           setDeleteMenu(true);
-                          props.setValue("");
                         }}
                       />
                     </div>

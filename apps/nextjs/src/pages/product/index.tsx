@@ -96,6 +96,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ products, count, total }: { products: ProductWithDetails[]; count: number; total: number; itemsPerPage: number }) {
+interface pageProps {
+  products: ProductWithDetails[];
+  count: number;
+  total: number;
+}
+
+export default function ProductsPage({ products, count, total }: pageProps) {
   return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} />;
 }

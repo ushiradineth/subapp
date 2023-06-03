@@ -70,7 +70,12 @@ interface Product {
   };
 }
 
-export default function EditProduct({ product, categories }: { product: Product; categories: Category[] }) {
+interface pageProps {
+  product: Product;
+  categories: Category[];
+}
+
+export default function EditProduct({ product, categories }: pageProps) {
   const form = useForm<ProductFormData>({
     resolver: yupResolver(ProductSchema),
   });
@@ -100,7 +105,7 @@ export default function EditProduct({ product, categories }: { product: Product;
   return (
     <>
       <Head>
-        <title>SubM - Edit Product {product.name}</title>
+        <title>Edit Product - {product.name}</title>
       </Head>
       <main>
         <Form {...form}>

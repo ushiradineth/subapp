@@ -47,7 +47,7 @@ export default function Auth() {
   return (
     <>
       <Head>
-        <title>SubM - Authentication</title>
+        <title>Authentication - SubM</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
         <Link href="/" className="absolute left-12 top-12 rounded-full border p-4 hover:bg-gray-800">

@@ -16,7 +16,7 @@ import { Textarea } from "~/components/ui/textarea";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -48,7 +48,7 @@ export default function NewCategory() {
   return (
     <>
       <Head>
-        <title>SubM - Create Category</title>
+        <title>Create Category - SubM</title>
       </Head>
       <main>
         <Form {...form}>
@@ -60,7 +60,7 @@ export default function NewCategory() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder="Name of the Category" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -73,7 +73,7 @@ export default function NewCategory() {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Description" {...field} />
+                    <Textarea placeholder="Brief description of the Category" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

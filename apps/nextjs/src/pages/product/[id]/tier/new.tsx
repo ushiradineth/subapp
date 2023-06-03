@@ -14,7 +14,10 @@ import { TierSchema, type TierFormData } from "~/utils/validators";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
+
+export const PERIODS = [{ period: "1", label: "Daily" }, { period: "7", label: "Weekly" }, , { period: "28", label: "Monthly" }, { period: "365", label: "Annually" }];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -65,7 +68,7 @@ export default function NewTier() {
   return (
     <>
       <Head>
-        <title>SubM - Create Tier</title>
+        <title>Create Tier - SubM</title>
       </Head>
       <main>
         <Form {...form}>
@@ -118,7 +121,20 @@ export default function NewTier() {
                 <FormItem>
                   <FormLabel>Period</FormLabel>
                   <FormControl>
-                    <Input placeholder="Periodic Cycle of the Subscription" type="number" {...field} />
+                    <Select onValueChange={field.onChange}>
+                      <SelectTrigger className="w-[400px]">
+                        <SelectValue placeholder="Period of the Subscription" />
+                      </SelectTrigger>
+                      <SelectContent className="w-max">
+                        {PERIODS.map((period, index) => {
+                          return (
+                            <SelectItem key={index} value={period?.period || ""}>
+                              {period?.label}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

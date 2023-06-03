@@ -23,7 +23,7 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session) {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -101,7 +101,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ users: serverUsers, count, total }: { users: User[]; count: number; total: number }) {
+interface pageProps {
+  users: User[];
+  count: number;
+  total: number;
+}
+
+export default function Index({ users: serverUsers, count, total }: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -114,7 +120,7 @@ export default function Index({ users: serverUsers, count, total }: { users: Use
   return (
     <>
       <Head>
-        <title>Users {router.query.page && `- Page ${router.query.page}`}</title>
+        <title>Users {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
@@ -125,7 +131,7 @@ export default function Index({ users: serverUsers, count, total }: { users: Use
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                <TableHead className="text-center">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -138,19 +144,21 @@ export default function Index({ users: serverUsers, count, total }: { users: Use
                       </TableCell>
                       <TableCell className="text-center">{user.name}</TableCell>
                       <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                      {session?.user.role === "Admin" && <DeleteUser id={user.id} onSuccess={() => setUsers(users.filter((p) => p.id !== user.id))} />}
+                      <DeleteUser id={user.id} onSuccess={() => setUsers(users.filter((p) => p.id !== user.id))} />
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={session?.user.role === "Admin" ? 4 : 3} className="h-24 text-center">
+                  <TableCell colSpan={4} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
-            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Users are on SubM</p> : <p>A list of Users you own ({total})</p>}</TableCaption>
+            <TableCaption>
+              <p>Currently, a total of {total} Users are on SubM</p>{" "}
+            </TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
             </TableCaption>
