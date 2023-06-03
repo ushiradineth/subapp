@@ -19,7 +19,7 @@ import { formalizeDate } from "~/lib/utils";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -41,7 +41,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function EditCategory({ category }: { category: Category }) {
+interface pageProps {
+  category: Category;
+}
+
+export default function EditCategory({ category }: pageProps) {
   const form = useForm<CategoryFormData>({
     resolver: yupResolver(CategorySchema),
   });
@@ -63,7 +67,7 @@ export default function EditCategory({ category }: { category: Category }) {
   return (
     <>
       <Head>
-        <title>SubM - Edit Category {category.name}</title>
+        <title>Edit {category.name} - SubM</title>
       </Head>
       <main>
         <Form {...form}>
@@ -75,7 +79,7 @@ export default function EditCategory({ category }: { category: Category }) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder="Name of the Category" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,7 +92,7 @@ export default function EditCategory({ category }: { category: Category }) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Description" {...field} />
+                    <Textarea placeholder="Brief description of the Category" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

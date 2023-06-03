@@ -44,7 +44,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Settings({ user }: { user: Admin | Vendor; session: Session }) {
+interface pageProps {
+  user: Admin | Vendor;
+  session: Session;
+}
+
+export default function Settings({ user }: pageProps) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -88,7 +93,7 @@ export default function Settings({ user }: { user: Admin | Vendor; session: Sess
   return (
     <>
       <Head>
-        <title>User Settings</title>
+        <title>Settings - SubM</title>
       </Head>
       <main>
         <Form {...form}>

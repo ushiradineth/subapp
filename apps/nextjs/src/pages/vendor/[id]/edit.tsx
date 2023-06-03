@@ -20,7 +20,7 @@ import { formalizeDate } from "~/lib/utils";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -42,7 +42,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function EditVendor({ vendor }: { vendor: Vendor }) {
+interface pageProps {
+  vendor: Vendor;
+}
+
+export default function EditVendor({ vendor }: pageProps) {
   const [loading, setLoading] = useState(false);
   const [upload, setUpload] = useState(false);
 
@@ -54,7 +58,7 @@ export default function EditVendor({ vendor }: { vendor: Vendor }) {
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      toast.success("Account has been updated");
+      toast.success("Vendor has been updated");
     },
   });
 
@@ -77,7 +81,7 @@ export default function EditVendor({ vendor }: { vendor: Vendor }) {
   return (
     <>
       <Head>
-        <title>SubM - Edit Vendor {vendor.name}</title>
+        <title>Edit Vendor {vendor.name}</title>
       </Head>
       <main>
         <Form {...form}>
@@ -102,7 +106,7 @@ export default function EditVendor({ vendor }: { vendor: Vendor }) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Email" disabled={true} {...field} />
+                    <Input placeholder="Email of the vendor" disabled={true} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,7 +119,7 @@ export default function EditVendor({ vendor }: { vendor: Vendor }) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder="Name of the vendor" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -42,7 +42,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function NewProduct({ categories }: { categories: Category[] }) {
+interface pageProps {
+  categories: Category[];
+}
+
+export default function NewProduct({ categories }: pageProps) {
   const { data: session } = useSession();
 
   const form = useForm<ProductFormData>({
@@ -67,7 +71,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
   return (
     <>
       <Head>
-        <title>SubM - Create Product</title>
+        <title>Create Product - SubM</title>
       </Head>
       <main>
         <Form {...form}>
@@ -92,7 +96,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder="Name of the Product" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -105,7 +109,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Description" {...field} />
+                    <Textarea placeholder="Brief description of the Product" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,7 +148,7 @@ export default function NewProduct({ categories }: { categories: Category[] }) {
                 <FormItem>
                   <FormLabel>Link</FormLabel>
                   <FormControl>
-                    <Input placeholder="Link" type="url" {...field} />
+                    <Input placeholder="Link to the Product Home page" type="url" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

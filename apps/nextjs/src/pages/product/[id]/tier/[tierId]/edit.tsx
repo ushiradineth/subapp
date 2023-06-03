@@ -52,7 +52,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function EditTier({ tier }: { tier: Tier }) {
+interface pageProps {
+  tier: Tier;
+}
+
+export default function EditTier({ tier }: pageProps) {
   const router = useRouter();
 
   const form = useForm<TierFormData>({
@@ -80,7 +84,7 @@ export default function EditTier({ tier }: { tier: Tier }) {
   return (
     <>
       <Head>
-        <title>SubM - Create Tier</title>
+        <title>Edit Tier - {tier.name}</title>
       </Head>
       <main>
         <Form {...form}>

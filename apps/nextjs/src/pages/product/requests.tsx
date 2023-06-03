@@ -11,7 +11,7 @@ const ITEMS_PER_PAGE = 10;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
 
-  if (!session || session.user.role === "Vendor") {
+  if (!session || session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -62,17 +62,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const count = await prisma.product.count({ where: { ...where, ...filter } });
 
-  const total =
-    session?.user.role === "Admin"
-      ? await prisma.product.count({ where: filter })
-      : await prisma.product.count({
-          where: {
-            vendorId: {
-              equals: session?.user.id,
-            },
-            ...filter,
-          },
-        });
+  const total = await prisma.product.count({ where: filter });
 
   return {
     props: {
@@ -86,6 +76,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Requests({ products, count, total }: { products: ProductWithDetails[]; count: number; total: number }) {
-  return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} />;
+interface pageProps {
+  products: ProductWithDetails[];
+  count: number;
+  total: number;
+}
+
+export default function Requests({ products, count, total }: pageProps) {
+  return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} requests={true} />;
 }

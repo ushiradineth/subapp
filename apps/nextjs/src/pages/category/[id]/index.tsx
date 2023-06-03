@@ -35,11 +35,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Category({ category }: { category: Category }) {
+interface pageProps {
+  category: Category;
+}
+
+export default function Category({ category }: pageProps) {
   return (
     <>
       <Head>
-        <title>Category - {category.name}</title>
+        <title>{category.name} - SubM</title>
       </Head>
       <main className="flex flex-col items-center justify-center">
         <div className="mb-12 flex items-center gap-8">

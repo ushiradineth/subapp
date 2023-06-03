@@ -117,7 +117,13 @@ const Bullets = ({ count, index, setIndex }: { count: number; index: number; set
   );
 };
 
-export default function Requests({ product, images, logo }: { product: ProductWithDetails; images: { url: string }[]; logo: string }) {
+interface pageProps {
+  product: ProductWithDetails;
+  images: { url: string }[];
+  logo: string;
+}
+
+export default function Product({ product, images, logo }: pageProps) {
   const { data: session } = useSession();
 
   const { mutate: verify, isLoading } = api.product.verify.useMutation({

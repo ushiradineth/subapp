@@ -34,6 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           name: true,
           vendor: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -42,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  if (session.user.id !== tier?.id && session.user.role !== "Admin") {
+  if (session.user.id !== tier?.product.vendor?.id && session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -72,16 +73,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-interface TierWithProduct extends Tier {
-  product: {
-    name: string;
-    vendor: {
+interface pageProps {
+  tier: Tier & {
+    product: {
       name: string;
+      vendor: {
+        name: string;
+      };
     };
   };
+  logo: string;
 }
 
-export default function Tier({ tier, logo }: { tier: TierWithProduct; logo: string }) {
+export default function Tier({ tier, logo }: pageProps) {
   return (
     <>
       <Head>

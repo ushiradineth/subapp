@@ -64,7 +64,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function Index({ vendors: serverVendors, count, total }: { vendors: Vendor[]; count: number; total: number }) {
+interface pageProps {
+  vendors: Vendor[];
+  count: number;
+  total: number;
+}
+
+export default function Vendors({ vendors: serverVendors, count, total }: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -77,57 +83,55 @@ export default function Index({ vendors: serverVendors, count, total }: { vendor
   return (
     <>
       <Head>
-        <title>Vendors {router.query.page && `- Page ${router.query.page}`}</title>
+        <title>Vendors {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         <Search search={router.query.search as string} placeholder="Search for vendors" path={router.asPath} params={router.query} count={count} />
-        <>
-          <Table className="border">
-            <TableHeader>
+        <Table className="border">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">ID</TableHead>
+              <TableHead className="text-center">Name</TableHead>
+              <TableHead className="text-center">Created At</TableHead>
+              {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {vendors.length !== 0 ? (
+              vendors.map((vendor, index) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell className="text-center">
+                      <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
+                    </TableCell>
+                    <TableCell className="text-center">{vendor.name}</TableCell>
+                    <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-4">
+                        <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
+                        <Link href={`/vendor/${vendor.id}/edit`}>
+                          <Edit />
+                        </Link>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
               <TableRow>
-                <TableHead className="text-center">ID</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Created At</TableHead>
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                <TableCell colSpan={4} className="h-24 text-center">
+                  No results.
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {vendors.length !== 0 ? (
-                vendors.map((vendor, index) => {
-                  return (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">
-                        <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
-                      </TableCell>
-                      <TableCell className="text-center">{vendor.name}</TableCell>
-                      <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                      {session?.user.role === "Admin" && (
-                        <TableCell>
-                          <div className="flex gap-4">
-                            <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
-                            <Link href={`/vendor/${vendor.id}/edit`}>
-                              <Edit />
-                            </Link>
-                          </div>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={session?.user.role === "Admin" ? 4 : 3} className="h-24 text-center">
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Vendors are on SubM</p> : <p>A list of Vendors you own ({total})</p>}</TableCaption>
-            <TableCaption>
-              <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-            </TableCaption>
-          </Table>
-        </>
+            )}
+          </TableBody>
+          <TableCaption>
+            <p>Currently, a total of {total} Vendors are on SubM</p>
+          </TableCaption>
+          <TableCaption>
+            <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+          </TableCaption>
+        </Table>
       </main>
     </>
   );
@@ -155,7 +159,7 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>This action cannot be undone. This will permanently delete the vendor.</AlertDialogDescription>
+              <AlertDialogDescription>This action cannot be undone. This will permanently delete the vendor, including all their products and related subscriptions and tiers.</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>

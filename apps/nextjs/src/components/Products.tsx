@@ -21,7 +21,15 @@ export interface ProductWithDetails extends Product {
   category: { name: string; id: string };
 }
 
-export default function Products({ products: serverProducts, count, total, itemsPerPage }: { products: ProductWithDetails[]; count: number; total: number; itemsPerPage: number }) {
+interface pageProps {
+  products: ProductWithDetails[];
+  count: number;
+  total: number;
+  itemsPerPage: number;
+  requests?: boolean;
+}
+
+export default function Products({ products: serverProducts, count, total, itemsPerPage, requests = false }: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -34,7 +42,7 @@ export default function Products({ products: serverProducts, count, total, items
   return (
     <>
       <Head>
-        <title>Products {router.query.page && `- Page ${router.query.page}`}</title>
+        <title>Products {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
         <Search search={router.query.search as string} placeholder="Search for products" path={router.asPath} params={router.query} count={count} />
@@ -95,7 +103,15 @@ export default function Products({ products: serverProducts, count, total, items
                 </TableRow>
               )}
             </TableBody>
-            <TableCaption>{session?.user.role === "Admin" ? <p>Currently, a total of {total} Product(s) are on SubM</p> : <p>You have {total} Product(s) on total SubM</p>}</TableCaption>
+            <TableCaption>
+              {session?.user.role === "Admin" ? (
+                <p>
+                  Currently, a total of {total} Product(s) are {requests && "requested"} on SubM
+                </p>
+              ) : (
+                <p>You have {total} Product(s) on total SubM</p>
+              )}
+            </TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={itemsPerPage} pageNumber={pageNumber} path={router.asPath} params={router.query} />
             </TableCaption>
@@ -128,7 +144,7 @@ const DeleleProduct = (props: { id: string; onSuccess: () => void }) => {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>This action cannot be undone. This will permanently delete the product.</AlertDialogDescription>
+              <AlertDialogDescription>This action cannot be undone. This will permanently delete the product, including all the tiers and subsciptions.</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
