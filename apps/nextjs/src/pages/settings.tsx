@@ -118,7 +118,7 @@ export default function Settings({ user }: pageProps) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Email" disabled={true} defaultValue={user.email || ""} {...field} />
+                    <Input placeholder="Email of the user" disabled={true} defaultValue={user.email || ""} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,7 +131,7 @@ export default function Settings({ user }: pageProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" defaultValue={user.name || ""} {...field} />
+                    <Input placeholder="Name of the user" defaultValue={user.name || ""} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

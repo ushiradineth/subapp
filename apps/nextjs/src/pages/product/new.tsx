@@ -124,7 +124,7 @@ export default function NewProduct({ categories }: pageProps) {
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger className="w-[400px]">
-                        <SelectValue />
+                        <SelectValue placeholder="Select a Category" />
                       </SelectTrigger>
                       <SelectContent className="w-max">
                         {categories.map((category, index) => {

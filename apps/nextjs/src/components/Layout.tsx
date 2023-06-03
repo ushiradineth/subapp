@@ -60,11 +60,11 @@ function NavItems() {
                 </NavigationMenuContent>
               </NavigationMenuItem>
             )}
-
-            <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-              <Link href={"/user"}>Users</Link>
-            </NavigationMenuItem>
-
+            {session?.user.role === "Admin" && (
+              <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+                <Link href={"/user"}>Users</Link>
+              </NavigationMenuItem>
+            )}
             <NavigationMenuItem>
               <NavigationMenuTrigger>Products</NavigationMenuTrigger>
               <NavigationMenuContent>
@@ -126,9 +126,11 @@ function AuthButton() {
               <MenubarContent className="border-bc text-white">
                 <Profile />
                 <MenubarSeparator />
-                <Link href={`/profile/${session?.user.id}`}>
-                  <MenubarItem>Profile</MenubarItem>
-                </Link>
+                {session.user.role === "Vendor" && (
+                  <Link href={`/vendor/${session?.user.id}`}>
+                    <MenubarItem>Profile</MenubarItem>
+                  </Link>
+                )}
                 <Link href={`/settings`}>
                   <MenubarItem>Settings</MenubarItem>
                 </Link>
@@ -169,7 +171,7 @@ function Profile() {
   };
 
   return (
-    <Link href={`/profile/${session?.user.id}`}>
+    <Link href={session?.user.role === "Vendor" ? `/vendor/${session?.user.id}` : `#`}>
       <MenubarItem className="flex flex-col items-center justify-center p-4">
         <Avatar>
           <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
