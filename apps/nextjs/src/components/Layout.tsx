@@ -49,21 +49,14 @@ function NavItems() {
         <NavigationMenu className="absolute left-1/2 -translate-x-1/2 transform">
           <NavigationMenuList>
             {session?.user.role === "Admin" && (
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Vendors</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <Link href={"/vendor"}>
-                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Vendors</NavigationMenuItem>
-                    </Link>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+              <Link href={"/vendor"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Vendors</NavigationMenuItem>
+              </Link>
             )}
             {session?.user.role === "Admin" && (
-              <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                <Link href={"/user"}>Users</Link>
-              </NavigationMenuItem>
+              <Link href={"/user"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Users</NavigationMenuItem>
+              </Link>
             )}
             <NavigationMenuItem>
               <NavigationMenuTrigger>Products</NavigationMenuTrigger>
