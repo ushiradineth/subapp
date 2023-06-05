@@ -117,7 +117,7 @@ export default function EditProduct({ product, categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Product Logo</FormLabel>
                   <FormControl>
-                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={product.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Logo", value)} bucket={env.NEXT_PUBLIC_PRODUCT_LOGO} delete />
+                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={product.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Logo", value)} bucket={env.NEXT_PUBLIC_PRODUCT_LOGO} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -195,7 +195,7 @@ export default function EditProduct({ product, categories }: pageProps) {
                 <FormItem>
                   <FormLabel>Product Images</FormLabel>
                   <FormControl>
-                    <ImageUpload itemId={product.id} upload={upload} setUpload={(value: boolean) => setUpload(value)} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Images", value)} multiple bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE} delete />
+                    <ImageUpload itemId={product.id} upload={upload} setUpload={(value: boolean) => setUpload(value)} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Images", value)} multiple bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
