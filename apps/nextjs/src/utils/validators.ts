@@ -93,3 +93,15 @@ export const UserSchema = yup
   .required();
 
 export type UserFormData = yup.InferType<typeof UserSchema>;
+
+export const UserEditFormSchema = yup
+  .object()
+  .shape({
+    Image: fileValidator,
+    Password: passwordValidator.notRequired(),
+    Name: nameValidator,
+    Email: emailValidator,
+  })
+  .required();
+
+export type UserEditFormData = yup.InferType<typeof UserEditFormSchema>;
