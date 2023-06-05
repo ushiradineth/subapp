@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { prisma, type Vendor } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { UserSchema, type UserFormData } from "~/utils/validators";
+import { UserEditFormSchema, type UserEditFormData } from "~/utils/validators";
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
@@ -51,8 +51,8 @@ export default function EditVendor({ vendor }: pageProps) {
   const [loading, setLoading] = useState(false);
   const [upload, setUpload] = useState(false);
 
-  const form = useForm<UserFormData>({
-    resolver: yupResolver(UserSchema),
+  const form = useForm<UserEditFormData>({
+    resolver: yupResolver(UserEditFormSchema),
   });
 
   const { mutate, isLoading } = api.vendor.update.useMutation({
@@ -63,9 +63,9 @@ export default function EditVendor({ vendor }: pageProps) {
     },
   });
 
-  const onSubmit = (data: UserFormData) => {
-    if (data.Name !== vendor.name) {
-      mutate({ id: vendor.id, name: data.Name });
+  const onSubmit = (data: UserEditFormData) => {
+    if (data.Name !== vendor.name || data.Password !== "") {
+      mutate({ id: vendor.id, name: data.Name, password: data.Password || "" });
     }
     if (typeof form.watch("Image") !== "undefined" && form.watch("Image") !== "") {
       setUpload(true);
@@ -96,11 +96,11 @@ export default function EditVendor({ vendor }: pageProps) {
                 <FormField
                   control={form.control}
                   name="Image"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel>User Image</FormLabel>
                       <FormControl>
-                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} />
+                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -132,7 +132,20 @@ export default function EditVendor({ vendor }: pageProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "")}>
+                <FormField
+                  control={form.control}
+                  name="Password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Password of the user" type="password" {...field} value={form.getValues("Password") || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "") && form.watch("Password") === ""}>
                   Submit
                 </Button>
               </form>

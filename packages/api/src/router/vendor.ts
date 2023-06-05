@@ -23,8 +23,16 @@ export const vendorRouter = createTRPCRouter({
     return ctx.prisma.vendor.create({ data: { name: input.name, email: input.email, password: hashedPassword, accountVerified: false } });
   }),
 
-  update: protectedProcedure.input(z.object({ id: z.string(), name: z.string() })).mutation(async ({ ctx, input }) => {
-    const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data: { name: input.name } });
+  update: protectedProcedure.input(z.object({ id: z.string(), name: z.string(), password: z.string() })).mutation(async ({ ctx, input }) => {
+    const data: { name?: string; password?: string } = { name: input.name };
+
+    if (input.password) {
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(input.password, salt);
+      data.password = hashedPassword;
+    }
+
+    const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data });
 
     if (!vendor) {
       throw new TRPCError({
