@@ -134,6 +134,7 @@ export function ImageUpload({ multiple, itemId, upload, bucket, loading, setValu
                   <Image src={image.dataURL || ""} alt="image" width={100} height={100} />
                   <div className="flex gap-8">
                     <button
+                      type="button"
                       onClick={async () => {
                         await deleteImage({ index, onDelete: onImageRemove });
                       }}>
