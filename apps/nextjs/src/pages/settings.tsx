@@ -105,7 +105,7 @@ export default function Settings({ user }: pageProps) {
                 <FormItem>
                   <FormLabel>User Image</FormLabel>
                   <FormControl>
-                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={user.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} delete={true} />
+                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={user.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
