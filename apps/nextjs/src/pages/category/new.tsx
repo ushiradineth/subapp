@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 import { CategorySchema, type CategoryFormData } from "~/utils/validators";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
@@ -51,39 +52,47 @@ export default function NewCategory() {
         <title>Create Category - SubM</title>
       </Head>
       <main>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
-            <FormField
-              control={form.control}
-              name="Name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name of the Category" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Brief description of the Category" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" loading={isLoading}>
-              Submit
-            </Button>
-          </form>
-        </Form>
+        <Card>
+          <CardHeader>
+            <CardTitle>Category</CardTitle>
+            <CardDescription>Create a new Category</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
+                <FormField
+                  control={form.control}
+                  name="Name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Name of the Category" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Brief description of the Category" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" loading={isLoading}>
+                  Submit
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
       </main>
     </>
   );
