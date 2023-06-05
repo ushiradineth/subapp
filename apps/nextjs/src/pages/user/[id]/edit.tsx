@@ -6,7 +6,7 @@ import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
-import { prisma, type Vendor } from "@acme/db";
+import { prisma, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { UserEditFormSchema, type UserEditFormData } from "~/utils/validators";
@@ -31,23 +31,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const vendor = await prisma.vendor.findUnique({ where: { id: context.params?.id as string } });
+  const user = await prisma.user.findUnique({ where: { id: context.params?.id as string } });
 
   return {
     props: {
-      vendor: {
-        ...vendor,
-        createdAt: formalizeDate(vendor?.createdAt),
+      user: {
+        ...user,
+        createdAt: formalizeDate(user?.createdAt),
       },
     },
   };
 };
 
 interface pageProps {
-  vendor: Vendor;
+  user: User;
 }
 
-export default function EditVendor({ vendor }: pageProps) {
+export default function EditUser({ user }: pageProps) {
   const [loading, setLoading] = useState(false);
   const [upload, setUpload] = useState(false);
 
@@ -55,17 +55,17 @@ export default function EditVendor({ vendor }: pageProps) {
     resolver: yupResolver(UserEditFormSchema),
   });
 
-  const { mutate, isLoading } = api.vendor.update.useMutation({
+  const { mutate, isLoading } = api.user.update.useMutation({
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      toast.success("Vendor has been updated");
+      toast.success("User has been updated");
     },
   });
 
   const onSubmit = (data: UserEditFormData) => {
-    if (data.Name !== vendor.name || data.Password !== "") {
-      mutate({ id: vendor.id, name: data.Name, password: data.Password || "" });
+    if (data.Name !== user.name || data.Password !== "") {
+      mutate({ id: user.id, name: data.Name, password: data.Password || "" });
     }
     if (typeof form.watch("Image") !== "undefined" && form.watch("Image") !== "") {
       setUpload(true);
@@ -73,22 +73,22 @@ export default function EditVendor({ vendor }: pageProps) {
   };
 
   useEffect(() => {
-    if (vendor.name && vendor.email) {
-      form.setValue("Name", vendor.name);
-      form.setValue("Email", vendor.email);
+    if (user.name && user.email) {
+      form.setValue("Name", user.name);
+      form.setValue("Email", user.email);
     }
-  }, [vendor]);
+  }, [user]);
 
   return (
     <>
       <Head>
-        <title>Edit Vendor {vendor.name}</title>
+        <title>Edit User {user.name}</title>
       </Head>
       <main>
         <Card>
           <CardHeader>
-            <CardTitle>Vendor</CardTitle>
-            <CardDescription>Edit &quot;{vendor.name}&quot;</CardDescription>
+            <CardTitle>User</CardTitle>
+            <CardDescription>Edit &quot;{user.name}&quot;</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <Form {...form}>
@@ -100,7 +100,7 @@ export default function EditVendor({ vendor }: pageProps) {
                     <FormItem>
                       <FormLabel>User Image</FormLabel>
                       <FormControl>
-                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
+                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={user.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -113,7 +113,7 @@ export default function EditVendor({ vendor }: pageProps) {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="Email of the vendor" disabled={true} {...field} />
+                        <Input placeholder="Email of the user" disabled={true} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -126,7 +126,7 @@ export default function EditVendor({ vendor }: pageProps) {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Name of the vendor" {...field} />
+                        <Input placeholder="Name of the user" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -145,7 +145,7 @@ export default function EditVendor({ vendor }: pageProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "") && form.watch("Password") === ""}>
+                <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === user.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "") && form.watch("Password") === ""}>
                   Submit
                 </Button>
               </form>
