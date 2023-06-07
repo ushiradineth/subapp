@@ -32,6 +32,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const category = await prisma.category.findUnique({ where: { id: context.params?.id as string } });
 
+  if (!category) return { props: {} };
+
   return {
     props: {
       category: {
@@ -51,6 +53,13 @@ export default function EditCategory({ category }: pageProps) {
     resolver: yupResolver(CategorySchema),
   });
 
+  useEffect(() => {
+    if (category) {
+      form.setValue("Name", category.name);
+      form.setValue("Description", category.description);
+    }
+  }, [category]);
+
   const { mutate, isLoading } = api.category.update.useMutation({
     onError: (error) => toast.error(error.message),
     onSuccess: () => toast.success("Category has been created"),
@@ -60,10 +69,7 @@ export default function EditCategory({ category }: pageProps) {
     mutate({ id: category.id, name: data.Name, description: data.Description });
   };
 
-  useEffect(() => {
-    form.setValue("Name", category.name);
-    form.setValue("Description", category.description);
-  }, [category]);
+  if (!category) return <div>Category not found</div>;
 
   return (
     <>

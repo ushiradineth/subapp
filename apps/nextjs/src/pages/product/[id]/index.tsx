@@ -11,12 +11,12 @@ import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
+import Caption from "~/components/Caption";
 import { type ProductWithDetails } from "~/components/Products";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { env } from "~/env.mjs";
 import { generalizeDate } from "~/lib/utils";
-import Caption from "~/components/Caption";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -50,6 +50,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
   });
+
+  if (!product) return { props: {} };
 
   if (session.user.id !== product?.vendorId && session.user.role !== "Admin") {
     return {
@@ -96,11 +98,11 @@ const ImageView = ({ images }: { images: { url: string }[] }) => {
 
   return (
     <div className={"grid h-full w-[400px] transform select-none place-items-center rounded-2xl border p-8 text-gray-300"}>
-      {images.length === 0 ? (<>
-        <ImageOff width={200} height={200} />
-        <Caption>No product images</Caption>
-      </>
-        
+      {images.length === 0 ? (
+        <>
+          <ImageOff width={200} height={200} />
+          <Caption>No product images</Caption>
+        </>
       ) : (
         <div className="flex h-[300px] w-full items-center justify-center transition-all duration-300">
           <ChevronLeft onClick={() => index > 0 && setIndex(index - 1)} className={"fixed left-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " + (index > 0 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")} />
@@ -141,6 +143,8 @@ export default function Product({ product, images, logo }: pageProps) {
       product.verified = true;
     },
   });
+
+  if (!product) return <div>Product not found</div>;
 
   return (
     <>

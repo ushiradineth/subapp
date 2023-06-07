@@ -29,6 +29,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!user) return { props: {} };
+
   if (session.user.id !== user?.id && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -64,6 +66,8 @@ interface pageProps {
 }
 
 export default function User({ user, avatar }: pageProps) {
+  if (!user) return <div>User not found</div>;
+
   return (
     <>
       <Head>

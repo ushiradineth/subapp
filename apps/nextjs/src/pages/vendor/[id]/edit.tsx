@@ -33,6 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const vendor = await prisma.vendor.findUnique({ where: { id: context.params?.id as string } });
 
+  if (!vendor) return { props: {} };
+
   return {
     props: {
       vendor: {
@@ -73,11 +75,13 @@ export default function EditVendor({ vendor }: pageProps) {
   };
 
   useEffect(() => {
-    if (vendor.name && vendor.email) {
+    if (vendor && vendor.email) {
       form.setValue("Name", vendor.name);
       form.setValue("Email", vendor.email);
     }
   }, [vendor]);
+
+  if (!vendor) return <div>Vendor not found</div>;
 
   return (
     <>

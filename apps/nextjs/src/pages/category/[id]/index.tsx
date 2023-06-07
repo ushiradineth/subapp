@@ -25,6 +25,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!category) return { props: {} };
+
   return {
     props: {
       category: {
@@ -40,6 +42,8 @@ interface pageProps {
 }
 
 export default function Category({ category }: pageProps) {
+  if (!category) return <div>Category not found</div>;
+  
   return (
     <>
       <Head>

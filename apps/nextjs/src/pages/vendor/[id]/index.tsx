@@ -30,6 +30,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!vendor) return { props: {} };
+
   if (session.user.id !== vendor?.id && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -65,6 +67,8 @@ interface pageProps {
 }
 
 export default function Vendor({ vendor, avatar }: pageProps) {
+  if (!vendor) return <div>Vendor not found</div>;
+
   return (
     <>
       <Head>
