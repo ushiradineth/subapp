@@ -35,6 +35,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const tier = await prisma.tier.findUnique({ where: { id: context.query.tierId as string }, include: { product: { select: { vendorId: true } } } });
 
+  if (!tier || tier.productId !== context.query.id) return { props: {} };
+
   if (tier?.product.vendorId !== session.user.id && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -67,7 +69,7 @@ export default function EditTier({ tier }: pageProps) {
   });
 
   useEffect(() => {
-    if (tier.name && tier.description) {
+    if (tier && tier.name && tier.description) {
       form.setValue("Name", tier.name);
       form.setValue("Description", tier.description);
       form.setValue("Period", tier.period);
@@ -83,6 +85,8 @@ export default function EditTier({ tier }: pageProps) {
   const onSubmit = async (data: TierFormData) => {
     mutate({ name: data.Name, description: data.Description, price: data.Price, period: data.Period, id: router.query.tierId as string });
   };
+
+  if (!tier) return <div>Tier not found</div>;
 
   return (
     <>

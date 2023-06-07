@@ -33,6 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const user = await prisma.user.findUnique({ where: { id: context.params?.id as string } });
 
+  if (!user) return { props: {} };
+
   return {
     props: {
       user: {
@@ -73,11 +75,13 @@ export default function EditUser({ user }: pageProps) {
   };
 
   useEffect(() => {
-    if (user.name && user.email) {
+    if (user) {
       form.setValue("Name", user.name);
       form.setValue("Email", user.email);
     }
   }, [user]);
+
+  if (!user) return <div>User not found</div>;
 
   return (
     <>

@@ -48,6 +48,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!product) return { props: {} };
+
   const categories = await prisma.category.findMany({ select: { name: true, id: true } });
 
   return {
@@ -77,16 +79,21 @@ interface pageProps {
 }
 
 export default function EditProduct({ product, categories }: pageProps) {
+  const [loading, setLoading] = useState(false);
+  const [upload, setUpload] = useState(false);
+
   const form = useForm<ProductFormData>({
     resolver: yupResolver(ProductSchema),
   });
 
   useEffect(() => {
-    form.setValue("Name", product.name);
-    form.setValue("Description", product.description);
-    form.setValue("Link", product.link || "");
-    form.setValue("Category", product.category.id);
-  }, []);
+    if (product) {
+      form.setValue("Name", product.name);
+      form.setValue("Description", product.description);
+      form.setValue("Link", product.link || "");
+      form.setValue("Category", product.category.id);
+    }
+  }, [product]);
 
   const { mutate, isLoading } = api.product.update.useMutation({
     onError: (error) => toast.error(error.message),
@@ -100,8 +107,7 @@ export default function EditProduct({ product, categories }: pageProps) {
     mutate({ id: product.id, name: data.Name, description: data.Description, link: data.Link, category: data.Category });
   };
 
-  const [loading, setLoading] = useState(false);
-  const [upload, setUpload] = useState(false);
+  if (!product) return <div>Product not found</div>;
 
   return (
     <>

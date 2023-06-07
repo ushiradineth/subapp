@@ -43,6 +43,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!tier || tier.productId !== context.query.id) return { props: {} };
+
   if (session.user.id !== tier?.product.vendor?.id && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -86,6 +88,8 @@ interface pageProps {
 }
 
 export default function Tier({ tier, logo }: pageProps) {
+  if (!tier) return <div>Tier not found</div>;
+
   return (
     <>
       <Head>
