@@ -159,6 +159,8 @@ export const userRouter = createTRPCRouter({
         });
       }
 
+      await ctx.prisma.passwordResetRequest.delete({ where: { id: request.id } });
+
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
