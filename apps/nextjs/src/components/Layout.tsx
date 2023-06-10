@@ -8,13 +8,21 @@ import { signOut, useSession } from "next-auth/react";
 import { supabase } from "@acme/api/src/lib/supabase";
 
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "~/components/ui/navigation-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "~/components/ui/navigation-menu";
 import { env } from "~/env.mjs";
 import icon from "../../public/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
-const ALLOWED_UNAUTHED_PATHS = ["/auth", "/"];
+const ALLOWED_UNAUTHED_PATHS = ["/auth", "/", "/auth/reset"];
+const NAVBAR_HIDDEN__PATHS = ["/auth", "/auth/reset"];
 
 function Layout(props: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -26,14 +34,16 @@ function Layout(props: { children: React.ReactNode }) {
 
   return (
     <main className="bg-bgc border-bc dark flex min-h-screen flex-col">
-      <div className={`border-bc flex h-14 items-center border-b ${router.pathname === "/auth" && "hidden"}`}>
+      <div className={`border-bc flex h-14 items-center border-b ${NAVBAR_HIDDEN__PATHS.includes(router.pathname) && "hidden"}`}>
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
         </Link>
         <NavItems />
         <AuthButton />
       </div>
-      <div className={`flex flex-grow flex-col items-center justify-center text-white ${router.pathname !== "/auth" && "my-10"}`}>{props.children}</div>
+      <div className={`flex flex-grow flex-col items-center justify-center text-white ${router.pathname !== "/auth" && "my-10"}`}>
+        {props.children}
+      </div>
     </main>
   );
 }

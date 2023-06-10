@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import icon from "../../public/logo.svg";
+import icon from "../../../public/logo.svg";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -61,6 +61,13 @@ export default function Auth() {
           <Login />
           <Registration />
         </Tabs>
+        <Card className="mt-2 w-full">
+          <CardHeader>
+            <CardDescription>
+              <Link href={"/auth/reset"}>Forgot your password? Reset your password here.</Link>
+            </CardDescription>
+          </CardHeader>
+        </Card>
       </main>
     </>
   );
@@ -128,7 +135,10 @@ function Registration() {
     resolver: yupResolver(RegisterSchema),
   });
 
-  const { mutate, isLoading } = api.vendor.register.useMutation({ onError: (error) => toast.error(error.message), onSuccess: () => toast.success("Account has been created") });
+  const { mutate, isLoading } = api.vendor.register.useMutation({
+    onError: (error) => toast.error(error.message),
+    onSuccess: () => toast.success("Account has been created"),
+  });
   const onSubmit = (data: RegisterFormData) => mutate({ name: data.Name, email: data.Email, password: data.Password });
 
   return (
