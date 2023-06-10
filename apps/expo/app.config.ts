@@ -30,6 +30,7 @@ const defineConfig = (): ExpoConfig => ({
     eas: {
       projectId: "0dc6749a-cb3d-4fe0-80aa-f2a7ba811017",
     },
+    WEB_URL: "https://subapp.vercel.app",
   },
   owner: "ushiradineth",
   plugins: ["./expo-plugins/with-modify-gradle.js"],

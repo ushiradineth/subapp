@@ -1,85 +1,164 @@
-// import React, { useEffect, useState } from "react";
-// import { useRouter } from "expo-router";
-// import { Adapt, Button, Dialog, Fieldset, H2, H6, Input, Sheet, Text, Unspaced, XStack, YStack } from "tamagui";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import { Button, H2, H6, Input, ScrollView, Spinner, Text, XStack, YStack } from "tamagui";
 
-// export default function Register() {
-//   const router = useRouter();
-//   const { signUp, isLoaded } = useSignUp();
-//   const [emailSent, setEmailSent] = useState(false);
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [error, setError] = useState("");
+import { api } from "~/utils/api";
+import { RegisterSchema, type RegisterFormData } from "~/utils/validators";
 
-//   useEffect(() => {
-//     error !== "" && setError("");
-//   }, [email, password]);
+export default function Register() {
+  const router = useRouter();
+  const [emailSent, setEmailSent] = useState(false);
 
-//   const onSignUpPress = async () => {
-//     if (!isLoaded) {
-//       return;
-//     }
+  const [error, setError] = useState("");
+  const { mutate, isLoading } = api.user.register.useMutation({
+    onSuccess() {
+      router.push("auth/login");
+    },
+    onError(error) {
+      setError(error.message);
+    },
+  });
 
-//     try {
-//       const signup = await signUp.create({
-//         emailAddress: email,
-//         password,
-//       });
+  const {
+    control,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: yupResolver(RegisterSchema),
+  });
 
-//       signUp.prepareEmailAddressVerification();
-//       setEmailSent(true);
-//     } catch (err) {
-//       // @ts-ignore
-//       setError(`Error: ${err.errors ? err.errors[0].message : err}`);
-//     }
-//   };
+  const onSubmit = (data: RegisterFormData) => mutate({ email: data.Email, password: data.Password, name: data.Name });
 
-//   const confirmOTP = (code: string) => {
-//     if (!isLoaded) {
-//       return false;
-//     }
+  useEffect(() => {
+    error !== "" && setError("");
+  }, [watch("Email"), watch("Password"), watch("Email"), watch("Password")]);
 
-//     try {
-//       signUp.attemptEmailAddressVerification({
-//         code,
-//       });
-//       return true;
-//     } catch (error) {
-//       return false;
-//     }
-//   };
+  // const confirmOTP = (code: string) => {
+  //   if (!isLoaded) {
+  //     return false;
+  //   }
 
-//   return (
-//     <YStack className="flex-1 items-center justify-center p-8" space>
-//       {emailSent && <EmailSentPopup onConfirm={confirmOTP} open={true} />}
-//       <H2 className="text-center text-2xl font-bold">Register</H2>
+  //   try {
+  //     signUp.attemptEmailAddressVerification({
+  //       code,
+  //     });
+  //     return true;
+  //   } catch (error) {
+  //     return false;
+  //   }
+  // };
 
-//       <YStack className="w-full">
-//         <H6 className="font-bold">Email</H6>
-//         <Input className="w-full" value={email} autoCapitalize="none" placeholder="Enter your email" onChangeText={(email) => setEmail(email)} />
-//       </YStack>
+  return (
+    <ScrollView backgroundColor="$background" padding="$4" borderRadius="$4">
+      <YStack className="flex items-center justify-center p-8" space>
+        {/* {emailSent && <EmailSentPopup onConfirm={confirmOTP} open={true} />} */}
+        <H2 className="text-center text-2xl font-bold">Register</H2>
 
-//       <YStack className="w-full">
-//         <H6 className="font-bold">Password</H6>
-//         <Input className="w-full" value={password} placeholder="Enter your Password" secureTextEntry={true} onChangeText={(password) => setPassword(password)} />
-//       </YStack>
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <YStack className="w-full">
+              <H6 className="font-bold">Name</H6>
+              <Input className="my-1" placeholder="Name" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+              <YStack className="flex items-center justify-center">
+                {errors.Name && <Text color={"red"}>{errors.Name.message}</Text>}
+              </YStack>
+            </YStack>
+          )}
+          name="Name"
+        />
 
-//       {error && <Text color={"red"}>{error}</Text>}
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <YStack className="w-full">
+              <H6 className="font-bold">Email</H6>
+              <Input className="my-1" placeholder="Email" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+              <YStack className="flex items-center justify-center">
+                {errors.Email && <Text color={"red"}>{errors.Email.message}</Text>}
+              </YStack>
+            </YStack>
+          )}
+          name="Email"
+        />
 
-//       <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={onSignUpPress} className={"w-full"}>
-//         Register
-//       </Button>
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <YStack className="w-full">
+              <H6 className="font-bold">Password</H6>
+              <Input
+                className="my-1"
+                placeholder="Password"
+                autoCapitalize={"none"}
+                secureTextEntry={true}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+              <YStack className="flex items-center justify-center">
+                {errors.Password && <Text color={"red"}>{errors.Password.message}</Text>}
+              </YStack>
+            </YStack>
+          )}
+          name="Password"
+        />
 
-//       <YStack className="flex items-center justify-center" space={8}>
-//         <XStack>
-//           <Text>Already have an account? </Text>
-//           <Text className="font-bold" onPress={() => router.push("auth/login")}>
-//             Login Here
-//           </Text>
-//         </XStack>
-//       </YStack>
-//     </YStack>
-//   );
-// }
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <YStack className="w-full">
+              <H6 className="font-bold">Confirm Password</H6>
+              <Input
+                className="my-1"
+                placeholder="Confirm Password"
+                autoCapitalize={"none"}
+                secureTextEntry={true}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+              <YStack className="flex items-center justify-center">
+                {errors.ConfirmPassword && <Text color={"red"}>{errors.ConfirmPassword.message}</Text>}
+              </YStack>
+            </YStack>
+          )}
+          name="ConfirmPassword"
+        />
+
+        <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={handleSubmit(onSubmit)} className={"w-full"}>
+          {isLoading ? <Spinner color="white" /> : "Register"}
+        </Button>
+
+        {error !== "" && <Text color={"red"}>{error}</Text>}
+
+        <YStack className="flex items-center justify-center" space={8}>
+          <XStack>
+            <Text>Already have an account? </Text>
+            <Text className="font-bold" onPress={() => router.push("auth/login")}>
+              Login Here
+            </Text>
+          </XStack>
+        </YStack>
+      </YStack>
+    </ScrollView>
+  );
+}
 
 // const EmailSentPopup = (props: { onConfirm: (code: string) => boolean; open: boolean }) => {
 //   const [code, setCode] = useState("");
@@ -152,17 +231,3 @@
 //     </Dialog>
 //   );
 // };
-
-
-import { View, Text } from 'react-native'
-import React from 'react'
-
-const register = () => {
-  return (
-    <View>
-      <Text>register</Text>
-    </View>
-  )
-}
-
-export default register
