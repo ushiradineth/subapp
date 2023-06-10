@@ -220,3 +220,10 @@ model Notification {
   @@index([commentId])
   @@index([categoryId])
 }
+
+model PasswordResetRequest {
+  id        String    @id @default(cuid())
+  userId    String
+  otp       String
+  createdAt DateTime  @default(now())
+}

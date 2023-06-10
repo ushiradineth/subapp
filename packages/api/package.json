@@ -16,11 +16,13 @@
     "@supabase/supabase-js": "^2.22.0",
     "@trpc/client": "^10.25.0",
     "@trpc/server": "^10.25.0",
+    "nodemailer": "^6.9.3",
     "superjson": "1.9.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@acme/eslint-config": "^0.1.0",
+    "@types/nodemailer": "^6.4.8",
     "eslint": "^8.40.0",
     "typescript": "^5.0.4"
   }
