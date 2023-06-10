@@ -4,6 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ExternalLink } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -53,6 +54,14 @@ export default function Auth() {
           <Image src={icon} alt="SubM Logo" width={50} />
         </Link>
         {emailSent ? <ResetPassword email={email} /> : <SendEmail setEmail={setEmail} setEmailSent={setEmailSent} />}
+        <Card className="mt-2 w-full">
+          <CardHeader>
+            <CardDescription className="flex items-center justify-center gap-2">
+              <Link href={"/auth"}>Found your password? Go back here.</Link>
+              <ExternalLink size={"20px"} />
+            </CardDescription>
+          </CardHeader>
+        </Card>
       </main>
     </>
   );
