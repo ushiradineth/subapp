@@ -49,8 +49,6 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
       }
 
       if (images.length - 1 === index) {
-        console.log("done", bucket);
-
         onUploadProp?.();
         setIsLoading(false);
         setUpload(false);

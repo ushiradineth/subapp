@@ -57,6 +57,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           id: true,
         },
       },
+      _count: {
+        select: {
+          tiers: true,
+        },
+      },
     },
   });
 

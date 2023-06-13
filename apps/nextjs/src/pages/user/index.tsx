@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Trash } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,15 @@ import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
@@ -76,6 +84,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          subscriptions: true,
+        },
+      },
+    },
   });
 
   const count = await prisma.user.count({
@@ -101,8 +116,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
+type UserType = User & {
+  _count: {
+    subscriptions: number;
+  };
+};
+
 interface pageProps {
-  users: User[];
+  users: UserType[];
   count: number;
   total: number;
 }
@@ -111,7 +132,7 @@ export default function Index({ users: serverUsers, count, total }: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
-  const [users, setUsers] = useState<User[]>(serverUsers);
+  const [users, setUsers] = useState<UserType[]>(serverUsers);
 
   useEffect(() => {
     setUsers(serverUsers);
@@ -123,7 +144,13 @@ export default function Index({ users: serverUsers, count, total }: pageProps) {
         <title>Users {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        <Search search={router.query.search as string} placeholder="Search for users" path={router.asPath} params={router.query} count={count} />
+        <Search
+          search={router.query.search as string}
+          placeholder="Search for users"
+          path={router.asPath}
+          params={router.query}
+          count={count}
+        />
         <>
           <Table className="border">
             <TableHeader>
@@ -131,6 +158,7 @@ export default function Index({ users: serverUsers, count, total }: pageProps) {
                 <TableHead className="text-center">ID</TableHead>
                 <TableHead className="text-center">Name</TableHead>
                 <TableHead className="text-center">Created At</TableHead>
+                <TableHead className="text-center">Subscriptions</TableHead>
                 <TableHead className="text-center">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -144,20 +172,30 @@ export default function Index({ users: serverUsers, count, total }: pageProps) {
                       </TableCell>
                       <TableCell className="text-center">{user.name}</TableCell>
                       <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                      <DeleteUser id={user.id} onSuccess={() => setUsers(users.filter((p) => p.id !== user.id))} />
+                      <TableCell className="text-center">{user._count.subscriptions}</TableCell>
+                      {session?.user.role === "Admin" && (
+                        <TableCell>
+                          <div className="flex gap-4">
+                            <DeleteUser id={user.id} onSuccess={() => setUsers(users.filter((p) => p.id !== user.id))} />
+                            <Link href={`/user/${user.id}/edit`}>
+                              <Edit />
+                            </Link>
+                          </div>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
             <TableCaption>
-              <p>Currently, a total of {total} Users are on SubM</p>{" "}
+              <p>Currently, a total of {total} Users are on SubM</p>
             </TableCaption>
             <TableCaption>
               <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
@@ -200,11 +238,9 @@ const DeleteUser = (props: { id: string; onSuccess: () => void }) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
-      <TableCell>
-        <button className="ml-2">
-          <Trash onClick={() => setDeleteMenu(true)} />
-        </button>
-      </TableCell>
+      <button onClick={() => setDeleteMenu(true)}>
+        <Trash />
+      </button>
     </>
   );
 };
