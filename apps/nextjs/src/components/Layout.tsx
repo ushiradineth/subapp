@@ -116,7 +116,9 @@ function AuthButton() {
   return (
     <>
       {status === "unauthenticated" ? (
-        <Button className="ml-auto mr-4 w-fit text-white font-semibold bg-indigo-600" onClick={() => router.push("/auth")}>
+        <Button
+          className="ml-auto mr-4 w-fit bg-indigo-600 font-semibold text-white hover:bg-indigo-500"
+          onClick={() => router.push("/auth")}>
           Join Us
         </Button>
       ) : (
