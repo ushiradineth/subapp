@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-body, html { 
+body,
+html {
   font-family: sans-serif;
 }
 
@@ -81,5 +82,8 @@ body, html {
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html {
+    @apply scroll-smooth;
   }
 }

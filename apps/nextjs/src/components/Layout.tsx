@@ -21,7 +21,7 @@ import icon from "../../public/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
-const ALLOWED_UNAUTHED_PATHS = ["/auth", "/", "/auth/reset"];
+const ALLOWED_UNAUTHED_PATHS = ["/auth", "/", "/auth/reset", "/learn"];
 const NAVBAR_HIDDEN__PATHS = ["/auth", "/auth/reset"];
 
 function Layout(props: { children: React.ReactNode }) {
@@ -116,7 +116,9 @@ function AuthButton() {
   return (
     <>
       {status === "unauthenticated" ? (
-        <Button className="ml-auto mr-4 w-fit" onClick={() => router.push("/auth")}>
+        <Button
+          className="ml-auto mr-4 w-fit bg-indigo-600 font-semibold text-white hover:bg-indigo-500"
+          onClick={() => router.push("/auth")}>
           Join Us
         </Button>
       ) : (
