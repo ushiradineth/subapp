@@ -43,6 +43,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
   });
 
   const count = await prisma.category.count({ where });
@@ -61,8 +68,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
+type CategoryType = Category & {
+  _count: {
+    products: number;
+  };
+};
+
 interface pageProps {
-  categories: Category[];
+  categories: CategoryType[];
   count: number;
   total: number;
 }
@@ -78,13 +91,20 @@ export default function Categories({ categories, count, total }: pageProps) {
         <title>Categories {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        <Search search={router.query.search as string} placeholder="Search for categories" path={router.asPath} params={router.query} count={count} />
+        <Search
+          search={router.query.search as string}
+          placeholder="Search for categories"
+          path={router.asPath}
+          params={router.query}
+          count={count}
+        />
         <Table className="border">
           <TableHeader>
             <TableRow>
               <TableHead className="text-center">ID</TableHead>
               <TableHead className="text-center">Name</TableHead>
               <TableHead className="text-center">Created At</TableHead>
+              <TableHead className="text-center">Products</TableHead>
               <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -98,6 +118,7 @@ export default function Categories({ categories, count, total }: pageProps) {
                     </TableCell>
                     <TableCell className="text-center">{category.name}</TableCell>
                     <TableCell className="text-center">{category.createdAt.toString()}</TableCell>
+                    <TableCell className="text-center">{category._count.products}</TableCell>
                     {session?.user.role === "Admin" && (
                       <TableCell>
                         <Link href={`/category/${category.id}/edit`}>
@@ -110,7 +131,7 @@ export default function Categories({ categories, count, total }: pageProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>

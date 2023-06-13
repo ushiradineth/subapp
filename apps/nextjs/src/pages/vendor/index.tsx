@@ -13,7 +13,15 @@ import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
@@ -44,6 +52,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
   });
 
   const count = await prisma.vendor.count({
@@ -64,8 +79,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
+type VendorType = Vendor & {
+  _count: {
+    products: number;
+  };
+};
+
 interface pageProps {
-  vendors: Vendor[];
+  vendors: VendorType[];
   count: number;
   total: number;
 }
@@ -74,7 +95,7 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
-  const [vendors, setVendors] = useState<Vendor[]>(serverVendors);
+  const [vendors, setVendors] = useState<VendorType[]>(serverVendors);
 
   useEffect(() => {
     setVendors(serverVendors);
@@ -86,13 +107,20 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
         <title>Vendors {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        <Search search={router.query.search as string} placeholder="Search for vendors" path={router.asPath} params={router.query} count={count} />
+        <Search
+          search={router.query.search as string}
+          placeholder="Search for vendors"
+          path={router.asPath}
+          params={router.query}
+          count={count}
+        />
         <Table className="border">
           <TableHeader>
             <TableRow>
               <TableHead className="text-center">ID</TableHead>
               <TableHead className="text-center">Name</TableHead>
               <TableHead className="text-center">Created At</TableHead>
+              <TableHead className="text-center">Products</TableHead>
               {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
             </TableRow>
           </TableHeader>
@@ -106,6 +134,7 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
                     </TableCell>
                     <TableCell className="text-center">{vendor.name}</TableCell>
                     <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
+                    <TableCell className="text-center">{vendor._count.products}</TableCell>
                     <TableCell>
                       <div className="flex gap-4">
                         <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
@@ -119,7 +148,7 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -159,7 +188,10 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>This action cannot be undone. This will permanently delete the vendor, including all their products and related subscriptions and tiers.</AlertDialogDescription>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the vendor, including all their products and related
+                subscriptions and tiers.
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
@@ -168,7 +200,9 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
-      <Trash onClick={() => setDeleteMenu(true)} />
+      <button onClick={() => setDeleteMenu(true)}>
+        <Trash />
+      </button>
     </>
   );
 };
