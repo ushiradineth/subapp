@@ -104,7 +104,7 @@ export default function EditVendor({ vendor }: pageProps) {
                     <FormItem>
                       <FormLabel>User Image</FormLabel>
                       <FormControl>
-                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
+                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} setLoading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

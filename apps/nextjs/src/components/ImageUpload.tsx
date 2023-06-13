@@ -15,7 +15,7 @@ type props = {
   itemId: string;
   upload: boolean;
   bucket: string;
-  loading: (value: boolean) => void;
+  setLoading: (value: boolean) => void;
   setValue: (value: string) => void;
   setUpload: (value: boolean) => void;
   onUpload?: () => void;
@@ -23,7 +23,7 @@ type props = {
 
 const FILE_TYPE = "jpg";
 
-export function ImageUpload({ multiple, itemId, upload, bucket, loading, setValue, setUpload, onUpload: onUploadProp }: props) {
+export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setValue, setUpload, onUpload: onUploadProp }: props) {
   const [images, setImages] = useState<ImageListType>([]);
   const [isLoading, setIsLoading] = useState(false);
   const maxNumber = 10;
@@ -35,8 +35,9 @@ export function ImageUpload({ multiple, itemId, upload, bucket, loading, setValu
     else setValue("");
   };
 
-  const onUpload = useCallback(() => {
+  const onUpload = useCallback(async () => {
     if (images.length === 0) return;
+    setIsLoading(true);
 
     images.forEach(async (image, index) => {
       if (image.file) {
@@ -46,10 +47,15 @@ export function ImageUpload({ multiple, itemId, upload, bucket, loading, setValu
           await supabase.storage.from(bucket).update(`/${itemId}/${index}.${FILE_TYPE}`, image.file);
         }
       }
-    });
 
-    onUploadProp?.();
-    setUpload(false);
+      if (images.length - 1 === index) {
+        console.log("done", bucket);
+
+        onUploadProp?.();
+        setIsLoading(false);
+        setUpload(false);
+      }
+    });
   }, [images, bucket, itemId, onUploadProp, setUpload]);
 
   const getImage = useCallback(async () => {
@@ -105,14 +111,11 @@ export function ImageUpload({ multiple, itemId, upload, bucket, loading, setValu
 
   useEffect(() => {
     if (upload) onUpload();
+    else getImage();
   }, [upload, itemId]);
 
   useEffect(() => {
-    getImage();
-  }, [itemId]);
-
-  useEffect(() => {
-    loading(isLoading);
+    setLoading(isLoading);
   }, [isLoading]);
 
   return (
@@ -121,7 +124,10 @@ export function ImageUpload({ multiple, itemId, upload, bucket, loading, setValu
         const UploadBox = () => {
           return (
             <div className="max-w-xl" onClick={onImageUpload} {...dragProps}>
-              <label className={`flex h-32 w-full cursor-pointer appearance-none items-center justify-center rounded-md border-2 border-dashed border-gray-300 px-4 transition hover:border-gray-400 focus:outline-none`}>{isLoading ? <Loader /> : <span className="font-medium">Click or Drop image{multiple && "s"} to Attach</span>}</label>
+              <label
+                className={`flex h-32 w-full cursor-pointer appearance-none items-center justify-center rounded-md border-2 border-dashed border-gray-300 px-4 transition hover:border-gray-400 focus:outline-none`}>
+                {isLoading ? <Loader /> : <span className="font-medium">Click or Drop image{multiple && "s"} to Attach</span>}
+              </label>
             </div>
           );
         };

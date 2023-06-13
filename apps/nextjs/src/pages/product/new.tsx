@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -47,8 +47,16 @@ interface pageProps {
   categories: Category[];
 }
 
+type ImageState = {
+  completed: boolean;
+  loading: boolean;
+};
+
 export default function NewProduct({ categories }: pageProps) {
   const { data: session } = useSession();
+  const [upload, setUpload] = useState(false);
+  const [logoState, setLogoState] = useState<ImageState>({ completed: false, loading: false });
+  const [imagesState, setImagesState] = useState<ImageState>({ completed: false, loading: false });
 
   const form = useForm<ProductFormData>({
     resolver: yupResolver(ProductSchema),
@@ -58,16 +66,23 @@ export default function NewProduct({ categories }: pageProps) {
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
-      session?.user.role === "Admin" ? toast.success("Product has been created") : toast.success("Product creation has been requested");
+      setLogoState({ completed: false, loading: true });
+      setImagesState({ completed: false, loading: true });
     },
   });
 
-  const onSubmit = async (data: ProductFormData) => {
+  const onSubmit = (data: ProductFormData) => {
     mutate({ name: data.Name, description: data.Description, link: data.Link, category: data.Category });
   };
 
-  const [loading, setLoading] = useState(false);
-  const [upload, setUpload] = useState(false);
+  useEffect(() => {
+    if (logoState.completed && imagesState.completed) {
+      session?.user.role === "Admin" ? toast.success("Product has been created") : toast.success("Product has been requested");
+    }
+  }, [logoState.completed, imagesState.completed]);
+
+  console.log(logoState.loading, imagesState.loading);
+  
 
   return (
     <>
@@ -90,7 +105,19 @@ export default function NewProduct({ categories }: pageProps) {
                     <FormItem>
                       <FormLabel>Product Logo</FormLabel>
                       <FormControl>
-                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={data?.id || ""} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Logo", value)} bucket={env.NEXT_PUBLIC_PRODUCT_LOGO} />
+                        <ImageUpload
+                          upload={upload}
+                          itemId={data?.id || ""}
+                          onUpload={() => setLogoState({ completed: true, loading: false })}
+                          setUpload={(value: boolean) => setUpload(value)}
+                          setLoading={(value: boolean) =>
+                            setLogoState((prev) => {
+                              return { ...prev, loading: value };
+                            })
+                          }
+                          setValue={(value: string) => form.setValue("Logo", value)}
+                          bucket={env.NEXT_PUBLIC_PRODUCT_LOGO}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -168,13 +195,26 @@ export default function NewProduct({ categories }: pageProps) {
                     <FormItem>
                       <FormLabel>Product Images</FormLabel>
                       <FormControl>
-                        <ImageUpload itemId={data?.id || ""} upload={upload} setUpload={(value: boolean) => setUpload(value)} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Images", value)} multiple bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE} />
+                        <ImageUpload
+                          itemId={data?.id || ""}
+                          upload={upload}
+                          onUpload={() => setImagesState({ completed: true, loading: false })}
+                          setUpload={(value: boolean) => setUpload(value)}
+                          setLoading={(value: boolean) =>
+                            setImagesState((prev) => {
+                              return { ...prev, loading: value };
+                            })
+                          }
+                          setValue={(value: string) => form.setValue("Images", value)}
+                          multiple
+                          bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" loading={isLoading || loading}>
+                <Button type="submit" loading={isLoading || logoState.loading || imagesState.loading}>
                   Submit
                 </Button>
               </form>
