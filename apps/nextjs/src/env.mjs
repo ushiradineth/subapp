@@ -19,6 +19,7 @@ export const env = createEnv({
     NEXT_PUBLIC_USER_ICON: z.string(),
     NEXT_PUBLIC_PRODUCT_LOGO: z.string(),
     NEXT_PUBLIC_PRODUCT_IMAGE: z.string(),
+    NEXT_PUBLIC_GMAIL_ADDRESS: z.string()
   },
 
   runtimeEnv: {
@@ -29,5 +30,6 @@ export const env = createEnv({
     NEXT_PUBLIC_USER_ICON: process.env.NEXT_PUBLIC_USER_ICON,
     NEXT_PUBLIC_PRODUCT_LOGO: process.env.NEXT_PUBLIC_PRODUCT_LOGO,
     NEXT_PUBLIC_PRODUCT_IMAGE: process.env.NEXT_PUBLIC_PRODUCT_IMAGE,
+    NEXT_PUBLIC_GMAIL_ADDRESS: process.env.NEXT_PUBLIC_GMAIL_ADDRESS,
   },
 });
