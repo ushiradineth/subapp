@@ -6,7 +6,7 @@ export default function Document() {
       <Head>
         <meta
           name="description"
-          content="SubM is a subscription management platform to connect subscriptions, consumers and providers together, giving small business owners the ability to manage subscriptions and consumers in a single place."
+          content="SubM: Subscription management platform for small businesses. Connect subscriptions, consumers & providers. Manage all in one place."
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
