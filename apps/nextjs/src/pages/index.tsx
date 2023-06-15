@@ -1,15 +1,31 @@
 import React from "react";
+import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { Activity, Construction, FolderLock, LineChart } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
-export default function Index() {
-  const { data: session, status } = useSession();
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ ctx: context });
+
+  return {
+    props: {
+      session,
+      status: session ? "authenticated" : "unauthenticated",
+    },
+  };
+};
+
+interface pageProps {
+  status: "authenticated" | "unauthenticated";
+}
+
+export default function Index({ status }: pageProps) {
+  const { data: session } = useSession();
 
   if (status === "unauthenticated") {
     return (

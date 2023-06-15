@@ -9,6 +9,7 @@ import { prisma, type Category } from "@acme/db";
 
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 
@@ -90,60 +91,89 @@ export default function Categories({ categories, count, total }: pageProps) {
       <Head>
         <title>Categories {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
-      <main className="flex flex-col items-center">
-        <Search
-          search={router.query.search as string}
-          placeholder="Search for categories"
-          path={router.asPath}
-          params={router.query}
-          count={count}
-        />
-        <Table className="border">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-center">ID</TableHead>
-              <TableHead className="text-center">Name</TableHead>
-              <TableHead className="text-center">Created At</TableHead>
-              <TableHead className="text-center">Products</TableHead>
-              <TableHead className="text-center">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.length !== 0 ? (
-              categories.map((category, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">
-                      <Link href={`/category/${category.id}`}>{category.id}</Link>
+      <main>
+        <Card>
+          <CardHeader>
+            <CardTitle>Categories</CardTitle>
+            <CardDescription>A list of all categories.</CardDescription>
+            <Search
+              search={router.query.search as string}
+              placeholder="Search for categories"
+              path={router.asPath}
+              params={router.query}
+              count={count}
+            />
+          </CardHeader>
+          <CardContent>
+            <Table className="border">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Products</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.length !== 0 ? (
+                  categories.map((category, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="text-center">
+                          <Link href={`/category/${category.id}`}>{category.id}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">{category.name}</TableCell>
+                        <TableCell className="text-center">{category.createdAt.toString()}</TableCell>
+                        <TableCell className="text-center">
+                          <Link href={`/product?search=${category.id}`}>{category._count.products}</Link>
+                        </TableCell>
+                        {session?.user.role === "Admin" && (
+                          <TableCell>
+                            <Link href={`/category/${category.id}/edit`}>
+                              <Edit className="ml-2" />
+                            </Link>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No results.
                     </TableCell>
-                    <TableCell className="text-center">{category.name}</TableCell>
-                    <TableCell className="text-center">{category.createdAt.toString()}</TableCell>
-                    <TableCell className="text-center">{category._count.products}</TableCell>
-                    {session?.user.role === "Admin" && (
-                      <TableCell>
-                        <Link href={`/category/${category.id}/edit`}>
-                          <Edit className="ml-2" />
-                        </Link>
-                      </TableCell>
-                    )}
                   </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableCaption>
-            <p>Currently, a total of {total} Categories are on SubM</p>
-          </TableCaption>
-          <TableCaption>
-            <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-          </TableCaption>
-        </Table>
+                )}
+              </TableBody>
+              <TableCaption>
+                <p>Currently, a total of {total} Categories are on SubM</p>
+              </TableCaption>
+              <TableCaption>
+                <PageNumbers
+                  count={count}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  pageNumber={pageNumber}
+                  path={router.asPath}
+                  params={router.query}
+                />
+              </TableCaption>
+            </Table>
+          </CardContent>
+          {count !== 0 && count > ITEMS_PER_PAGE && (
+            <CardFooter className="flex justify-center">
+              <TableCaption>
+                <PageNumbers
+                  count={count}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  pageNumber={pageNumber}
+                  path={router.asPath}
+                  params={router.query}
+                />
+              </TableCaption>
+            </CardFooter>
+          )}
+        </Card>
       </main>
     </>
   );

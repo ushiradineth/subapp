@@ -23,6 +23,7 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 
 export interface ProductWithDetails extends Product {
   vendor: { name: string; id: string };
@@ -39,9 +40,19 @@ interface pageProps {
   total: number;
   itemsPerPage: number;
   requests?: boolean;
+  title?: string;
+  description?: string;
 }
 
-export default function Products({ products: serverProducts, count, total, itemsPerPage, requests = false }: pageProps) {
+export default function Products({
+  products: serverProducts,
+  count,
+  total,
+  itemsPerPage,
+  requests = false,
+  title = "Products",
+  description = "A list of all products.",
+}: pageProps) {
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
@@ -57,91 +68,101 @@ export default function Products({ products: serverProducts, count, total, items
         <title>Products {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
       <main className="flex flex-col items-center">
-        <Search
-          search={router.query.search as string}
-          placeholder="Search for products"
-          path={router.asPath}
-          params={router.query}
-          count={count}
-        />
-        <>
-          <Table className="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-center">ID</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Vendor Name</TableHead>
-                <TableHead className="text-center">Category</TableHead>
-                <TableHead className="text-center">Created At</TableHead>
-                <TableHead className="text-center">Verifed</TableHead>
-                <TableHead className="text-center">Tiers</TableHead>
-                {products[0]?.verified && <TableHead className="text-center">Subscriptions</TableHead>}
-                {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.length !== 0 ? (
-                products.map((product, index) => {
-                  return (
-                    <TableRow key={index}>
-                      <TableCell className="text-center">
-                        <Link href={`/product/${product.id}`}>{product.id}</Link>
-                      </TableCell>
-                      <TableCell className="text-center">{product.name}</TableCell>
-                      <TableCell className="text-center">
-                        <Link href={`/vendor/${product.vendor.id}`}>{product.vendor.name}</Link>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Link href={`/category/${product.category.id}`}>{product.category.name}</Link>
-                      </TableCell>
-                      <TableCell className="text-center">{product.createdAt.toString()}</TableCell>
-                      <TableCell className="mt-1 flex justify-center">
-                        {product.verified ? <BadgeCheck className="text-green-500" /> : <BadgeX className="text-red-500" />}
-                      </TableCell>
-                      <TableCell>
-                        <Link className="flex items-center justify-center gap-2" href={`/product/${product.id}/tier`}>
-                          <Layers className="ml-1" />
-                          {product._count.tiers}
-                        </Link>
-                      </TableCell>
-                      {products[0]?.verified && <TableCell className="text-center">{product._count.subscriptions}</TableCell>}
-                      {session?.user.role === "Admin" && (
-                        <TableCell>
-                          <div className="flex gap-4">
-                            <DeleleProduct id={product.id} onSuccess={() => setProducts(products.filter((p) => p.id !== product.id))} />
-                            <Link href={`/product/${product.id}/edit`}>
-                              <Edit />
-                            </Link>
-                          </div>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  );
-                })
-              ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+            <Search
+              search={router.query.search as string}
+              placeholder="Search for products"
+              path={router.asPath}
+              params={router.query}
+              count={count}
+            />
+          </CardHeader>
+          <CardContent>
+            <Table className="border">
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={session?.user.role === "Admin" ? (products[0]?.verified ? 9 : 8) : products[0]?.verified ? 8 : 7}
-                    className="h-24 text-center">
-                    No results.
-                  </TableCell>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Vendor Name</TableHead>
+                  <TableHead className="text-center">Category</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Verifed</TableHead>
+                  <TableHead className="text-center">Tiers</TableHead>
+                  {products[0]?.verified && <TableHead className="text-center">Subscriptions</TableHead>}
+                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
                 </TableRow>
-              )}
-            </TableBody>
-            <TableCaption>
-              {session?.user.role === "Admin" ? (
-                <p>
-                  Currently, a total of {total} Product(s) are {requests && "requested"} on SubM
-                </p>
-              ) : (
-                <p>You have {total} Product(s) on total SubM</p>
-              )}
-            </TableCaption>
-            <TableCaption>
-              <PageNumbers count={count} itemsPerPage={itemsPerPage} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-            </TableCaption>
-          </Table>
-        </>
+              </TableHeader>
+              <TableBody>
+                {products.length !== 0 ? (
+                  products.map((product, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="text-center">
+                          <Link href={`/product/${product.id}`}>{product.id}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">{product.name}</TableCell>
+                        <TableCell className="text-center">
+                          <Link href={`/vendor/${product.vendor.id}`}>{product.vendor.name}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Link href={`/category/${product.category.id}`}>{product.category.name}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">{product.createdAt.toString()}</TableCell>
+                        <TableCell className="mt-1 flex justify-center">
+                          {product.verified ? <BadgeCheck className="text-green-500" /> : <BadgeX className="text-red-500" />}
+                        </TableCell>
+                        <TableCell>
+                          <Link className="flex items-center justify-center gap-2" href={`/product/${product.id}/tier`}>
+                            <Layers className="ml-1" />
+                            {product._count.tiers}
+                          </Link>
+                        </TableCell>
+                        {products[0]?.verified && <TableCell className="text-center">{product._count.subscriptions}</TableCell>}
+                        {session?.user.role === "Admin" && (
+                          <TableCell>
+                            <div className="flex gap-4">
+                              <DeleleProduct id={product.id} onSuccess={() => setProducts(products.filter((p) => p.id !== product.id))} />
+                              <Link href={`/product/${product.id}/edit`}>
+                                <Edit />
+                              </Link>
+                            </div>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={session?.user.role === "Admin" ? (products[0]?.verified ? 9 : 8) : products[0]?.verified ? 8 : 7}
+                      className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+              <TableCaption>
+                {session?.user.role === "Admin" ? (
+                  <p>
+                    Currently, a total of {total} Product(s) are {requests && "requested"} on SubM
+                  </p>
+                ) : (
+                  <p>You have {total} Product(s) on total SubM</p>
+                )}
+              </TableCaption>
+            </Table>
+          </CardContent>
+          {count !== 0 && count > itemsPerPage && (
+            <CardFooter className="flex justify-center">
+              <TableCaption>
+                <PageNumbers count={count} itemsPerPage={itemsPerPage} pageNumber={pageNumber} path={router.asPath} params={router.query} />
+              </TableCaption>
+            </CardFooter>
+          )}
+        </Card>
       </main>
     </>
   );

@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function PageNumbers(props: { pageNumber: number; count: number; itemsPerPage: number; path: string; params: { [key: string]: unknown } }) {
   return (
-    <div className="m-8 flex w-40 select-none justify-center">
+    <div className="flex select-none justify-center">
       <div className="flex">
         {props.pageNumber > 1 ? (
           <Link href={{ href: props.path, query: { ...props.params, page: props.pageNumber - 1 } }}>
