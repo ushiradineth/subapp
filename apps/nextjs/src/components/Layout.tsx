@@ -29,7 +29,7 @@ function Layout(props: { children: React.ReactNode }) {
   const { status } = useSession();
   const router = useRouter();
 
-  if (status === "loading") return <Loader background />;
+  if (status === "loading" && router.pathname !== "/") return <Loader background />;
 
   if (status === "unauthenticated" && !ALLOWED_UNAUTHED_PATHS.includes(router.pathname)) router.push("/auth");
 
@@ -37,7 +37,10 @@ function Layout(props: { children: React.ReactNode }) {
 
   return (
     <main className="bg-bgc border-bc dark flex min-h-screen flex-col">
-      <div className={`border-bc flex h-14 items-center border-b sticky top-0 bg-bgc/30 backdrop-blur ${NAVBAR_HIDDEN__PATHS.includes(router.pathname) && "hidden"}`}>
+      <div
+        className={`border-bc bg-bgc/30 sticky top-0 flex h-14 items-center border-b backdrop-blur ${
+          NAVBAR_HIDDEN__PATHS.includes(router.pathname) && "hidden"
+        }`}>
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
         </Link>

@@ -1,5 +1,5 @@
 import { type GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 
 import { prisma } from "@acme/db";
 
@@ -27,7 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     OR: [
       { name: { search: search } },
       {
-        category: { OR: [{ name: { search: search } }, { description: { search: search } }] },
+        category: { OR: [{ name: { search: search } }, { description: { search: search } }, { id: { search: search } }] },
       },
       { vendor: { OR: [{ name: { search: search } }, { id: { search: search } }] } },
     ],
@@ -109,5 +109,16 @@ interface pageProps {
 }
 
 export default function ProductsPage({ products, count, total }: pageProps) {
-  return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} />;
+  const { data: session } = useSession();
+  
+  return (
+    <Products
+      products={products}
+      count={count}
+      total={total}
+      itemsPerPage={ITEMS_PER_PAGE}
+      title="Products"
+      description={`A list of all products${session?.user.role === "Admin" ? "." : " created by own."}`}
+    />
+  );
 }

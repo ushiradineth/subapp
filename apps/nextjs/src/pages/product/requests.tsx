@@ -27,7 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     OR: [
       { name: { search: search } },
       {
-        category: { OR: [{ name: { search: search } }, { description: { search: search } }] },
+        category: { OR: [{ name: { search: search } }, { description: { search: search } }, { id: { search: search } }] },
       },
       { vendor: { OR: [{ name: { search: search } }, { id: { search: search } }] } },
     ],
@@ -88,5 +88,15 @@ interface pageProps {
 }
 
 export default function Requests({ products, count, total }: pageProps) {
-  return <Products products={products} count={count} total={total} itemsPerPage={ITEMS_PER_PAGE} requests={true} />;
+  return (
+    <Products
+      products={products}
+      count={count}
+      total={total}
+      itemsPerPage={ITEMS_PER_PAGE}
+      requests={true}
+      title="Products"
+      description={"A list of all products that are awaiting approval."}
+    />
+  );
 }

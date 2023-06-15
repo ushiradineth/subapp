@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 
@@ -106,61 +107,77 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
       <Head>
         <title>Vendors {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
-      <main className="flex flex-col items-center">
-        <Search
-          search={router.query.search as string}
-          placeholder="Search for vendors"
-          path={router.asPath}
-          params={router.query}
-          count={count}
-        />
-        <Table className="border">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-center">ID</TableHead>
-              <TableHead className="text-center">Name</TableHead>
-              <TableHead className="text-center">Created At</TableHead>
-              <TableHead className="text-center">Products</TableHead>
-              {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {vendors.length !== 0 ? (
-              vendors.map((vendor, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">
-                      <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
-                    </TableCell>
-                    <TableCell className="text-center">{vendor.name}</TableCell>
-                    <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                    <TableCell className="text-center">{vendor._count.products}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-4">
-                        <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
-                        <Link href={`/vendor/${vendor.id}/edit`}>
-                          <Edit />
-                        </Link>
-                      </div>
+      <main>
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendors</CardTitle>
+            <CardDescription>A list of all vendors.</CardDescription>
+            <Search
+              search={router.query.search as string}
+              placeholder="Search for vendors"
+              path={router.asPath}
+              params={router.query}
+              count={count}
+            />
+          </CardHeader>
+          <CardContent>
+            <Table className="border">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Products</TableHead>
+                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {vendors.length !== 0 ? (
+                  vendors.map((vendor, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="text-center">
+                          <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">{vendor.name}</TableCell>
+                        <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
+                        <TableCell className="text-center">{vendor._count.products}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-4">
+                            <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
+                            <Link href={`/vendor/${vendor.id}/edit`}>
+                              <Edit />
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No results.
                     </TableCell>
                   </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableCaption>
-            <p>Currently, a total of {total} Vendors are on SubM</p>
-          </TableCaption>
-          <TableCaption>
-            <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-          </TableCaption>
-        </Table>
+                )}
+              </TableBody>
+              <TableCaption>Currently, a total of {total} Vendors are on SubM</TableCaption>
+            </Table>
+          </CardContent>
+          {(count !== 0 && count > ITEMS_PER_PAGE) && (
+            <CardFooter className="flex justify-center">
+              <TableCaption>
+                <PageNumbers
+                  count={count}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  pageNumber={pageNumber}
+                  path={router.asPath}
+                  params={router.query}
+                />
+              </TableCaption>
+            </CardFooter>
+          )}
+        </Card>
       </main>
     </>
   );

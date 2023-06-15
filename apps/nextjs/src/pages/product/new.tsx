@@ -81,9 +81,6 @@ export default function NewProduct({ categories }: pageProps) {
     }
   }, [logoState.completed, imagesState.completed]);
 
-  console.log(logoState.loading, imagesState.loading);
-  
-
   return (
     <>
       <Head>
