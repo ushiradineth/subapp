@@ -31,7 +31,7 @@ export default function Index({ status }: pageProps) {
     return (
       <>
         <Head>
-          <title>Welcome - SubM</title>
+          <title>Welcome to SubM - Subscription Management Platform</title>
         </Head>
         <div className="flex flex-1 flex-col items-center justify-center">
           <div className="mx-auto flex h-[calc(90vh)] max-w-2xl place-items-center">
