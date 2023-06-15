@@ -20,6 +20,7 @@ import { env } from "~/env.mjs";
 import icon from "../../public/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
+import Loader from "./Loader";
 
 const ALLOWED_UNAUTHED_PATHS = ["/auth", "/", "/auth/reset", "/learn"];
 const NAVBAR_HIDDEN__PATHS = ["/auth", "/auth/reset"];
@@ -27,6 +28,8 @@ const NAVBAR_HIDDEN__PATHS = ["/auth", "/auth/reset"];
 function Layout(props: { children: React.ReactNode }) {
   const { status } = useSession();
   const router = useRouter();
+
+  if( status === "loading") return <Loader background />
 
   if (status === "unauthenticated" && !ALLOWED_UNAUTHED_PATHS.includes(router.pathname)) router.push("/auth");
 
