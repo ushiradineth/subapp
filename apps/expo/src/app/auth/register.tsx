@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Button, H2, H6, Input, ScrollView, Spinner, Text, XStack, YStack } from "tamagui";
+import { Button, H2, H6, Input, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { RegisterSchema, type RegisterFormData } from "~/utils/validators";
+import { Spinner } from "~/components/Spinner";
 
 export default function Register() {
   const router = useRouter();

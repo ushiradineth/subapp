@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Button, H2, H6, Input, Spinner, Text, XStack, YStack } from "tamagui";
+import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { LoginSchema, type LoginFormData } from "~/utils/validators";
 import { AuthContext } from "../_layout";
+import { Spinner } from "~/components/Spinner";
 
 export default function Login() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function Login() {
     },
   });
 
-  console.log(auth.session)
+  console.log(auth.session);
 
   const {
     control,
@@ -84,9 +85,6 @@ export default function Login() {
         )}
         name="Password"
       />
-      <YStack className="flex items-center justify-center">
-        {errors.Password && <Text color={"red"}>{errors.Password.message}</Text>}
-      </YStack>
 
       <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={handleSubmit(onSubmit)} className={"w-full"}>
         {isLoading ? <Spinner color="white" /> : "Log in"}

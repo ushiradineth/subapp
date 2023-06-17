@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Adapt, Button, Dialog, Fieldset, H2, H6, Input, Sheet, Spinner, Text, Unspaced, XStack, YStack } from "tamagui";
+import { Adapt, Button, Dialog, Fieldset, H2, H6, Input, Sheet, Text, Unspaced, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ForgetPasswordSchema, ResetPasswordSchema, type ForgetPasswordFormData, type ResetPasswordFormData } from "~/utils/validators";
+import { Spinner } from "~/components/Spinner";
 
 export default function PasswordReset() {
   const router = useRouter();
