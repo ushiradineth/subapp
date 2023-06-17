@@ -4,21 +4,21 @@ export default function Layout() {
   return (
     <Stack>
       <Stack.Screen
-        name="login"
+        name="[productId]"
         options={{
-          title: "Login to SubM",
+          title: "Product",
         }}
       />
       <Stack.Screen
-        name="register"
+        name="tier"
         options={{
-          title: "Register to SubM",
+          title: "Tiers",
         }}
       />
       <Stack.Screen
-        name="password-reset"
+        name="review"
         options={{
-          title: "Reset your Password",
+          title: "Reviews",
         }}
       />
     </Stack>
