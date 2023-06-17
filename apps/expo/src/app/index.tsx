@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
+import { LogBox } from "react-native";
 import { Redirect, SplashScreen } from "expo-router";
 
 import { AuthContext } from "./_layout";
+
+LogBox.ignoreAllLogs(true);
 
 const Index = () => {
   const auth = useContext(AuthContext);

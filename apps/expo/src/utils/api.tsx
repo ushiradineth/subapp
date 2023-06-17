@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Constants from "expo-constants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
@@ -45,7 +45,7 @@ export const TRPCProvider: React.FC<{
 }> = ({ children }) => {
   const auth = useContext(AuthContext);
   const [queryClient] = React.useState(() => new QueryClient());
-  const [trpcClient] = React.useState(() =>
+  const [trpcClient, setTrpcClient] = React.useState(() =>
     api.createClient({
       transformer: superjson,
       links: [
@@ -60,6 +60,24 @@ export const TRPCProvider: React.FC<{
       ],
     }),
   );
+
+  useEffect(() => {
+    setTrpcClient(
+      api.createClient({
+        transformer: superjson,
+        links: [
+          httpBatchLink({
+            headers() {
+              return {
+                authorization: auth.session?.id,
+              };
+            },
+            url: `${getBaseUrl()}/api/trpc`,
+          }),
+        ],
+      }),
+    );
+  }, [auth.session.id]);
 
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>
