@@ -11,8 +11,6 @@ export const userRouter = createTRPCRouter({
   authorize: publicProcedure.input(z.object({ email: z.string(), password: z.string() })).mutation(async ({ ctx, input }) => {
     const user = await ctx.prisma.user.findUnique({ where: { email: input.email } });
 
-    console.log(ctx.auth);
-
     if (!user) {
       throw new TRPCError({
         code: "BAD_REQUEST",
