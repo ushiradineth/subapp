@@ -1,10 +1,12 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 
 export default function Layout() {
+  const pathname = usePathname();
+
   return (
     <Stack>
       <Stack.Screen
-        name="[productId]"
+        name="index"
         options={{
           title: "Product",
         }}
@@ -19,6 +21,7 @@ export default function Layout() {
         name="review"
         options={{
           title: "Reviews",
+          headerShown: pathname.startsWith("/product") && pathname.endsWith("/review"),
         }}
       />
     </Stack>
