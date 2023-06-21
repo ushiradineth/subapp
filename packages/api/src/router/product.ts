@@ -84,6 +84,16 @@ export const productRouter = createTRPCRouter({
         reviews: {
           include: {
             user: true,
+            likes: {
+              where: {
+                id: ctx.auth.id,
+              },
+            },
+            dislikes: {
+              where: {
+                id: ctx.auth.id,
+              },
+            },
             _count: {
               select: {
                 likes: true,

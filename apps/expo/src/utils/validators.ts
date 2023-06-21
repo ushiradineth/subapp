@@ -7,6 +7,7 @@ export const nameValidator = yup.string().min(1).max(100).required();
 export const urlValidator = yup.string().url().required();
 export const fileValidator = yup.string().required();
 export const numberValidator = yup.number().required();
+export const ratingValidator = yup.number().max(5).min(1).required();
 export const periodValidtor = yup.number().min(1).max(365).oneOf([1, 7, 28, 365], "Period has to be either 1, 7, 28, or 365").required();
 export const otpValidtor = yup.string().min(1).max(6).required();
 
@@ -103,3 +104,22 @@ export const UserSchema = yup
   .required();
 
 export type UserFormData = yup.InferType<typeof UserSchema>;
+
+export const CommentSchema = yup
+  .object()
+  .shape({
+    Comment: textValidator,
+  })
+  .required();
+
+export type CommentFormData = yup.InferType<typeof CommentSchema>;
+
+export const ReviewSchema = yup
+  .object()
+  .shape({
+    Review: textValidator,
+    Rating: numberValidator,
+  })
+  .required();
+
+export type ReviewFormData = yup.InferType<typeof ReviewSchema>;

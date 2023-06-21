@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Stack, usePathname, useRouter, useSearchParams } from "expo-router";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Star } from "lucide-react-native";
-import { Adapt, Button, Dialog, Fieldset, H2, Image, Label, ScrollView, Sheet, TextArea, Unspaced, XStack, YStack } from "tamagui";
+import { Controller, useForm } from "react-hook-form";
+import { Adapt, Button, Dialog, H2, Image, Label, ScrollView, Sheet, Text as TamaguiText, TextArea, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
+import { ReviewSchema, type ReviewFormData } from "~/utils/validators";
 import BackButton from "~/components/BackButton";
 import { Spinner } from "~/components/Spinner";
 import ReviewItem from "~/components/ui/review-item/ReviewItem";
@@ -109,7 +112,7 @@ const Product: React.FC = () => {
         </XStack>
         <XStack className="flex flex-col items-center justify-between">
           <Text className={"overflow-scroll truncate whitespace-normal text-center text-[16px] font-medium"}>
-            {(clamp && data?.product?.description) || 0 > 200
+            {clamp && (data?.product?.description.length || 0) > 200
               ? `${data?.product?.description?.slice(0, 200)}...`
               : data?.product?.description}
           </Text>
@@ -138,11 +141,13 @@ const Product: React.FC = () => {
       </ScrollView>
 
       <YStack space className="p-4">
-        <Button
-          onPress={() => setOpen(true)}
-          className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
-          <Text className="text-accent text-[16px] font-bold">{data?.review?.length || 0 > 0 ? "Edit review" : "Add review"}</Text>
-        </Button>
+        {!data?.subscribed && (
+          <Button
+            onPress={() => setOpen(true)}
+            className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
+            <Text className="text-accent text-[16px] font-bold">{data?.review?.length || 0 > 0 ? "Edit review" : "Add review"}</Text>
+          </Button>
+        )}
 
         <XStack className="flex items-center justify-between">
           <Text className="text-[16px] font-medium">Reviews</Text>
@@ -172,8 +177,8 @@ function Rating({ rating = 0, caption }: { rating: number | undefined; caption: 
             <Star
               key={i}
               size={16}
-              fill={i < rating / 2 ? theme.colors.accent : "gray"}
-              color={i < rating / 2 ? theme.colors.accent : "gray"}
+              fill={i < rating ? theme.colors.accent : "gray"}
+              color={i < rating ? theme.colors.accent : "gray"}
             />
           ))}
         </XStack>
@@ -196,11 +201,35 @@ function Review({
   existingReview: ReviewType | null;
   onSuccess: () => void;
 }) {
-  const { mutate: createReview } = api.review.create.useMutation({ onSettled: () => setOpen(false), onSuccess: onSuccess });
-  const { mutate: updateReview } = api.review.update.useMutation({ onSettled: () => setOpen(false), onSuccess: onSuccess });
-  const { mutate: deleteReview } = api.review.delete.useMutation({ onSettled: () => setOpen(false), onSuccess: onSuccess });
-  const [rating, setRating] = useState(existingReview?.rating ? existingReview.rating / 2 : 0);
-  const [review, setReview] = useState(existingReview?.review ?? "");
+  const { mutate: createReview, isLoading: isCreating } = api.review.create.useMutation({
+    onSettled: () => setOpen(false),
+    onSuccess: onSuccess,
+  });
+  const { mutate: updateReview, isLoading: isUpdating } = api.review.update.useMutation({
+    onSettled: () => setOpen(false),
+    onSuccess: onSuccess,
+  });
+  const { mutate: deleteReview, isLoading: isDeleting } = api.review.delete.useMutation({
+    onSettled: () => setOpen(false),
+    onSuccess: onSuccess,
+  });
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    clearErrors,
+    formState: { errors },
+  } = useForm<ReviewFormData>({
+    resolver: yupResolver(ReviewSchema),
+  });
+
+  const onCreate = (data: ReviewFormData) => createReview({ productId: productId, rating: data.Rating, review: data.Review });
+  const onUpdate = (data: ReviewFormData) => updateReview({ reviewId: existingReview?.id ?? "", rating: data.Rating, review: data.Review });
+
+  useEffect(() => {
+    clearErrors();
+  }, [open]);
 
   return (
     <Dialog
@@ -237,50 +266,74 @@ function Review({
           space>
           <Dialog.Title>{existingReview ? "Edit Review" : "Add Review"}</Dialog.Title>
           <YStack className="p-4" space="$4">
-            <XStack>
-              <Label width={80} justifyContent="flex-end" htmlFor="rating">
-                Rating
-              </Label>
-              <StarRating starSize={24} rating={rating} onChange={setRating} maxStars={5} enableHalfStar enableSwiping />
-            </XStack>
-
-            <XStack>
-              <Label width={80} justifyContent="flex-end" htmlFor="review">
-                Review
-              </Label>
-              <TextArea
-                defaultValue={review}
-                onChange={(event) => setReview(event.nativeEvent.text)}
-                flex={1}
-                maxHeight={200}
-                minHeight={100}
-                id="review"
-                placeholder="Describe your experience"
-              />
-            </XStack>
-            <XStack alignSelf="flex-end">
-              <Dialog.Close displayWhenAdapted asChild>
-                {existingReview ? (
-                  <XStack space={"$2"}>
-                    <Button onPress={() => deleteReview({ id: existingReview.id })} theme="red_alt2" aria-label="Close">
-                      Delete
-                    </Button>
-                    <Button
-                      onPress={() => updateReview({ reviewId: existingReview.id, rating: rating * 2, review: review })}
-                      theme="alt2"
-                      aria-label="Close">
-                      Update
-                    </Button>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange } }) => (
+                <YStack className="w-full">
+                  <XStack>
+                    <Label width={80} justifyContent="flex-end" htmlFor="rating">
+                      Rating
+                    </Label>
+                    <StarRating starSize={24} rating={watch("Rating")} onChange={onChange} maxStars={5} enableHalfStar enableSwiping />
                   </XStack>
-                ) : (
-                  <Button
-                    onPress={() => createReview({ productId: productId, rating: rating * 2, review: review })}
-                    theme="alt2"
-                    aria-label="Close">
-                    Submit
+                  <YStack className="flex items-center justify-center">
+                    {errors.Rating && <TamaguiText color={"red"}>{errors.Rating.message}</TamaguiText>}
+                  </YStack>
+                </YStack>
+              )}
+              name="Rating"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <YStack className="w-full">
+                  <XStack>
+                    <Label width={80} justifyContent="flex-end" htmlFor="review">
+                      Review
+                    </Label>
+                    <TextArea
+                      defaultValue={existingReview?.review ?? ""}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      autoCapitalize="none"
+                      flex={1}
+                      maxHeight={200}
+                      minHeight={100}
+                      id="review"
+                      placeholder="Describe your experience"
+                    />
+                  </XStack>
+                  <YStack className="flex items-center justify-center">
+                    {errors.Review && <TamaguiText color={"red"}>{errors.Review.message}</TamaguiText>}
+                  </YStack>
+                </YStack>
+              )}
+              name="Review"
+            />
+
+            <XStack alignSelf="flex-end">
+              {existingReview ? (
+                <XStack space={"$2"}>
+                  <Button onPress={() => deleteReview({ id: existingReview.id })} theme="red_alt2">
+                    {isDeleting ? <Spinner /> : "Delete"}
                   </Button>
-                )}
-              </Dialog.Close>
+                  <Button onPress={handleSubmit(onUpdate)} theme="alt2">
+                    {isUpdating ? <Spinner /> : "Update"}
+                  </Button>
+                </XStack>
+              ) : (
+                <Button onPress={handleSubmit(onCreate)} theme="alt2">
+                  {isCreating ? <Spinner /> : "Submit"}
+                </Button>
+              )}
             </XStack>
           </YStack>
         </Dialog.Content>
