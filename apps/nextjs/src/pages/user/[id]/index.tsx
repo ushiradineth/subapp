@@ -3,7 +3,6 @@ import Head from "next/head";
 import { UserCircle2 } from "lucide-react";
 import { getSession } from "next-auth/react";
 
-import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma, type User } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -41,21 +40,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: avatarFolder } = await supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).list(user?.id, { limit: 1 });
-
-  let avatar = "";
-
-  if (avatarFolder) {
-    const { data } = supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).getPublicUrl(`${user?.id}/${avatarFolder[0]?.name}`);
-    avatar = data.publicUrl;
-  }
   return {
     props: {
       user: {
         ...user,
         createdAt: generalizeDate(user?.createdAt),
       },
-      avatar,
+      avatar: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${user.id}/0.jpg`,
     },
   };
 };
@@ -84,7 +75,9 @@ export default function User({ user, avatar }: pageProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="grid grid-flow-row md:h-fit md:gap-3">
-                <div className="flex max-w-[200px] items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">{user.name}</div>
+                <div className="flex max-w-[200px] items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">
+                  {user.name}
+                </div>
                 <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">Joined {String(user.createdAt)}</div>
               </div>
             </div>

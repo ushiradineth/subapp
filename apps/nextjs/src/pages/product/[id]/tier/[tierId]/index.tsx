@@ -1,10 +1,9 @@
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { BadgeCheck, LinkIcon, XCircle } from "lucide-react";
+import { LinkIcon, XCircle } from "lucide-react";
 import { getSession } from "next-auth/react";
 
-import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma, type Tier } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -55,22 +54,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: avatarFolder } = await supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).list(tier?.productId, { limit: 1 });
-
-  let logo = "";
-
-  if (avatarFolder) {
-    const { data } = supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).getPublicUrl(`${tier?.productId}/${avatarFolder[0]?.name}`);
-    logo = data.publicUrl;
-  }
-
   return {
     props: {
       tier: {
         ...tier,
         createdAt: generalizeDate(tier?.createdAt),
       },
-      logo,
+      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${tier.productId}/0.jpg`,
     },
   };
 };
@@ -106,7 +96,9 @@ export default function Tier({ tier, logo }: pageProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="grid grid-flow-row md:h-fit md:gap-3">
-                <div className="flex max-w-[200px] items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">{tier.name}</div>
+                <div className="flex max-w-[200px] items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">
+                  {tier.name}
+                </div>
                 <div className="verflow-hidden max-w-[200px] truncate text-ellipsis text-sm">
                   {tier.product.name} by {tier.product.vendor.name}
                 </div>

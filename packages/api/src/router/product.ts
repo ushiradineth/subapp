@@ -141,15 +141,6 @@ export const productRouter = createTRPCRouter({
       images.push({ url: url?.publicUrl ?? "" });
     });
 
-    const { data: logoFolder } = await supabase.storage.from(env.PRODUCT_IMAGE).list(product?.id, { limit: 1 });
-
-    let logo = "";
-
-    if (logoFolder) {
-      const { data } = supabase.storage.from(env.PRODUCT_LOGO).getPublicUrl(`${product?.id}/${logoFolder[0]?.name}`);
-      logo = data.publicUrl;
-    }
-
     return {
       product,
       rank: rank ?? 0,
@@ -157,7 +148,7 @@ export const productRouter = createTRPCRouter({
       wishlisted: (user?.wishlist?.length || 0) > 0,
       review: user?.reviews,
       subscribed: (user?.subscriptions?.length || 0) > 0,
-      logo,
+      logo: `${env.SUPABASE_URL}/${env.SUPABASE_URL}/${product?.id}/0.jpg`,
       images,
     };
   }),

@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { User, UserCircle2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-
-import { supabase } from "@acme/api/src/lib/supabase";
 
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
 import {
@@ -157,35 +155,17 @@ function AuthButton() {
 
 function Profile() {
   const { data: session } = useSession();
-  const [image, setImage] = useState("");
-
-  useEffect(() => {
-    getImage();
-  }, []);
-
-  const getImage = async () => {
-    const { data: image } = await supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).list(session?.user.id, { limit: 1 });
-    if (image) {
-      const { data: url } = supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).getPublicUrl(`${session?.user.id}/${image[0]?.name}`);
-
-      if (url.publicUrl) {
-        try {
-          const result = await fetch(url.publicUrl, { method: "HEAD" });
-          if (result) {
-            if (result.status === 200) {
-              setImage(url.publicUrl);
-            }
-          }
-        } catch (error) {}
-      }
-    }
-  };
 
   return (
     <Link href={session?.user.role === "Vendor" ? `/vendor/${session?.user.id}` : `#`}>
       <MenubarItem className="flex flex-col items-center justify-center p-4">
         <Avatar>
-          <AvatarImage src={image} alt="User Avatar" width={100} height={100} />
+          <AvatarImage
+            src={`${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${session?.user.id}/0.jpg`}
+            alt="User Avatar"
+            width={100}
+            height={100}
+          />
           <AvatarFallback>
             <UserCircle2 width={100} height={100} />
           </AvatarFallback>
