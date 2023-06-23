@@ -9,6 +9,7 @@ import { CommentSchema, type CommentFormData } from "~/utils/validators";
 import { Spinner } from "~/components/Spinner";
 import CommentItem from "~/components/ui/comment-item/CommentItem";
 import ReviewItem from "~/components/ui/review-item/ReviewItem";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const Review: React.FC = () => {
   const { reviewId } = useSearchParams();
@@ -21,6 +22,7 @@ const Review: React.FC = () => {
   const { data: review, refetch } = api.review.getById.useQuery({ id: reviewId });
   const { mutate } = api.comment.create.useMutation({
     onSuccess: (data) => {
+      Toast.show({ type: "success", text1: "Comment has been posted" });
       review?.comments.unshift(data);
       setValue("Comment", "");
     },

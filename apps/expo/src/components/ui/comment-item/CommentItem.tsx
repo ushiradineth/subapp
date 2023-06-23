@@ -9,6 +9,7 @@ import { theme } from "~/utils/consts";
 import { generalizeDate } from "~/utils/utils";
 import { AuthContext } from "~/app/_layout";
 import { type Comment, type User } from ".prisma/client";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 interface Props {
   comment: Comment & {
@@ -59,7 +60,12 @@ const CommentItem = ({ comment, onDelete }: Props) => {
     },
   });
 
-  const { mutate: mutateDelete } = api.comment.delete.useMutation({ onSuccess: () => onDelete() });
+  const { mutate: mutateDelete } = api.comment.delete.useMutation({
+    onSuccess: () => {
+      onDelete();
+      Toast.show({ type: "success", text1: "Comment has been deleted" })
+    },
+  });
 
   useEffect(() => {
     setLike(comment.likes.length > 0);

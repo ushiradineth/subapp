@@ -148,7 +148,7 @@ export const productRouter = createTRPCRouter({
       wishlisted: (user?.wishlist?.length || 0) > 0,
       review: user?.reviews,
       subscribed: (user?.subscriptions?.length || 0) > 0,
-      logo: `${env.SUPABASE_URL}/${env.SUPABASE_URL}/${product?.id}/0.jpg`,
+      logo: `${env.SUPABASE_URL}/${env.PRODUCT_LOGO}/${product?.id}/0.jpg`,
       images,
     };
   }),
