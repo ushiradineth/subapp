@@ -55,9 +55,6 @@ importers:
       '@tamagui/theme-base':
         specifier: ^1.29.1
         version: 1.29.1(react@18.2.0)
-      '@tamagui/toast':
-        specifier: ^1.29.1
-        version: 1.29.1(burnt@0.10.0)(react-native@0.71.8)(react@18.2.0)
       '@tanstack/react-query':
         specifier: ^4.29.5
         version: 4.29.5(react-dom@18.2.0)(react-native@0.71.8)(react@18.2.0)
@@ -71,8 +68,8 @@ importers:
         specifier: ^10.25.0
         version: 10.25.0
       burnt:
-        specifier: ^0.10.0
-        version: 0.10.0(expo@48.0.17)(react-native@0.71.8)(react@18.2.0)
+        specifier: ^0.11.7
+        version: 0.11.7(expo@48.0.17)(react-dom@18.2.0)(react-native@0.71.8)(react@18.2.0)
       expo:
         specifier: ^48.0.17
         version: 48.0.17(@babel/core@7.21.8)
@@ -130,6 +127,9 @@ importers:
       react-native-svg:
         specifier: ^13.9.0
         version: 13.9.0(react-native@0.71.8)(react@18.2.0)
+      react-native-toast-message:
+        specifier: ^2.1.6
+        version: 2.1.6(react-native@0.71.8)(react@18.2.0)
       react-native-web:
         specifier: ^0.19.4
         version: 0.19.4(react-dom@18.2.0)(react@18.2.0)
@@ -5062,29 +5062,6 @@ packages:
       - react
     dev: false
 
-  /@tamagui/toast@1.29.1(burnt@0.10.0)(react-native@0.71.8)(react@18.2.0):
-    resolution: {integrity: sha512-vJy5+ghj2tDNXMYTEpuDJU3oxrbRCGLNmU2GnNbIyRapqniPToY7f3uO0JdalAauDfIbPfyzDwIR6fO2Oc1PuA==}
-    peerDependencies:
-      burnt: ^0.10.0
-      react: '*'
-      react-native: '*'
-    dependencies:
-      '@tamagui/animate-presence': 1.29.1(react@18.2.0)
-      '@tamagui/compose-refs': 1.29.1(react@18.2.0)
-      '@tamagui/core': 1.29.1(react@18.2.0)
-      '@tamagui/create-context': 1.29.1(react@18.2.0)
-      '@tamagui/dismissable': 1.29.1(react@18.2.0)
-      '@tamagui/polyfill-dev': 1.29.1
-      '@tamagui/portal': 1.29.1(react-native@0.71.8)(react@18.2.0)
-      '@tamagui/stacks': 1.29.1(react@18.2.0)
-      '@tamagui/text': 1.29.1(react-native@0.71.8)(react@18.2.0)
-      '@tamagui/use-controllable-state': 1.29.1(react@18.2.0)
-      '@tamagui/visually-hidden': 1.29.1(react@18.2.0)
-      burnt: 0.10.0(expo@48.0.17)(react-native@0.71.8)(react@18.2.0)
-      react: 18.2.0
-      react-native: 0.71.8(@babel/core@7.21.8)(@babel/preset-env@7.21.5)(react@18.2.0)
-    dev: false
-
   /@tamagui/toggle-group@1.29.1(react-native@0.71.8)(react@18.2.0):
     resolution: {integrity: sha512-iL8oNW+ZExKYEs5wyFSXreevagzkwB6QQ7Y0LyBjMbMtHzNICP/T7Acfdwac8yx+yOmZSLj0D23R9SEe8gY37g==}
     peerDependencies:
@@ -6309,8 +6286,8 @@ packages:
       run-applescript: 5.0.0
     dev: false
 
-  /burnt@0.10.0(expo@48.0.17)(react-native@0.71.8)(react@18.2.0):
-    resolution: {integrity: sha512-gru7iQ0EzNxhe9ISkPWTVovJQKRA8JXJEdL8ui9aRtl+WNaUCxqph0MDUcND56d6j3f4I2ePLyIMyjAWCd1dHw==}
+  /burnt@0.11.7(expo@48.0.17)(react-dom@18.2.0)(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-Td70Axu53eDdEFDehCW1IvBY6xopdgcIISHMDKhQQFKAuoxdYHsensfXIzOAsjqTaNFA8NFmnYfLdQhAoPc9MA==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -6320,6 +6297,9 @@ packages:
       react: 18.2.0
       react-native: 0.71.8(@babel/core@7.21.8)(@babel/preset-env@7.21.5)(react@18.2.0)
       sf-symbols-typescript: 1.0.0
+      sonner: 0.3.5(react-dom@18.2.0)(react@18.2.0)
+    transitivePeerDependencies:
+      - react-dom
     dev: false
 
   /busboy@1.6.0:
@@ -11774,6 +11754,16 @@ packages:
       react-native: 0.71.8(@babel/core@7.21.8)(@babel/preset-env@7.21.5)(react@18.2.0)
     dev: false
 
+  /react-native-toast-message@2.1.6(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-VctXuq20vmRa9AE13acaNZhrLcS3FaBS2zEevS3+vhBsnVZYG0FIlWIis9tVnpnNxUb3ART+BWtwQjzSttXTng==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      react: 18.2.0
+      react-native: 0.71.8(@babel/core@7.21.8)(@babel/preset-env@7.21.5)(react@18.2.0)
+    dev: false
+
   /react-native-web-internals@1.29.1(react@18.2.0):
     resolution: {integrity: sha512-CMmWrZ2ccIrYEIG3X/03NC5hpknHXPRP73ficsNY1+Udl4++DC3qFw6gANkPh8wwhCRPuzMsYi/Hq0gTiEtQ/g==}
     peerDependencies:
@@ -12541,6 +12531,16 @@ packages:
       use: 3.1.1
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /sonner@0.3.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-yIwaQ4dftMvFApuruto2t7wGyyaPRpj5qYBWYJIz4Z7uGcVn0IfqI/hWN0JyJN4izNbZFuCYZISf3fOGnvSlNQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /source-map-js@1.0.2:

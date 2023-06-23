@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text } from "react-native";
 import StarRating from "react-native-star-rating-widget";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Stack, usePathname, useRouter, useSearchParams } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Star } from "lucide-react-native";
@@ -35,6 +36,9 @@ const Product: React.FC = () => {
   const { mutate: wishlist, isLoading: wishlisting } = api.product.wishlist.useMutation({
     onSuccess() {
       setWishlisted((wishlisted) => !wishlisted);
+      !wishlisted
+        ? Toast.show({ type: "success", text1: "Added to wishlist" })
+        : Toast.show({ type: "success", text1: "Removed from wishlist" });
     },
   });
   const [open, setOpen] = useState(false);
@@ -174,12 +178,7 @@ function Rating({ rating = 0, caption }: { rating: number | undefined; caption: 
       <YStack className="ml-2 flex items-center justify-center">
         <XStack>
           {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={16}
-              fill={i < rating ? theme.colors.accent : "gray"}
-              color={i < rating ? theme.colors.accent : "gray"}
-            />
+            <Star key={i} size={16} fill={i < rating ? theme.colors.accent : "gray"} color={i < rating ? theme.colors.accent : "gray"} />
           ))}
         </XStack>
         <Text className="text-[10px] font-medium">{caption}</Text>
@@ -203,15 +202,24 @@ function Review({
 }) {
   const { mutate: createReview, isLoading: isCreating } = api.review.create.useMutation({
     onSettled: () => setOpen(false),
-    onSuccess: onSuccess,
+    onSuccess: () => {
+      Toast.show({ type: "success", text1: "Review has been created" });
+      onSuccess();
+    },
   });
   const { mutate: updateReview, isLoading: isUpdating } = api.review.update.useMutation({
     onSettled: () => setOpen(false),
-    onSuccess: onSuccess,
+    onSuccess: () => {
+      Toast.show({ type: "success", text1: "Review has been updated" });
+      onSuccess();
+    },
   });
   const { mutate: deleteReview, isLoading: isDeleting } = api.review.delete.useMutation({
     onSettled: () => setOpen(false),
-    onSuccess: onSuccess,
+    onSuccess: () => {
+      Toast.show({ type: "success", text1: "Review has been deleted" });
+      onSuccess();
+    },
   });
 
   const {
@@ -219,6 +227,7 @@ function Review({
     handleSubmit,
     watch,
     clearErrors,
+    setValue,
     formState: { errors },
   } = useForm<ReviewFormData>({
     resolver: yupResolver(ReviewSchema),
@@ -229,6 +238,7 @@ function Review({
 
   useEffect(() => {
     clearErrors();
+    existingReview && setValue("Rating", existingReview.rating);
   }, [open]);
 
   return (
