@@ -123,6 +123,7 @@ model Tier {
   price       Float
   description String?
   name        String?
+  points      String[]
   createdAt   DateTime @default(now())
   subscriptions        Subscription[] @relation("tierSubscriptions")
 
