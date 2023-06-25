@@ -41,7 +41,7 @@ export default function Login() {
   }, [watch("Email"), watch("Password")]);
 
   return (
-    <YStack className="flex-1 items-center justify-center p-8" space>
+    <YStack className="flex-1 items-center justify-center p-8" space backgroundColor="$background">
       <H2 className="text-center text-2xl font-bold">Login</H2>
 
       <Controller
@@ -99,7 +99,7 @@ export default function Login() {
             Register here
           </Text>
         </XStack>
-        <Text className="font-bold" onPress={() => router.push("auth/password-reset")}>
+        <Text className="font-bold" onPress={() => router.push("auth/reset")}>
           Reset password
         </Text>
       </YStack>
