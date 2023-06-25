@@ -109,8 +109,11 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
 
   useEffect(() => {
     if (upload) onUpload();
-    else getImage();
-  }, [upload, itemId]);
+  }, [upload]);
+
+  useEffect(() => {
+    getImage();
+  }, []);
 
   useEffect(() => {
     setLoading(isLoading);
