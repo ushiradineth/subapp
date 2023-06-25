@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "expo-router";
 import { Text, XStack } from "tamagui";
 
 import { type Tier } from ".prisma/client";
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const TierItem = ({ tier }: Props) => {
+  const router = useRouter();
+
   let period = "";
   switch (tier.period) {
     case 1:
@@ -25,8 +28,11 @@ const TierItem = ({ tier }: Props) => {
     default:
       throw new Error("Invalid tier period");
   }
+
   return (
-    <XStack className="bg-background flex h-16 w-full items-center justify-between rounded-2xl p-4">
+    <XStack
+      onPress={() => router.push(`/product/${tier.productId}/tier/${tier.id}`)}
+      className="bg-background flex h-16 w-full items-center justify-between rounded-2xl p-4">
       <Text className="text-xl font-semibold">{tier.name}</Text>
       <Text className="text-[11px] font-semibold">{`$${tier.price} ${period}`}</Text>
     </XStack>

@@ -60,6 +60,13 @@ export const tierRouter = createTRPCRouter({
   }),
 
   getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-    return await ctx.prisma.tier.findUnique({ where: { id: input.id } });
+    return await ctx.prisma.tier.findUnique({
+      where: { id: input.id },
+      include: {
+        product: {
+          select: { name: true, link: true },
+        },
+      },
+    });
   }),
 });
