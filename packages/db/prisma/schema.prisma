@@ -101,15 +101,18 @@ model Subscription {
   id        String    @id @default(cuid())
   user      User      @relation("userSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
   product   Product   @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
+  tier      Tier      @relation("tierSubscriptions", fields: [tierId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
+  startedAt DateTime  @default(now())
   deletedAt DateTime?
   active    Boolean
-  reccuring Boolean
   userId    String
   productId String
+  tierId    String
 
   @@index([userId])
   @@index([productId])
+  @@index([tierId])
 }
 
 model Tier {
@@ -120,7 +123,9 @@ model Tier {
   price       Float
   description String?
   name        String?
+  points      String[]
   createdAt   DateTime @default(now())
+  subscriptions        Subscription[] @relation("tierSubscriptions")
 
   @@index([productId])
 }

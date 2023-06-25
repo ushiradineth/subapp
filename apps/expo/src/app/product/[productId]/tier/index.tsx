@@ -1,29 +1,26 @@
-import React from "react";
 import { useSearchParams } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
-import ReviewItem from "~/components/ui/review-item/ReviewItem";
+import TierItem from "~/components/ui/tier-item/TierItem";
 
-const Reviews = () => {
+export default function Tiers() {
   const { productId } = useSearchParams();
   if (!productId || typeof productId !== "string") throw new Error("Product id not found");
 
-  const { data: reviews, isLoading } = api.review.getByProductId.useQuery({ id: productId });
+  const { data: tiers, isLoading } = api.tier.getByProductId.useQuery({ id: productId });
 
   if (isLoading) return <Spinner background />;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">
       <YStack space className="p-4">
-        {reviews?.map((review) => (
-          <ReviewItem key={review.id} review={review} />
+        {tiers?.map((tier) => (
+          <TierItem key={tier.id} tier={tier} />
         ))}
-        {reviews?.length === 0 && <Text>No reviews yet</Text>}
+        {tiers?.length === 0 && <Text>No tiers yet</Text>}
       </YStack>
     </ScrollView>
   );
-};
-
-export default Reviews;
+}

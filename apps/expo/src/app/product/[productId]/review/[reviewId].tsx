@@ -1,4 +1,5 @@
 import { Pressable, View } from "react-native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useSearchParams } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -9,7 +10,6 @@ import { CommentSchema, type CommentFormData } from "~/utils/validators";
 import { Spinner } from "~/components/Spinner";
 import CommentItem from "~/components/ui/comment-item/CommentItem";
 import ReviewItem from "~/components/ui/review-item/ReviewItem";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const Review: React.FC = () => {
   const { reviewId } = useSearchParams();
@@ -26,6 +26,7 @@ const Review: React.FC = () => {
       review?.comments.unshift(data);
       setValue("Comment", "");
     },
+    onError: () => Toast.show({ type: "error", text1: "Failed posting the comment" }),
   });
 
   const onSubmit = (data: CommentFormData) => mutate({ reviewId, comment: data.Comment });

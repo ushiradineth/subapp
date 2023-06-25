@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Cross, XIcon } from "lucide-react";
 import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -33,7 +34,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const tier = await prisma.tier.findUnique({ where: { id: context.query.tierId as string }, include: { product: { select: { vendorId: true } } } });
+  const tier = await prisma.tier.findUnique({
+    where: { id: context.query.tierId as string },
+    include: { product: { select: { vendorId: true } } },
+  });
 
   if (!tier || tier.productId !== context.query.id) return { props: {} };
 
@@ -63,6 +67,7 @@ interface pageProps {
 
 export default function EditTier({ tier }: pageProps) {
   const router = useRouter();
+  const [point, setPoint] = useState("");
 
   const form = useForm<TierFormData>({
     resolver: yupResolver(TierSchema),
@@ -74,6 +79,7 @@ export default function EditTier({ tier }: pageProps) {
       form.setValue("Description", tier.description);
       form.setValue("Period", tier.period);
       form.setValue("Price", tier.price);
+      form.setValue("Points", tier.points);
     }
   }, [tier]);
 
@@ -83,7 +89,18 @@ export default function EditTier({ tier }: pageProps) {
   });
 
   const onSubmit = async (data: TierFormData) => {
-    mutate({ name: data.Name, description: data.Description, price: data.Price, period: data.Period, id: router.query.tierId as string });
+    if (data.Points.length === 0) {
+      return form.setError("Points", { message: "Points is required" });
+    }
+
+    mutate({
+      name: data.Name,
+      description: data.Description,
+      price: data.Price,
+      period: data.Period,
+      id: router.query.tierId as string,
+      points: data.Points,
+    });
   };
 
   if (!tier) return <div>Tier not found</div>;
@@ -132,6 +149,66 @@ export default function EditTier({ tier }: pageProps) {
 
                 <FormField
                   control={form.control}
+                  name="Points"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Features points</FormLabel>
+                      <FormControl>
+                        <>
+                          {form.getValues("Points")?.length > 0 && (
+                            <Card className="p-4">
+                              <ul className="list-disc">
+                                {(Array.isArray(form.getValues("Points")) ? form.getValues("Points") : []).map((point, index) => (
+                                  <li key={index} className="flex">
+                                    <p className="w-full truncate">{point}</p>
+                                    <span
+                                      className="ml-auto cursor-pointer"
+                                      onClick={() =>
+                                        form.setValue(
+                                          "Points",
+                                          [...form.getValues("Points")].filter((_, i) => i !== index),
+                                        )
+                                      }>
+                                      <XIcon />
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </Card>
+                          )}
+                          <div className="flex flex-row gap-2">
+                            <Input
+                              {...field}
+                              onChange={(value) => setPoint(value.target.value)}
+                              value={point}
+                              maxLength={100}
+                              placeholder="Feature points of this tier"
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                if (point !== "") {
+                                  form.setValue("Points", [
+                                    ...(Array.isArray(form.getValues("Points")) ? form.getValues("Points") : []),
+                                    point,
+                                  ]);
+                                  setPoint("");
+                                } else {
+                                  form.setError("Points", { message: "Point should have atleast one character" });
+                                }
+                              }}>
+                              Add
+                            </Button>
+                          </div>
+                        </>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="Price"
                   render={({ field }) => (
                     <FormItem>
@@ -151,7 +228,9 @@ export default function EditTier({ tier }: pageProps) {
                     <FormItem>
                       <FormLabel>Period</FormLabel>
                       <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={PERIODS.find((period) => Number(period?.period) === tier.period)?.period}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={PERIODS.find((period) => Number(period?.period) === tier.period)?.period}>
                           <SelectTrigger className="w-[400px]">
                             <SelectValue placeholder="Period of the Subscription" />
                           </SelectTrigger>

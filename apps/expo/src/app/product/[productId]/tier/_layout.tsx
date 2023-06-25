@@ -8,16 +8,14 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Reviews",
+          title: "Tiers",
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="[reviewId]"
+        name="[tierId]"
         options={{
-          title: "Review",
-          headerLeft: () => <BackButton />,
-          presentation: "modal"
+          headerShown: false,
         }}
       />
     </Stack>

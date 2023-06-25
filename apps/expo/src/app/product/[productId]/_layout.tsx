@@ -15,6 +15,7 @@ export default function Layout() {
         name="tier"
         options={{
           title: "Tiers",
+          headerShown: pathname.startsWith("/product") && !pathname.includes("/tier/"),
         }}
       />
       <Stack.Screen

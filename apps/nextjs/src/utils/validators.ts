@@ -7,6 +7,7 @@ export const nameValidator = yup.string().min(1).max(100).required();
 export const urlValidator = yup.string().url().required();
 export const fileValidator = yup.string().required();
 export const numberValidator = yup.number().required();
+export const pointsValidator = yup.array(yup.string().min(1).max(200).required()).nonNullable().required();
 export const periodValidtor = yup.number().min(1).max(365).oneOf([1, 7, 28, 365], "Period has to be either 1, 7, 28, or 365").required();
 export const otpValidtor = yup.string().min(1).max(6).required();
 
@@ -70,6 +71,8 @@ export type ResetPasswordFormData = yup.InferType<typeof ResetPasswordSchema>;
 export const TierSchema = yup
   .object()
   .shape({
+    Point: yup.string().min(1).max(200),
+    Points: pointsValidator,
     Period: periodValidtor,
     Price: numberValidator,
     Description: textValidator,

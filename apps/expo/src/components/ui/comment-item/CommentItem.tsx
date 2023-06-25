@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Pressable } from "react-native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { Heart, HeartCrack, Trash } from "lucide-react-native";
 import { Image, Text, XStack, YStack } from "tamagui";
@@ -9,7 +10,6 @@ import { theme } from "~/utils/consts";
 import { generalizeDate } from "~/utils/utils";
 import { AuthContext } from "~/app/_layout";
 import { type Comment, type User } from ".prisma/client";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 interface Props {
   comment: Comment & {
@@ -63,8 +63,9 @@ const CommentItem = ({ comment, onDelete }: Props) => {
   const { mutate: mutateDelete } = api.comment.delete.useMutation({
     onSuccess: () => {
       onDelete();
-      Toast.show({ type: "success", text1: "Comment has been deleted" })
+      Toast.show({ type: "success", text1: "Comment has been deleted" });
     },
+    onError: () => Toast.show({ type: "error", text1: "Failed deleting the comment" }),
   });
 
   useEffect(() => {
@@ -133,11 +134,13 @@ const CommentItem = ({ comment, onDelete }: Props) => {
             <Text>{comment._count.dislikes}</Text>
           </XStack>
         </XStack>
-        <XStack className="ml-2">
-          <Text onPress={() => mutateDelete({ id: comment.id })}>
-            <Trash color="black" />
-          </Text>
-        </XStack>
+        {comment.userId === auth.session.id && (
+          <XStack className="ml-2">
+            <Text onPress={() => mutateDelete({ id: comment.id })}>
+              <Trash color="black" />
+            </Text>
+          </XStack>
+        )}
       </XStack>
     </YStack>
   );

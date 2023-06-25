@@ -95,14 +95,12 @@ export default function Tier({ tier, logo }: pageProps) {
                   <XCircle width={100} height={100} />
                 </AvatarFallback>
               </Avatar>
-              <div className="grid grid-flow-row md:h-fit md:gap-3">
-                <div className="flex max-w-[200px] items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">
-                  {tier.name}
-                </div>
-                <div className="verflow-hidden max-w-[200px] truncate text-ellipsis text-sm">
+              <div className="grid max-w-[400px] grid-flow-row gap-3">
+                <div className="flex items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">{tier.name}</div>
+                <div className="overflow-hidden truncate text-ellipsis text-sm">
                   {tier.product.name} by {tier.product.vendor.name}
                 </div>
-                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">Joined {String(tier.createdAt)}</div>
+                <div className="overflow-hidden truncate text-ellipsis font-semibold">Created {String(tier.createdAt)}</div>
                 <Link className="flex items-center gap-2 text-sm font-light text-gray-400" href={"/product/" + tier.productId}>
                   <LinkIcon className="h-4 w-4" /> View product
                 </Link>

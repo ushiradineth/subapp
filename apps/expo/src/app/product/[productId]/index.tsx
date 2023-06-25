@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { Stack, usePathname, useRouter, useSearchParams } from "expo-router";
+import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Star } from "lucide-react-native";
+import { ExternalLink, Star } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { Adapt, Button, Dialog, H2, Image, Label, ScrollView, Sheet, Text as TamaguiText, TextArea, XStack, YStack } from "tamagui";
 
@@ -40,6 +40,11 @@ const Product: React.FC = () => {
         ? Toast.show({ type: "success", text1: "Added to wishlist" })
         : Toast.show({ type: "success", text1: "Removed from wishlist" });
     },
+    onError() {
+      !wishlisted
+        ? Toast.show({ type: "error", text1: "Failed to add to wishlist" })
+        : Toast.show({ type: "error", text1: "Failed to remove from wishlist" });
+    },
   });
   const [open, setOpen] = useState(false);
 
@@ -70,13 +75,19 @@ const Product: React.FC = () => {
           <YStack className="ml-4">
             <H2 className="text-2xl font-bold">{data?.product?.name}</H2>
             <Text>{data?.product?.category.name}</Text>
+            <Link className="mt-2" href={data?.product?.link ?? ""}>
+              <XStack className="text-accent flex items-center text-xs font-bold">
+                <ExternalLink size={20} color={theme.colors.accent} />
+                <Text className="text-accent mt-1 text-xs font-bold"> Official Website</Text>
+              </XStack>
+            </Link>
           </YStack>
         </XStack>
         <XStack className="flex h-16 items-center justify-between">
           {data?.subscribed ? (
-            <Button className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
+            <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
               <Text className="text-accent text-[16px] font-bold">Subscribed</Text>
-            </Button>
+            </View>
           ) : (
             <>
               <Button
@@ -206,6 +217,7 @@ function Review({
       Toast.show({ type: "success", text1: "Review has been created" });
       onSuccess();
     },
+    onError: () => Toast.show({ type: "error", text1: "Failed creating the review" }),
   });
   const { mutate: updateReview, isLoading: isUpdating } = api.review.update.useMutation({
     onSettled: () => setOpen(false),
@@ -213,6 +225,7 @@ function Review({
       Toast.show({ type: "success", text1: "Review has been updated" });
       onSuccess();
     },
+    onError: () => Toast.show({ type: "error", text1: "Failed updating the review" }),
   });
   const { mutate: deleteReview, isLoading: isDeleting } = api.review.delete.useMutation({
     onSettled: () => setOpen(false),
@@ -220,6 +233,7 @@ function Review({
       Toast.show({ type: "success", text1: "Review has been deleted" });
       onSuccess();
     },
+    onError: () => Toast.show({ type: "error", text1: "Failed deleting the review" }),
   });
 
   const {
