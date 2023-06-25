@@ -126,7 +126,7 @@ export const productRouter = createTRPCRouter({
         },
         subscriptions: {
           where: {
-            id: product?.id,
+            productId: product?.id,
           },
         },
       },

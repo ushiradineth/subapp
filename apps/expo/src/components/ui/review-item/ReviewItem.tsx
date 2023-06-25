@@ -115,7 +115,7 @@ const ReviewItem = ({ review, clampText }: Props) => {
           <Text className="text-accent mt-1 text-[10px] font-bold">{clamp ? "SHOW MORE" : "SHOW LESS"}</Text>
         </Pressable>
       )}
-      <XStack className="flex w-full justify-between pr-2 pt-2">
+      <XStack className="flex w-full justify-between pt-2">
         <XStack>
           <XStack>
             <Text className="mr-1">

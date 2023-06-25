@@ -1,6 +1,6 @@
 import React from "react";
 import { useSearchParams } from "expo-router";
-import { ScrollView, YStack } from "tamagui";
+import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
@@ -20,6 +20,7 @@ const Reviews = () => {
         {reviews?.map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
+        {reviews?.length === 0 && <Text>No reviews yet</Text>}
       </YStack>
     </ScrollView>
   );
