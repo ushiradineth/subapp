@@ -16,7 +16,7 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="password-reset"
+        name="reset"
         options={{
           title: "Reset your Password",
         }}
