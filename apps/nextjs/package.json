@@ -17,6 +17,7 @@
     "@acme/auth": "^0.1.0",
     "@acme/db": "^0.1.0",
     "@hookform/resolvers": "^3.1.0",
+    "@prisma/nextjs-monorepo-workaround-plugin": "^4.16.1",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.2",

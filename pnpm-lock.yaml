@@ -203,6 +203,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.1.0
         version: 3.1.0(react-hook-form@7.43.9)
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^4.16.1
+        version: 4.16.1
       '@radix-ui/react-accordion':
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)
@@ -2855,6 +2858,10 @@ packages:
   /@prisma/engines@4.14.0:
     resolution: {integrity: sha512-PDNlhP/1vyTgmNyiucGqGCdXIp7HIkkvKO50si3y3PcceeHvqtiKPaH1iJdz63jCWMVMbj2MElSxXPOeBvEVIQ==}
     requiresBuild: true
+
+  /@prisma/nextjs-monorepo-workaround-plugin@4.16.1:
+    resolution: {integrity: sha512-wZrtpmYhGRmd7xOChq/YqQiqnc28pmQdaw6sneRmf2Pmp4ZnGBoQYkUNkisiGr6MCb/DNZXAPZziOFoi2Wh53g==}
+    dev: false
 
   /@radix-ui/number@1.0.0:
     resolution: {integrity: sha512-Ofwh/1HX69ZfJRiRBMTy7rgjAzHmwe4kW9C9Y99HTRUcYLUuVT0KESFj15rPjRgKJs20GPq8Bm5aEDJ8DuA3vA==}
