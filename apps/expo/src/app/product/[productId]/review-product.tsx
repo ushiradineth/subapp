@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Label, Text, TextArea, XStack, YStack } from "tamagui";
+import { Button, H6, Text, TextArea, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ReviewSchema, type ReviewFormData } from "~/utils/validators";
@@ -92,9 +92,7 @@ export default function Review() {
           render={({ field: { onChange } }) => (
             <YStack className="w-full">
               <XStack>
-                <Label width={80} justifyContent="flex-end" htmlFor="rating">
-                  Rating
-                </Label>
+                <H6 className="w-[80px] font-bold">Rating</H6>
                 <StarRating starSize={24} rating={watch("Rating")} onChange={onChange} maxStars={5} enableHalfStar enableSwiping />
               </XStack>
               <YStack className="flex items-center justify-center">
@@ -113,9 +111,7 @@ export default function Review() {
           render={({ field: { onChange, onBlur, value } }) => (
             <YStack className="w-full">
               <XStack>
-                <Label width={80} justifyContent="flex-end" htmlFor="review">
-                  Review
-                </Label>
+                <H6 className="w-[80px] font-bold">Review</H6>
                 <TextArea
                   defaultValue={review?.review ?? ""}
                   onBlur={onBlur}

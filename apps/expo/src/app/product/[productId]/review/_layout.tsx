@@ -17,7 +17,8 @@ export default function Layout() {
         options={{
           title: "Review",
           headerLeft: () => <BackButton />,
-          presentation: "modal"
+          presentation: "modal",
+          headerTitleAlign: "center"
         }}
       />
     </Stack>
