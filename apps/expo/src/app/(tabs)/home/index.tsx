@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import { Button, H1, ScrollView, XStack, YStack } from "tamagui";
+import { H1, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
@@ -23,23 +23,8 @@ export default function Home() {
           {data?.map((product) => (
             <ProductItem key={product.id} product={product} image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`} />
           ))}
-          {data?.map((product) => (
-            <ProductItem key={product.id} product={product} image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`} />
-          ))}
         </XStack>
       </ScrollView>
-      <YStack className={"w-full px-4"}>
-        <Button
-          onPress={() => {
-            auth.logout();
-            router.replace("auth");
-          }}
-          backgroundColor={"$accent"}
-          fontWeight={"600"}
-          color={"white"}>
-          Log out
-        </Button>
-      </YStack>
     </YStack>
   );
 }

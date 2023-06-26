@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
 
@@ -20,6 +20,9 @@ export const AuthContext = createContext<{
 }>({ session: { id: "", email: "", name: "" }, setSession(arg) {}, logout() {}, status: "loading" });
 
 const RootLayout = () => {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const [session, setSession] = useState<Session>({
     id: "",
     email: "",
@@ -66,6 +69,10 @@ const RootLayout = () => {
   useEffect(() => {
     console.log(session, status);
   }, [status]);
+
+  if (status === "unauthenticated" && session.id === "" && !pathname.includes("/auth")) {
+    return router.replace("/auth");
+  }
 
   return (
     <AuthContext.Provider

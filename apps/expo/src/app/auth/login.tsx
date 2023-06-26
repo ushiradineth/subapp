@@ -6,8 +6,8 @@ import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { LoginSchema, type LoginFormData } from "~/utils/validators";
-import { AuthContext } from "../_layout";
 import { Spinner } from "~/components/Spinner";
+import { AuthContext } from "../_layout";
 
 export default function Login() {
   const router = useRouter();
