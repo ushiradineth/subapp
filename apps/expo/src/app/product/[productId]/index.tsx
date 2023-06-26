@@ -56,7 +56,6 @@ const Product: React.FC = () => {
       <Stack.Screen
         options={{
           headerTitle: data?.product?.name,
-          headerLeft: () => <BackButton />,
         }}
       />
       <YStack space className="p-4">
@@ -70,7 +69,7 @@ const Product: React.FC = () => {
             alt={data?.product?.name}
             width="100%"
             height="100%"
-            className="h-36 w-36 rounded-3xl"
+            className="h-36 w-36 rounded-3xl bg-foreground"
           />
           <YStack className="ml-4">
             <H2 className="text-2xl font-bold">{data?.product?.name}</H2>

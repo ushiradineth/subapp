@@ -97,9 +97,7 @@ export type ProductFormData = yup.InferType<typeof ProductSchema>;
 export const UserSchema = yup
   .object()
   .shape({
-    Image: fileValidator,
     Name: nameValidator,
-    Email: emailValidator,
   })
   .required();
 

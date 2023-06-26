@@ -28,6 +28,7 @@ const StackLayout = () => {
               <Search color="black" />
             </Text>
           ),
+          headerTitleAlign: "center",
         }}
       />
     </Stack>

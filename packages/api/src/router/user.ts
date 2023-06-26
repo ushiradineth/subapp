@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import { z } from "zod";
 
 import { env } from "../../env.mjs";
-import { deleteFiles } from "../lib/supabase";
+import { deleteFiles, supabase } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
@@ -164,4 +164,36 @@ export const userRouter = createTRPCRouter({
 
       return await ctx.prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword } });
     }),
+
+  profile: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.auth.id },
+      include: { subscriptions: { select: { tier: { select: { price: true, period: true } } } } },
+    });
+
+    const getMultiplicator = (period: number) => {
+      switch (period) {
+        case 1:
+          return 28;
+        case 7:
+          return 4;
+        case 28:
+          return 1;
+        case 365:
+          return 0.12;
+        default:
+          return 1;
+      }
+    };
+
+    const cost = user?.subscriptions.reduce((acc, curr) => {
+      return acc + curr.tier.price * getMultiplicator(curr.tier.period);
+    }, 0);
+
+    return {
+      joined: user?.createdAt,
+      cost,
+      count: user?.subscriptions.length,
+    };
+  }),
 });
