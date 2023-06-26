@@ -46,8 +46,6 @@ export default function Review() {
       Toast.show({ type: "success", text1: "Review has been created" });
     },
     onError: (err) => {
-      console.log(err);
-      
       Toast.show({ type: "error", text1: "Failed creating the review" });
     },
   });

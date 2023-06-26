@@ -154,12 +154,6 @@ const Product: React.FC = () => {
         {data?.subscribed && (
           <Button
             onPress={() => {
-              console.log(
-                `${pathname}/review-product?productId=${data?.product?.id}${
-                  data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
-                }`,
-              );
-
               router.push(
                 `${pathname}/review-product?productId=${data?.product?.id}${
                   data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
