@@ -1,4 +1,5 @@
 import { Stack, usePathname } from "expo-router";
+
 import BackButton from "~/components/BackButton";
 
 export default function Layout() {
@@ -19,7 +20,6 @@ export default function Layout() {
         options={{
           title: "Tiers",
           headerShown: pathname.startsWith("/product") && !pathname.includes("/tier/"),
-          // headerTitleAlign: "center",
         }}
       />
       <Stack.Screen
@@ -34,7 +34,8 @@ export default function Layout() {
         options={{
           title: "Add a review",
           headerLeft: () => <BackButton />,
-          presentation: "modal"
+          presentation: "modal",
+          headerTitleAlign: "center",
         }}
       />
     </Stack>

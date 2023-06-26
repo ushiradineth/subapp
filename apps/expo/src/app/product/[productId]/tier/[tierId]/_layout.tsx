@@ -1,14 +1,13 @@
-import { Stack, usePathname } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function Layout() {
-  const pathname = usePathname();
-
   return (
     <Stack>
       <Stack.Screen
         name="index"
         options={{
           title: "Tier",
+          headerTitleAlign: "center"
         }}
       />
       <Stack.Screen
@@ -16,6 +15,7 @@ export default function Layout() {
         options={{
           title: "Subscribe",
           presentation: "modal",
+          headerTitleAlign: "center"
         }}
       />
     </Stack>
