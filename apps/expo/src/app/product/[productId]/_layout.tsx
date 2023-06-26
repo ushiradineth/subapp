@@ -29,6 +29,14 @@ export default function Layout() {
           headerShown: pathname.startsWith("/product") && pathname.endsWith("/review"),
         }}
       />
+      <Stack.Screen
+        name="review-product"
+        options={{
+          title: "Add a review",
+          headerLeft: () => <BackButton />,
+          presentation: "modal"
+        }}
+      />
     </Stack>
   );
 }

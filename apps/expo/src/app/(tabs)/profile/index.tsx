@@ -40,7 +40,7 @@ export default function Profile() {
           {user ? (
             <>
               <Text className="text-center text-lg font-bold">Current Monthly Bill</Text>
-              <Text className="text-accent text-center text-lg font-bold">${user.cost}</Text>
+              <Text className="text-accent text-center text-lg font-bold">${user.cost?.toFixed(2)}</Text>
               <Text className="text-foreground text-center text-sm font-bold">{user.count} Subscriptions</Text>
             </>
           ) : (
