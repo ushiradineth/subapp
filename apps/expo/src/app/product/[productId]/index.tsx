@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { ExternalLink, Star } from "lucide-react-native";
-import { Controller, useForm } from "react-hook-form";
-import { Adapt, Button, Dialog, H2, Image, Label, ScrollView, Sheet, Text as TamaguiText, TextArea, XStack, YStack } from "tamagui";
+import { Button, H2, Image, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { ReviewSchema, type ReviewFormData } from "~/utils/validators";
-import BackButton from "~/components/BackButton";
 import { Spinner } from "~/components/Spinner";
 import ReviewItem from "~/components/ui/review-item/ReviewItem";
-import { type Review as ReviewType } from ".prisma/client";
 
 const Product: React.FC = () => {
   const router = useRouter();
@@ -46,13 +40,15 @@ const Product: React.FC = () => {
         : Toast.show({ type: "error", text1: "Failed to remove from wishlist" });
     },
   });
-  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    refetch();
+  }, [pathname]);
 
   if (isLoading) return <Spinner background />;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">
-      <Review open={open} setOpen={setOpen} productId={productId} existingReview={data?.review?.[0] ?? null} onSuccess={refetch} />
       <Stack.Screen
         options={{
           headerTitle: data?.product?.name,
@@ -69,7 +65,7 @@ const Product: React.FC = () => {
             alt={data?.product?.name}
             width="100%"
             height="100%"
-            className="h-36 w-36 rounded-3xl bg-foreground"
+            className="bg-foreground h-36 w-36 rounded-3xl"
           />
           <YStack className="ml-4">
             <H2 className="text-2xl font-bold">{data?.product?.name}</H2>
@@ -155,9 +151,21 @@ const Product: React.FC = () => {
       </ScrollView>
 
       <YStack space className="p-4">
-        {!data?.subscribed && (
+        {data?.subscribed && (
           <Button
-            onPress={() => setOpen(true)}
+            onPress={() => {
+              console.log(
+                `${pathname}/review-product?productId=${data?.product?.id}${
+                  data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
+                }`,
+              );
+
+              router.push(
+                `${pathname}/review-product?productId=${data?.product?.id}${
+                  data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
+                }`,
+              );
+            }}
             className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
             <Text className="text-accent text-[16px] font-bold">{data?.review?.length || 0 > 0 ? "Edit review" : "Add review"}</Text>
           </Button>
@@ -194,173 +202,5 @@ function Rating({ rating = 0, caption }: { rating: number | undefined; caption: 
         <Text className="text-[10px] font-medium">{caption}</Text>
       </YStack>
     </>
-  );
-}
-
-function Review({
-  open,
-  setOpen,
-  productId,
-  existingReview,
-  onSuccess,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  productId: string;
-  existingReview: ReviewType | null;
-  onSuccess: () => void;
-}) {
-  const { mutate: createReview, isLoading: isCreating } = api.review.create.useMutation({
-    onSettled: () => setOpen(false),
-    onSuccess: () => {
-      Toast.show({ type: "success", text1: "Review has been created" });
-      onSuccess();
-    },
-    onError: () => Toast.show({ type: "error", text1: "Failed creating the review" }),
-  });
-  const { mutate: updateReview, isLoading: isUpdating } = api.review.update.useMutation({
-    onSettled: () => setOpen(false),
-    onSuccess: () => {
-      Toast.show({ type: "success", text1: "Review has been updated" });
-      onSuccess();
-    },
-    onError: () => Toast.show({ type: "error", text1: "Failed updating the review" }),
-  });
-  const { mutate: deleteReview, isLoading: isDeleting } = api.review.delete.useMutation({
-    onSettled: () => setOpen(false),
-    onSuccess: () => {
-      Toast.show({ type: "success", text1: "Review has been deleted" });
-      onSuccess();
-    },
-    onError: () => Toast.show({ type: "error", text1: "Failed deleting the review" }),
-  });
-
-  const {
-    control,
-    handleSubmit,
-    watch,
-    clearErrors,
-    setValue,
-    formState: { errors },
-  } = useForm<ReviewFormData>({
-    resolver: yupResolver(ReviewSchema),
-  });
-
-  const onCreate = (data: ReviewFormData) => createReview({ productId: productId, rating: data.Rating, review: data.Review });
-  const onUpdate = (data: ReviewFormData) => updateReview({ reviewId: existingReview?.id ?? "", rating: data.Rating, review: data.Review });
-
-  useEffect(() => {
-    clearErrors();
-    existingReview && setValue("Rating", existingReview.rating);
-  }, [open]);
-
-  return (
-    <Dialog
-      modal
-      open={open}
-      onOpenChange={(open) => {
-        setOpen(open);
-      }}>
-      <Adapt when="sm" platform="touch">
-        <Sheet zIndex={200000} modal dismissOnSnapToBottom>
-          <Sheet.Frame padding="$4" space>
-            <Adapt.Contents />
-          </Sheet.Frame>
-          <Sheet.Overlay />
-        </Sheet>
-      </Adapt>
-
-      <Dialog.Portal>
-        <Dialog.Overlay key="overlay" animation="quick" opacity={0.5} enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animation={[
-            "quick",
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          space>
-          <Dialog.Title>{existingReview ? "Edit Review" : "Add Review"}</Dialog.Title>
-          <YStack className="p-4" space="$4">
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange } }) => (
-                <YStack className="w-full">
-                  <XStack>
-                    <Label width={80} justifyContent="flex-end" htmlFor="rating">
-                      Rating
-                    </Label>
-                    <StarRating starSize={24} rating={watch("Rating")} onChange={onChange} maxStars={5} enableHalfStar enableSwiping />
-                  </XStack>
-                  <YStack className="flex items-center justify-center">
-                    {errors.Rating && <TamaguiText color={"red"}>{errors.Rating.message}</TamaguiText>}
-                  </YStack>
-                </YStack>
-              )}
-              name="Rating"
-            />
-
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <YStack className="w-full">
-                  <XStack>
-                    <Label width={80} justifyContent="flex-end" htmlFor="review">
-                      Review
-                    </Label>
-                    <TextArea
-                      defaultValue={existingReview?.review ?? ""}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value}
-                      autoCapitalize="none"
-                      flex={1}
-                      maxHeight={200}
-                      minHeight={100}
-                      id="review"
-                      placeholder="Describe your experience"
-                    />
-                  </XStack>
-                  <YStack className="flex items-center justify-center">
-                    {errors.Review && <TamaguiText color={"red"}>{errors.Review.message}</TamaguiText>}
-                  </YStack>
-                </YStack>
-              )}
-              name="Review"
-            />
-
-            <XStack alignSelf="flex-end">
-              {existingReview ? (
-                <XStack space={"$2"}>
-                  <Button onPress={() => deleteReview({ id: existingReview.id })} theme="red_alt2">
-                    {isDeleting ? <Spinner /> : "Delete"}
-                  </Button>
-                  <Button onPress={handleSubmit(onUpdate)} theme="alt2">
-                    {isUpdating ? <Spinner /> : "Update"}
-                  </Button>
-                </XStack>
-              ) : (
-                <Button onPress={handleSubmit(onCreate)} theme="alt2">
-                  {isCreating ? <Spinner /> : "Submit"}
-                </Button>
-              )}
-            </XStack>
-          </YStack>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog>
   );
 }
