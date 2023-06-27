@@ -194,7 +194,7 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
     onSuccess: () => {
       props.onSuccess();
       setDeleteMenu(false);
-      toast.success("Vendor has been delete");
+      toast.success("Vendor has been deleted");
     },
   });
 

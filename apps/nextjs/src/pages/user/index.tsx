@@ -235,7 +235,7 @@ const DeleteUser = (props: { id: string; onSuccess: () => void }) => {
     onSuccess: () => {
       props.onSuccess();
       setDeleteMenu(false);
-      toast.success("User has been delete");
+      toast.success("User has been deleted");
     },
   });
 

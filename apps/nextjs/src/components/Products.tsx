@@ -179,7 +179,7 @@ const DeleleProduct = (props: { id: string; onSuccess: () => void }) => {
     onSuccess: () => {
       props.onSuccess();
       setDeleteMenu(false);
-      toast.success("Product has been delete");
+      toast.success("Product has been deleted");
     },
   });
 
