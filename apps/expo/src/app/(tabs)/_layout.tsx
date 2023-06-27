@@ -1,5 +1,5 @@
 import { Tabs, usePathname } from "expo-router";
-import { Coins, Home, List, MessagesSquare, User } from "lucide-react-native";
+import { Coins, Home, LayoutDashboard, List, User } from "lucide-react-native";
 
 export default function NavigationBar() {
   const pathname = usePathname();
@@ -19,7 +19,8 @@ export default function NavigationBar() {
         options={{
           headerShown: false,
           tabBarLabel: "Lists",
-          tabBarIcon: () => (pathname.startsWith("/lists") ? <List color="black" strokeWidth={2.5} /> : <List color="black" strokeWidth={2.2} />),
+          tabBarIcon: () =>
+            pathname.startsWith("/lists") ? <List color="black" strokeWidth={2.5} /> : <List color="black" strokeWidth={2.2} />,
         }}
       />
       <Tabs.Screen
@@ -31,11 +32,12 @@ export default function NavigationBar() {
         }}
       />
       <Tabs.Screen
-        name="discover"
+        name="categories"
         options={{
           headerShown: false,
-          tabBarLabel: "Discover",
-          tabBarIcon: () => (pathname.startsWith("/discover") ? <MessagesSquare color="black" strokeWidth={2.5} /> : <MessagesSquare color="black" />),
+          tabBarLabel: "Categories",
+          tabBarIcon: () =>
+            pathname.startsWith("/categories") ? <LayoutDashboard color="black" strokeWidth={2.5} /> : <LayoutDashboard color="black" />,
         }}
       />
       <Tabs.Screen
