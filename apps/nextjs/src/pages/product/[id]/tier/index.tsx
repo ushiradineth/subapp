@@ -202,7 +202,7 @@ const DeleteTier = (props: { id: string; onSuccess: () => void }) => {
     onSuccess: () => {
       props.onSuccess();
       setDeleteMenu(false);
-      toast.success("Tier has been delete");
+      toast.success("Tier has been deleted");
     },
   });
 

@@ -34,6 +34,7 @@ const defineConfig = (): ExpoConfig => ({
     PRODUCT_LOGO: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/PRODUCT_LOGO",
     PRODUCT_IMAGE: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/PRODUCT_IMAGE",
     USER_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/USER_ICON",
+    CATEGORY_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/CATEGORY_ICON",
     USER_ICON_BUCKET: "USER_ICON",
     SUPABASE_PROJECT: "pwnatkddgcrwrcdpxdxu",
     SUPABASE_ANON_KEY:

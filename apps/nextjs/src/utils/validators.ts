@@ -99,6 +99,7 @@ export type ProductFormData = yup.InferType<typeof ProductSchema>;
 export const CategorySchema = yup
   .object()
   .shape({
+    Icon: fileValidator,
     Description: textValidator,
     Name: nameValidator,
   })

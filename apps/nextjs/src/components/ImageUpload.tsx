@@ -41,11 +41,7 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
 
     images.forEach(async (image, index) => {
       if (image.file) {
-        const { error } = await supabase.storage.from(bucket).upload(`/${itemId}/${index}.${FILE_TYPE}`, image.file);
-
-        if (error) {
-          await supabase.storage.from(bucket).update(`/${itemId}/${index}.${FILE_TYPE}`, image.file);
-        }
+        await supabase.storage.from(bucket).upload(`/${itemId}/${index}.${FILE_TYPE}`, image.file, { upsert: true });
       }
 
       if (images.length - 1 === index) {
@@ -96,7 +92,7 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
         const { error } = await supabase.storage.from(bucket).remove([`${itemId}/${list[index]?.name}`]);
 
         if (!error) {
-          toast.success("Image has been delete");
+          toast.success("Image has been deleted");
           onDelete(index);
           if (images.length === 0) setValue("");
         }

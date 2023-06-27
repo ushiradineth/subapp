@@ -5,7 +5,7 @@ import { H1, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
-import ProductItem from "~/components/ui/product-item/ProductItem";
+import CardItem from "~/components/ui/card-item/CardItem";
 import { AuthContext } from "~/app/_layout";
 
 export default function Home() {
@@ -21,7 +21,13 @@ export default function Home() {
       <ScrollView className="pl-4" horizontal>
         <XStack className="mr-8" space={"$2"}>
           {data?.map((product) => (
-            <ProductItem key={product.id} product={product} image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`} />
+            <CardItem
+              key={product.id}
+              onPress={() => router.push(`product/${product.id}`)}
+              title={product.name}
+              text1={product.category.name}
+              image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+            />
           ))}
         </XStack>
       </ScrollView>
