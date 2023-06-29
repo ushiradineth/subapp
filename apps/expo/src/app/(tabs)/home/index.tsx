@@ -16,21 +16,23 @@ export default function Home() {
   if (isLoading) return <Spinner background />;
 
   return (
-    <YStack space>
-      <H1 className="pl-4 pt-4 text-xl font-semibold">Welcome, {auth.session?.name}</H1>
-      <ScrollView className="pl-4" horizontal>
-        <XStack className="mr-8" space={"$2"}>
-          {data?.map((product) => (
-            <CardItem
-              key={product.id}
-              onPress={() => router.push(`product/${product.id}`)}
-              title={product.name}
-              text1={product.category.name}
-              image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
-            />
-          ))}
-        </XStack>
-      </ScrollView>
-    </YStack>
+    <ScrollView backgroundColor={"$background"}>
+      <YStack space>
+        <H1 className="pl-4 pt-4 text-xl font-semibold">Welcome, {auth.session?.name}</H1>
+        <ScrollView className="pl-4" horizontal>
+          <XStack className="mr-8" space={"$2"}>
+            {data?.map((product) => (
+              <CardItem
+                key={product.id}
+                onPress={() => router.push(`product/${product.id}`)}
+                title={product.name}
+                text1={product.category.name}
+                image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+              />
+            ))}
+          </XStack>
+        </ScrollView>
+      </YStack>
+    </ScrollView>
   );
 }

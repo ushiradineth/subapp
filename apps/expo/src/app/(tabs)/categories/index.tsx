@@ -14,8 +14,8 @@ export default function Categories() {
   if (isLoading) return <Spinner background />;
 
   return (
-    <YStack className="flex-1 items-center justify-start px-4" space>
-      <ScrollView className="grid grid-cols-2 grid-rows-2 w-screen px-4 pt-4 pb-12" space={"$2"}>
+    <ScrollView backgroundColor={"$background"}>
+      <YStack space className="p-4">
         {categories?.map((category) => (
           <CardItemWide
             key={category.id}
@@ -25,7 +25,7 @@ export default function Categories() {
             image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}/0.jpg`}
           />
         ))}
-      </ScrollView>
-    </YStack>
+      </YStack>
+    </ScrollView>
   );
 }
