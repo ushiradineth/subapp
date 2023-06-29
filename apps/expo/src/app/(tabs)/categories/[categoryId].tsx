@@ -4,6 +4,7 @@ import { Stack, useRouter, useSearchParams } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import NoData from "~/components/NoData";
 import { Spinner } from "~/components/Spinner";
 import CardItemWide from "~/components/ui/card-item-wide/CardItemWide";
 
@@ -14,6 +15,7 @@ const Category: React.FC = () => {
   const { data: category } = api.category.getById.useQuery({ id: typeof categoryId !== "undefined" ? (categoryId as string) : "" });
 
   if (!category) return <Spinner background />;
+  if (category.products.length === 0) return <NoData>No products yet</NoData>;
 
   return (
     <ScrollView backgroundColor="$background">
@@ -35,7 +37,6 @@ const Category: React.FC = () => {
             image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
           />
         ))}
-        {category.products.length === 0 && <Text>No products yet</Text>}
       </YStack>
     </ScrollView>
   );
