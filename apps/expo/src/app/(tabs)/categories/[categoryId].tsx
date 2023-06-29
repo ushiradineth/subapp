@@ -16,30 +16,28 @@ const Category: React.FC = () => {
   if (!category) return <Spinner background />;
 
   return (
-    <View className="flex-1">
+    <ScrollView backgroundColor="$background">
       <Stack.Screen
         options={{
           headerTitle: category.name,
         }}
       />
-      <ScrollView className="mb-10" backgroundColor="$background">
-        <YStack space className="p-4">
-          {category?.products.map((product) => (
-            <CardItemWide
-              key={product.id}
-              onPress={() => {
-                router.back();
-                router.replace(`product/${product.id}`);
-              }}
-              title={product.name}
-              text1={`${product._count.subscriptions} subscriptions`}
-              image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
-            />
-          ))}
-          {category.products.length === 0 && <Text>No products yet</Text>}
-        </YStack>
-      </ScrollView>
-    </View>
+      <YStack space className="p-4">
+        {category?.products.map((product) => (
+          <CardItemWide
+            key={product.id}
+            onPress={() => {
+              router.back();
+              router.replace(`product/${product.id}`);
+            }}
+            title={product.name}
+            text1={`${product._count.subscriptions} subscriptions`}
+            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+          />
+        ))}
+        {category.products.length === 0 && <Text>No products yet</Text>}
+      </YStack>
+    </ScrollView>
   );
 };
 

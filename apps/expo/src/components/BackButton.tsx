@@ -1,16 +1,18 @@
 import React from "react";
-import { Platform, Pressable } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
-
-import { theme } from "~/utils/consts";
 
 const BackButton = () => {
   const router = useRouter();
 
   return (
-    <Pressable onPress={() => router.back()}>
-      <ArrowLeft className={Platform.OS === "android" ? "mt-1" : ""} color={theme.colors.accent} />
+    <Pressable
+      onPress={() => router.back()}
+      className={`rounded-full hover:bg-zinc-300 active:bg-zinc-200 ${Platform.OS === "android" ? "px-2 pb-2 pt-1" : "p-2"}`}>
+      <View className="">
+        <ArrowLeft className={` ${Platform.OS === "android" && "mt-1"}`} color={"black"} />
+      </View>
     </Pressable>
   );
 };

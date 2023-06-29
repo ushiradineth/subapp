@@ -11,6 +11,7 @@ export default function NavigationBar() {
         options={{
           headerShown: false,
           tabBarLabel: "Home",
+          tabBarShowLabel: false,
           tabBarIcon: () => (pathname.startsWith("/home") ? <Home color="black" strokeWidth={2.5} /> : <Home color="black" />),
         }}
       />
@@ -19,6 +20,7 @@ export default function NavigationBar() {
         options={{
           headerShown: false,
           tabBarLabel: "Lists",
+          tabBarShowLabel: false,
           tabBarIcon: () =>
             pathname.startsWith("/lists") ? <List color="black" strokeWidth={2.5} /> : <List color="black" strokeWidth={2.2} />,
         }}
@@ -28,6 +30,7 @@ export default function NavigationBar() {
         options={{
           headerShown: false,
           tabBarLabel: "Bills",
+          tabBarShowLabel: false,
           tabBarIcon: () => (pathname.startsWith("/bills") ? <Coins color="black" strokeWidth={2.5} /> : <Coins color="black" />),
         }}
       />
@@ -36,6 +39,7 @@ export default function NavigationBar() {
         options={{
           headerShown: false,
           tabBarLabel: "Categories",
+          tabBarShowLabel: false,
           tabBarIcon: () =>
             pathname.startsWith("/categories") ? <LayoutDashboard color="black" strokeWidth={2.5} /> : <LayoutDashboard color="black" />,
         }}
@@ -45,6 +49,7 @@ export default function NavigationBar() {
         options={{
           headerShown: false,
           tabBarLabel: "Profile",
+          tabBarShowLabel: false,
           tabBarIcon: () => (pathname.startsWith("/profile") ? <User color="black" strokeWidth={2.5} /> : <User color="black" />),
         }}
       />
