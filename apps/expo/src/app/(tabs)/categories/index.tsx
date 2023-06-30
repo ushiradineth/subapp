@@ -1,21 +1,23 @@
 import React from "react";
 import Constants from "expo-constants";
-import { usePathname, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
 import CardItemWide from "~/components/ui/card-item-wide/CardItemWide";
+import NoData from "~/components/NoData";
 
 export default function Categories() {
   const router = useRouter();
   const { data: categories, isLoading } = api.category.getAll.useQuery();
 
   if (isLoading) return <Spinner background />;
+  if (categories?.length === 0) return <NoData>No Categories found</NoData>;
 
   return (
-    <YStack className="flex-1 items-center justify-start px-4" space>
-      <ScrollView className="grid grid-cols-2 grid-rows-2 w-screen px-4 pt-4 pb-12" space={"$2"}>
+    <ScrollView backgroundColor={"$background"}>
+      <YStack space className="p-4">
         {categories?.map((category) => (
           <CardItemWide
             key={category.id}
@@ -25,7 +27,7 @@ export default function Categories() {
             image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}/0.jpg`}
           />
         ))}
-      </ScrollView>
-    </YStack>
+      </YStack>
+    </ScrollView>
   );
 }

@@ -89,7 +89,7 @@ const RootLayout = () => {
               headerShown: false,
             }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="product" options={{ headerShown: false }} />
+            <Stack.Screen name="product/[productId]" options={{ headerShown: false }} />
             <Stack.Screen name="auth" options={{ headerShown: false }} />
           </Stack>
           <StatusBar />

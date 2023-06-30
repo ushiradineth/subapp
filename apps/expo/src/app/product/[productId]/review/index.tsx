@@ -5,6 +5,7 @@ import { ScrollView, Text, YStack } from "tamagui";
 import { api } from "~/utils/api";
 import { Spinner } from "~/components/Spinner";
 import ReviewItem from "~/components/ui/review-item/ReviewItem";
+import NoData from "~/components/NoData";
 
 const Reviews = () => {
   const { productId } = useSearchParams();
@@ -13,6 +14,7 @@ const Reviews = () => {
   const { data: reviews, isLoading } = api.review.getByProductId.useQuery({ id: productId });
 
   if (isLoading) return <Spinner background />;
+  if (reviews?.length === 0) return <NoData>No reviews found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">
@@ -20,7 +22,6 @@ const Reviews = () => {
         {reviews?.map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
-        {reviews?.length === 0 && <Text>No reviews yet</Text>}
       </YStack>
     </ScrollView>
   );

@@ -196,4 +196,57 @@ export const userRouter = createTRPCRouter({
       count: user?.subscriptions.length,
     };
   }),
+
+  wishlist: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.auth.id },
+      include: {
+        wishlist: {
+          include: { category: { select: { name: true } } },
+        },
+      },
+    });
+
+    return {
+      wishlist: user?.wishlist,
+    };
+  }),
+
+  subscriptions: protectedProcedure
+    .input(z.object({ showTerminatedSubscripitions: z.boolean().optional().default(false) }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: ctx.auth.id },
+        include: {
+          subscriptions: {
+            where: {
+              active: !input.showTerminatedSubscripitions,
+            },
+            include: {
+              template: {
+                select: {
+                  name: true,
+                },
+              },
+              tier: {
+                select: {
+                  name: true,
+                  price: true,
+                  period: true,
+                },
+              },
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return {
+        subscriptions: user?.subscriptions,
+      };
+    }),
 });

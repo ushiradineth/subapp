@@ -68,32 +68,6 @@ export const ResetPasswordSchema = yup
 
 export type ResetPasswordFormData = yup.InferType<typeof ResetPasswordSchema>;
 
-export const TierSchema = yup
-  .object()
-  .shape({
-    Period: periodValidtor,
-    Price: numberValidator,
-    Description: textValidator,
-    Name: nameValidator,
-  })
-  .required();
-
-export type TierFormData = yup.InferType<typeof TierSchema>;
-
-export const ProductSchema = yup
-  .object()
-  .shape({
-    Images: fileValidator,
-    Link: urlValidator,
-    Category: idValidator,
-    Description: textValidator,
-    Name: nameValidator,
-    Logo: fileValidator,
-  })
-  .required();
-
-export type ProductFormData = yup.InferType<typeof ProductSchema>;
-
 export const UserSchema = yup
   .object()
   .shape({
@@ -121,3 +95,17 @@ export const ReviewSchema = yup
   .required();
 
 export type ReviewFormData = yup.InferType<typeof ReviewSchema>;
+
+export const TemplateSchema = yup
+  .object()
+  .shape({    
+    Period: periodValidtor,
+    Price: numberValidator,
+    Link: urlValidator,
+    Description: textValidator,
+    Name: nameValidator,
+    // Logo: fileValidator,
+  })
+  .required();
+
+export type TemplateFormData = yup.InferType<typeof TemplateSchema>;

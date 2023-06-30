@@ -34,8 +34,10 @@ const defineConfig = (): ExpoConfig => ({
     PRODUCT_LOGO: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/PRODUCT_LOGO",
     PRODUCT_IMAGE: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/PRODUCT_IMAGE",
     USER_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/USER_ICON",
+    TEMPLATE_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/TEMPLATE_ICON",
     CATEGORY_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/CATEGORY_ICON",
     USER_ICON_BUCKET: "USER_ICON",
+    TEMPLATE_ICON_BUCKET: "TEMPLATE_ICON",
     SUPABASE_PROJECT: "pwnatkddgcrwrcdpxdxu",
     SUPABASE_ANON_KEY:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bmF0a2RkZ2Nyd3JjZHB4ZHh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3NjM3MDQsImV4cCI6MjAwMjMzOTcwNH0.O0GqjwMa76r8bwpv5uByhUkUOnAcz6M4vtHogPd6eQg",

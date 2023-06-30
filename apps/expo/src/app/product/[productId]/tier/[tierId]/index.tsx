@@ -30,7 +30,7 @@ const Tier: React.FC = () => {
     <ScrollView className="h-fit" backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: tier.product.name,
+          headerTitle: tier.product?.name,
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <Pressable onPress={() => router.push(pathname + "/subscribe")}>
@@ -66,7 +66,7 @@ const Tier: React.FC = () => {
           ))}
         </YStack>
 
-        <Link href={tier.product.link ?? ""} className="text-accent ml-auto w-full text-center text-xs font-bold">
+        <Link href={tier.product?.link ?? ""} className="text-accent ml-auto w-full text-center text-xs font-bold">
           Go to the Official Website
         </Link>
       </YStack>
