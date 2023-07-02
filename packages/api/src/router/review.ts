@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -6,6 +7,15 @@ export const reviewRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ productId: z.string(), review: z.string(), rating: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      const reviews = await ctx.prisma.review.findMany({ where: { userId: ctx.auth.id, productId: input.productId } });
+
+      if (reviews.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User already has a review",
+        });
+      }
+
       return await ctx.prisma.review.create({
         data: {
           rating: input.rating,
