@@ -8,8 +8,8 @@ import { Calendar } from "lucide-react-native";
 import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import BackButton from "~/components/BackButton";
-import { Spinner } from "~/components/Spinner";
+import BackButton from "~/components/Atoms/BackButton";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Subscribe: React.FC = () => {
   const { tierId } = useSearchParams();

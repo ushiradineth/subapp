@@ -7,8 +7,8 @@ import { Image, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { generalizeDate } from "~/utils/utils";
-import { Spinner } from "~/components/Spinner";
-import ButtonWide from "~/components/ui/button-wide/ButtonWide";
+import ButtonWide from "~/components/Atoms/ButtonWide";
+import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
 
 export default function Profile() {

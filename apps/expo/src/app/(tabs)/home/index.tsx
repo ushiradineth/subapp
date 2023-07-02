@@ -4,8 +4,8 @@ import { useRouter } from "expo-router";
 import { H1, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { Spinner } from "~/components/Spinner";
-import CardItem from "~/components/ui/card-item/CardItem";
+import CardItem from "~/components/Atoms/CardItem";
+import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
 
 export default function Home() {

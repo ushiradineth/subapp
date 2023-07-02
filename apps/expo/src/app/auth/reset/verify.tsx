@@ -8,7 +8,7 @@ import { Button, H6, Input, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ResetPasswordSchema, type ResetPasswordFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Verify = () => {
   const { email } = useLocalSearchParams();

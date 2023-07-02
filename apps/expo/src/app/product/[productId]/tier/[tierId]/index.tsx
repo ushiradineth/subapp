@@ -4,8 +4,8 @@ import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-route
 import { ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import BackButton from "~/components/BackButton";
-import { Spinner } from "~/components/Spinner";
+import BackButton from "~/components/Atoms/BackButton";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 export const PERIODS = [
   { period: 1, label: "Day" },

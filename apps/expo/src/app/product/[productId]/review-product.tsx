@@ -9,7 +9,7 @@ import { Button, H6, Text, TextArea, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ReviewSchema, type ReviewFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 import { type Review } from ".prisma/client";
 
 export default function Review() {

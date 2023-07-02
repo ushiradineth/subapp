@@ -6,7 +6,7 @@ import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ForgetPasswordSchema, type ForgetPasswordFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 export default function PasswordReset() {
   const router = useRouter();
