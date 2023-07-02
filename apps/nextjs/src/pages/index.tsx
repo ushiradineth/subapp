@@ -54,7 +54,7 @@ export default function Index({ status }: pageProps) {
               </div>
             </div>
           </div>
-          <div id="learn" className="flex min-h-screen flex-col items-center justify-center gap-24 p-12">
+          <div id="learn" className="flex min-h-screen flex-col items-center justify-center gap-24 pt-24 p-12">
             <div className="flex w-full items-center justify-center">
               <div className="flex w-full flex-col">
                 <div className="pr-4">
