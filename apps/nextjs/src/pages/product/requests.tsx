@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const where = search !== "" ? searchQuery : {};
 
-  const filter = { user: null, verified: false };
+  const filter = { verified: false };
 
   const products = await prisma.product.findMany({
     take: ITEMS_PER_PAGE,
