@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? {}
       : { vendorId: { equals: session?.user.id } };
 
-  const filter = { user: null, verified: session.user.role === "Admin" };
+  const filter = { verified: session.user.role === "Admin" };
 
   const products = await prisma.product.findMany({
     take: ITEMS_PER_PAGE,
@@ -110,7 +110,7 @@ interface pageProps {
 
 export default function ProductsPage({ products, count, total }: pageProps) {
   const { data: session } = useSession();
-  
+
   return (
     <Products
       products={products}
