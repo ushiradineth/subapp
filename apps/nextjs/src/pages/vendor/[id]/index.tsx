@@ -6,7 +6,7 @@ import { getSession } from "next-auth/react";
 
 import { prisma, type Vendor } from "@acme/db";
 
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
 import { env } from "~/env.mjs";
 import { generalizeDate } from "~/lib/utils";
 

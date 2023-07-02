@@ -11,10 +11,10 @@ import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
-import Caption from "~/components/Caption";
-import { type ProductWithDetails } from "~/components/Products";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
+import { Button } from "~/components/Atoms/Button";
+import Caption from "~/components/Atoms/Caption";
+import { type ProductWithDetails } from "~/components/Templates/Products";
 import { env } from "~/env.mjs";
 import { generalizeDate } from "~/lib/utils";
 

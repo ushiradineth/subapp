@@ -11,12 +11,12 @@ import { toast } from "react-toastify";
 
 import { api } from "~/utils/api";
 import { ForgetPasswordSchema, ResetPasswordSchema, type ForgetPasswordFormData, type ResetPasswordFormData } from "~/utils/validators";
-import FormFieldError from "~/components/FormFieldError";
-import Loader from "~/components/Loader";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { Button } from "~/components/Atoms/Button";
+import FormFieldError from "~/components/Atoms/FormFieldError";
+import { Input } from "~/components/Atoms/Input";
+import { Label } from "~/components/Atoms/Label";
+import Loader from "~/components/Atoms/Loader";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/Molecules/Card";
 import icon from "../../../public/logo.svg";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

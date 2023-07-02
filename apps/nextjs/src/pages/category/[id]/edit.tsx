@@ -10,12 +10,12 @@ import { prisma, type Category } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { CategorySchema, type CategoryFormData } from "~/utils/validators";
-import { ImageUpload } from "~/components/ImageUpload";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
+import { Button } from "~/components/Atoms/Button";
+import { Input } from "~/components/Atoms/Input";
+import { Textarea } from "~/components/Atoms/Textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/Molecules/Form";
+import { ImageUpload } from "~/components/Molecules/ImageUpload";
 import { env } from "~/env.mjs";
 import { formalizeDate } from "~/lib/utils";
 

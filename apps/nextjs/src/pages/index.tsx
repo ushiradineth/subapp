@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Activity, Construction, FolderLock, LineChart } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/Molecules/Accordion";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/Molecules/Card";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -54,7 +54,7 @@ export default function Index({ status }: pageProps) {
               </div>
             </div>
           </div>
-          <div id="learn" className="flex min-h-screen flex-col items-center justify-center gap-24 pt-24 p-12">
+          <div id="learn" className="flex min-h-screen flex-col items-center justify-center gap-24 p-12 pt-24">
             <div className="flex w-full items-center justify-center">
               <div className="flex w-full flex-col">
                 <div className="pr-4">

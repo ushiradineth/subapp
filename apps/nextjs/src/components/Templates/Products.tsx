@@ -9,9 +9,9 @@ import { toast } from "react-toastify";
 import { type Product } from "@acme/db";
 
 import { api } from "~/utils/api";
-import Loader from "~/components/Loader";
-import PageNumbers from "~/components/PageNumbers";
-import Search from "~/components/Search";
+import { Button } from "~/components/Atoms/Button";
+import Loader from "~/components/Atoms/Loader";
+import PageNumbers from "~/components/Atoms/PageNumbers";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -20,10 +20,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+} from "~/components/Molecules/AlertDialog";
+import Search from "~/components/Molecules/Search";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/Molecules/Table";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../Molecules/Card";
 
 export interface ProductWithDetails extends Product {
   vendor: { name: string; id: string };

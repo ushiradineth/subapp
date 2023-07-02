@@ -10,9 +10,9 @@ import { toast } from "react-toastify";
 import { prisma, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
-import Loader from "~/components/Loader";
-import PageNumbers from "~/components/PageNumbers";
-import Search from "~/components/Search";
+import { Button } from "~/components/Atoms/Button";
+import Loader from "~/components/Atoms/Loader";
+import PageNumbers from "~/components/Atoms/PageNumbers";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -21,10 +21,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+} from "~/components/Molecules/AlertDialog";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import Search from "~/components/Molecules/Search";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/Molecules/Table";
 import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;

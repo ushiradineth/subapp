@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { User, UserCircle2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/ui/menubar";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "~/components/Molecules/Menubar";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,12 +13,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "~/components/ui/navigation-menu";
+} from "~/components/Molecules/NavigationMenu";
 import { env } from "~/env.mjs";
 import icon from "../../public/logo.svg";
-import Loader from "./Loader";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./Atoms/Avatar";
+import { Button } from "./Atoms/Button";
+import Loader from "./Atoms/Loader";
 
 const ALLOWED_UNAUTHED_PATHS = ["/auth", "/", "/auth/reset", "/learn"];
 const NAVBAR_HIDDEN__PATHS = ["/auth", "/auth/reset"];
