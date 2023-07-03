@@ -58,7 +58,7 @@ const Subscribe: React.FC = () => {
           {isLoading ? <Spinner /> : "Subscribe"}
         </Button>
       </YStack>
-      <StatusBar style="light" />
+      {Platform.OS === "ios" && <StatusBar style="light" />}
     </ScrollView>
   );
 };
