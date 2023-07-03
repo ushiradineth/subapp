@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Pressable } from "react-native";
+import { Platform, Pressable } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import type * as ImagePicker from "expo-image-picker";
@@ -122,7 +122,7 @@ const EditProfile = () => {
       <Button onPress={handleSubmit(onSubmit)} className="bg-background h-16 w-full">
         {isLoading || uploading ? <Spinner /> : "Update Profile"}
       </Button>
-      <StatusBar style="light" />
+      {Platform.OS === "ios" && <StatusBar style="light" />}
     </ScrollView>
   );
 };

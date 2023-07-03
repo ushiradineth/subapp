@@ -73,32 +73,45 @@ export const vendorRouter = createTRPCRouter({
       OTP += digits[Math.floor(Math.random() * 10)];
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: env.GMAIL_ADDRESS,
-        pass: env.GMAIL_PASSWORD,
-      },
-    });
-
-    const mailOptions = {
-      from: env.GMAIL_ADDRESS,
-      to: input.email,
-      subject: "One Time Password by SubM",
-      text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
-    };
-
-    transporter.sendMail(mailOptions, async function (error) {
-      if (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to send email",
+    async function SendEmail() {
+      return new Promise((resolve) => {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: env.GMAIL_ADDRESS,
+            pass: env.GMAIL_PASSWORD,
+          },
         });
-      } else {
-        await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor.id } });
-        await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor.id, otp: OTP } });
-      }
-    });
+
+        const mailOptions = {
+          from: env.GMAIL_ADDRESS,
+          to: input.email,
+          subject: "One Time Password by SubM",
+          text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
+        };
+
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        transporter.sendMail(mailOptions, async function (error) {
+          if (error) {
+            resolve(false);
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to send email",
+            });
+          } else {
+            const salt = bcrypt.genSaltSync(10);
+            const hashedOtp = bcrypt.hashSync(OTP, salt);
+
+            await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor?.id } });
+            await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id || "", otp: hashedOtp } });
+
+            resolve(true);
+          }
+        });
+      });
+    }
+
+    await SendEmail();
 
     return vendor;
   }),
@@ -116,6 +129,22 @@ export const vendorRouter = createTRPCRouter({
       }
 
       const request = await ctx.prisma.passwordResetRequest.findFirst({ where: { userId: vendor.id } });
+      
+      if (!request) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Reset request not found",
+        });
+      }
+
+      const otpVerified = bcrypt.compareSync(input.otp, request?.otp ?? "");
+
+      if (!otpVerified) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid OTP",
+        });
+      }
 
       const ONE_HOUR = 60 * 60 * 1000;
       if (new Date(request?.createdAt ?? "").getTime() + ONE_HOUR < Date.now()) {
@@ -125,14 +154,7 @@ export const vendorRouter = createTRPCRouter({
         });
       }
 
-      if (input.otp !== request?.otp) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Invalid OTP",
-        });
-      }
-
-      await ctx.prisma.passwordResetRequest.delete({ where: { id: request.id } });
+      await ctx.prisma.passwordResetRequest.delete({ where: { id: request?.id } });
 
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);

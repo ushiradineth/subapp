@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { Platform } from "react-native";
+import { Link, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -37,7 +37,7 @@ const Verify = () => {
 
   return (
     <YStack className="h-full p-8" space backgroundColor={"$background"}>
-      <StatusBar style="light" />
+      {Platform.OS === "ios" && <StatusBar style="light" />}
       <YStack>
         <Text className="text-2xl font-bold">Confirm your Identity</Text>
         <Text>Check your email for the verification code.</Text>
