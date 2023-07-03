@@ -15,6 +15,7 @@ export default function Layout() {
         options={{
           title: "Verify your identity",
           presentation: "modal",
+          headerShown: false,
         }}
       />
     </Stack>

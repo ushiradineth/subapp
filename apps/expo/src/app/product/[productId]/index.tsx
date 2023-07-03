@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
 import { ExternalLink, Star } from "lucide-react-native";
@@ -17,7 +18,7 @@ const Product: React.FC = () => {
   const [clamp, setClamp] = useState(true);
 
   if (!productId || typeof productId !== "string") throw new Error("Product id not found");
-  const { data, isLoading, refetch } = api.product.getProductPage.useQuery(
+  const { data, isLoading, refetch, isRefetching } = api.product.getProductPage.useQuery(
     { id: productId },
     {
       onSuccess(data) {
@@ -79,7 +80,11 @@ const Product: React.FC = () => {
           </YStack>
         </XStack>
         <XStack className="flex h-16 items-center justify-between">
-          {data?.subscribed ? (
+          {isRefetching ? (
+            <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
+              <Spinner />
+            </View>
+          ) : data?.subscribed ? (
             <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
               <Text className="text-accent text-[16px] font-bold">Subscribed</Text>
             </View>
@@ -151,18 +156,24 @@ const Product: React.FC = () => {
       </ScrollView>
 
       <YStack space className="p-4">
-        {data?.subscribed && (
-          <Button
-            onPress={() => {
-              router.push(
-                `${pathname}/review-product?productId=${data?.product?.id}${
-                  data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
-                }`,
-              );
-            }}
-            className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
-            <Text className="text-accent text-[16px] font-bold">{data?.review?.length || 0 > 0 ? "Edit review" : "Add review"}</Text>
+        {isRefetching ? (
+          <Button className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
+            <Spinner />
           </Button>
+        ) : (
+          data?.subscribed && (
+            <Button
+              onPress={() => {
+                router.push(
+                  `${pathname}/review-product?productId=${data?.product?.id}${
+                    data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
+                  }`,
+                );
+              }}
+              className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
+              <Text className="text-accent text-[16px] font-bold">{data?.review?.length || 0 > 0 ? "Edit review" : "Add review"}</Text>
+            </Button>
+          )
         )}
 
         <XStack className="flex items-center justify-between">
@@ -189,9 +200,14 @@ function Rating({ rating = 0, caption }: { rating: number | undefined; caption: 
       </YStack>
       <YStack className="ml-2 flex items-center justify-center">
         <XStack>
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} size={16} fill={i < rating ? theme.colors.accent : "gray"} color={i < rating ? theme.colors.accent : "gray"} />
-          ))}
+          <StarRating
+            onChange={() => undefined}
+            starStyle={{ marginLeft: 0, marginRight: 0 }}
+            starSize={20}
+            enableHalfStar
+            color={theme.colors.accent}
+            rating={rating}
+          />
         </XStack>
         <Text className="text-[10px] font-medium">{caption}</Text>
       </YStack>

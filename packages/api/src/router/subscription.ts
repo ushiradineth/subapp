@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -6,6 +7,17 @@ export const subscriptionRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ productId: z.string(), tierId: z.string(), startedAt: z.date() }))
     .mutation(async ({ ctx, input }) => {
+      const subscriptions = await ctx.prisma.subscription.findMany({
+        where: { userId: ctx.auth.id, productId: input.productId, tierId: input.tierId },
+      });
+
+      if (subscriptions.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User has already subscribed",
+        });
+      }
+
       return await ctx.prisma.subscription.create({
         data: {
           active: true,

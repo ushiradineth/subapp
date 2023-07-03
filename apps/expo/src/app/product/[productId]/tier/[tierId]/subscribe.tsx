@@ -21,7 +21,7 @@ const Subscribe: React.FC = () => {
   const [startedAt, setStartedAt] = useState(new Date());
   const { mutate, isLoading } = api.subscription.create.useMutation({
     onSuccess: () => {
-      router.push(`/home`);
+      router.push(`/product/${tier?.productId}`);
       Toast.show({ type: "success", text1: "Your subscription was successful" });
     },
     onError: () => Toast.show({ type: "error", text1: "Failed to subscribe" }),
@@ -38,7 +38,7 @@ const Subscribe: React.FC = () => {
     <ScrollView className="h-fit" backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: tier.product.name,
+          headerTitle: tier.product?.name,
           headerLeft: () => <BackButton />,
         }}
       />
@@ -54,11 +54,11 @@ const Subscribe: React.FC = () => {
             <DateTimePicker testID="dateTimePicker" value={startedAt} mode={"date"} display={"calendar"} onChange={onChange} />
           )}
         </XStack>
-        <Button onPress={() => mutate({ tierId: tierId, productId: tier.productId, startedAt })} theme="alt2">
+        <Button onPress={() => mutate({ tierId: tierId, productId: tier.productId ?? "", startedAt })} theme="alt2">
           {isLoading ? <Spinner /> : "Subscribe"}
         </Button>
       </YStack>
-      <StatusBar style="light" />
+      {Platform.OS === "ios" && <StatusBar style="light" />}
     </ScrollView>
   );
 };

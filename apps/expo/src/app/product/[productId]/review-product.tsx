@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Platform } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useRouter, useSearchParams } from "expo-router";
@@ -78,7 +79,7 @@ export default function Review() {
 
   return (
     <YStack className="h-full p-4" space backgroundColor={"$background"}>
-      <StatusBar style="light" />
+      {Platform.OS === "ios" && <StatusBar style="light" />}
       <YStack>
         <Text className="text-2xl font-bold">Share your experience</Text>
       </YStack>
