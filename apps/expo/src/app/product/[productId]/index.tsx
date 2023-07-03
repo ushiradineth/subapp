@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
 import { ExternalLink, Star } from "lucide-react-native";
@@ -199,9 +200,14 @@ function Rating({ rating = 0, caption }: { rating: number | undefined; caption: 
       </YStack>
       <YStack className="ml-2 flex items-center justify-center">
         <XStack>
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} size={16} fill={i < rating ? theme.colors.accent : "gray"} color={i < rating ? theme.colors.accent : "gray"} />
-          ))}
+          <StarRating
+            onChange={() => undefined}
+            starStyle={{ marginLeft: 0, marginRight: 0 }}
+            starSize={20}
+            enableHalfStar
+            color={theme.colors.accent}
+            rating={rating}
+          />
         </XStack>
         <Text className="text-[10px] font-medium">{caption}</Text>
       </YStack>
