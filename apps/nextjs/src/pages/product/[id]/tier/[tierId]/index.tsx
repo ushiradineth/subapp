@@ -1,10 +1,9 @@
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { BadgeCheck, LinkIcon, XCircle } from "lucide-react";
+import { LinkIcon, XCircle } from "lucide-react";
 import { getSession } from "next-auth/react";
 
-import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma, type Tier } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -43,6 +42,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!tier || tier.productId !== context.query.id) return { props: {} };
+
   if (session.user.id !== tier?.product.vendor?.id && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -53,22 +54,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: avatarFolder } = await supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).list(tier?.productId, { limit: 1 });
-
-  let logo = "";
-
-  if (avatarFolder) {
-    const { data } = supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).getPublicUrl(`${tier?.productId}/${avatarFolder[0]?.name}`);
-    logo = data.publicUrl;
-  }
-
   return {
     props: {
       tier: {
         ...tier,
         createdAt: generalizeDate(tier?.createdAt),
       },
-      logo,
+      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${tier.productId}/0.jpg`,
     },
   };
 };
@@ -86,6 +78,8 @@ interface pageProps {
 }
 
 export default function Tier({ tier, logo }: pageProps) {
+  if (!tier) return <div>Tier not found</div>;
+
   return (
     <>
       <Head>
@@ -101,12 +95,12 @@ export default function Tier({ tier, logo }: pageProps) {
                   <XCircle width={100} height={100} />
                 </AvatarFallback>
               </Avatar>
-              <div className="grid grid-flow-row md:h-fit md:gap-3">
-                <div className="flex max-w-[200px] items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">{tier.name}</div>
-                <div className="verflow-hidden max-w-[200px] truncate text-ellipsis text-sm">
+              <div className="grid max-w-[400px] grid-flow-row gap-3">
+                <div className="flex items-center gap-2 overflow-hidden truncate text-ellipsis text-xl font-semibold">{tier.name}</div>
+                <div className="overflow-hidden truncate text-ellipsis text-sm">
                   {tier.product.name} by {tier.product.vendor.name}
                 </div>
-                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">Joined {String(tier.createdAt)}</div>
+                <div className="overflow-hidden truncate text-ellipsis font-semibold">Created {String(tier.createdAt)}</div>
                 <Link className="flex items-center gap-2 text-sm font-light text-gray-400" href={"/product/" + tier.productId}>
                   <LinkIcon className="h-4 w-4" /> View product
                 </Link>

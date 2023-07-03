@@ -1,13 +1,20 @@
 import React from "react";
 import { useRouter } from "expo-router";
-import { H2, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
+
+import ButtonWide from "~/components/ui/button-wide/ButtonWide";
 
 export default function Lists() {
   const router = useRouter();
 
   return (
-    <YStack className="flex-1 items-center justify-center p-8" space>
-      <H2 className="text-center text-2xl font-bold">Lists</H2>
-    </YStack>
+    <ScrollView backgroundColor={"$background"}>
+      <YStack className="p-4" space>
+        <ButtonWide text="Current Subscriptions" justifyText="center" onPress={() => router.push("/lists/subscriptions")} />
+        <ButtonWide text="Wishlist" justifyText="center" onPress={() => router.push("/lists/wishlist")} />
+        <ButtonWide text="Subscription History" justifyText="center" onPress={() => router.push("/lists/history")} />
+        <ButtonWide text="Add custom subscriptions" justifyText="center" onPress={() => router.push("/lists/custom")} />
+      </YStack>
+    </ScrollView>
   );
 }

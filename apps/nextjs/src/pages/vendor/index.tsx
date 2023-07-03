@@ -13,8 +13,17 @@ import { api } from "~/utils/api";
 import Loader from "~/components/Loader";
 import PageNumbers from "~/components/PageNumbers";
 import Search from "~/components/Search";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "~/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { formalizeDate } from "~/lib/utils";
 
@@ -44,6 +53,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
   });
 
   const count = await prisma.vendor.count({
@@ -64,8 +80,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
+type VendorType = Vendor & {
+  _count: {
+    products: number;
+  };
+};
+
 interface pageProps {
-  vendors: Vendor[];
+  vendors: VendorType[];
   count: number;
   total: number;
 }
@@ -74,7 +96,7 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
   const router = useRouter();
   const pageNumber = Number(router.query.page || 1);
   const { data: session } = useSession();
-  const [vendors, setVendors] = useState<Vendor[]>(serverVendors);
+  const [vendors, setVendors] = useState<VendorType[]>(serverVendors);
 
   useEffect(() => {
     setVendors(serverVendors);
@@ -85,53 +107,77 @@ export default function Vendors({ vendors: serverVendors, count, total }: pagePr
       <Head>
         <title>Vendors {router.query.page && `- Page ${router.query.page as string}`}</title>
       </Head>
-      <main className="flex flex-col items-center">
-        <Search search={router.query.search as string} placeholder="Search for vendors" path={router.asPath} params={router.query} count={count} />
-        <Table className="border">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-center">ID</TableHead>
-              <TableHead className="text-center">Name</TableHead>
-              <TableHead className="text-center">Created At</TableHead>
-              {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {vendors.length !== 0 ? (
-              vendors.map((vendor, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell className="text-center">
-                      <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
-                    </TableCell>
-                    <TableCell className="text-center">{vendor.name}</TableCell>
-                    <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-4">
-                        <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
-                        <Link href={`/vendor/${vendor.id}/edit`}>
-                          <Edit />
-                        </Link>
-                      </div>
+      <main>
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendors</CardTitle>
+            <CardDescription>A list of all vendors.</CardDescription>
+            <Search
+              search={router.query.search as string}
+              placeholder="Search for vendors"
+              path={router.asPath}
+              params={router.query}
+              count={count}
+            />
+          </CardHeader>
+          <CardContent>
+            <Table className="border">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">ID</TableHead>
+                  <TableHead className="text-center">Name</TableHead>
+                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Products</TableHead>
+                  {session?.user.role === "Admin" && <TableHead className="text-center">Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {vendors.length !== 0 ? (
+                  vendors.map((vendor, index) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="text-center">
+                          <Link href={`/vendor/${vendor.id}`}>{vendor.id}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">{vendor.name}</TableCell>
+                        <TableCell className="text-center">{vendor.createdAt.toString()}</TableCell>
+                        <TableCell className="text-center">{vendor._count.products}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-4">
+                            <DeleteVendor id={vendor.id} onSuccess={() => setVendors(vendors.filter((p) => p.id !== vendor.id))} />
+                            <Link href={`/vendor/${vendor.id}/edit`}>
+                              <Edit />
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No results.
                     </TableCell>
                   </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableCaption>
-            <p>Currently, a total of {total} Vendors are on SubM</p>
-          </TableCaption>
-          <TableCaption>
-            <PageNumbers count={count} itemsPerPage={ITEMS_PER_PAGE} pageNumber={pageNumber} path={router.asPath} params={router.query} />
-          </TableCaption>
-        </Table>
+                )}
+              </TableBody>
+              <TableCaption>Currently, a total of {total} Vendors are on SubM</TableCaption>
+            </Table>
+          </CardContent>
+          {(count !== 0 && count > ITEMS_PER_PAGE) && (
+            <CardFooter className="flex justify-center">
+              <TableCaption>
+                <PageNumbers
+                  count={count}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  pageNumber={pageNumber}
+                  path={router.asPath}
+                  params={router.query}
+                />
+              </TableCaption>
+            </CardFooter>
+          )}
+        </Card>
       </main>
     </>
   );
@@ -148,7 +194,7 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
     onSuccess: () => {
       props.onSuccess();
       setDeleteMenu(false);
-      toast.success("Vendor has been delete");
+      toast.success("Vendor has been deleted");
     },
   });
 
@@ -159,7 +205,10 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>This action cannot be undone. This will permanently delete the vendor, including all their products and related subscriptions and tiers.</AlertDialogDescription>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the vendor, including all their products and related
+                subscriptions and tiers.
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setDeleteMenu(false)}>Cancel</AlertDialogCancel>
@@ -168,7 +217,9 @@ const DeleteVendor = (props: { id: string; onSuccess: () => void }) => {
           </AlertDialogContent>
         </AlertDialog>
       )}
-      <Trash onClick={() => setDeleteMenu(true)} />
+      <button onClick={() => setDeleteMenu(true)}>
+        <Trash />
+      </button>
     </>
   );
 };

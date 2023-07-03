@@ -6,6 +6,9 @@ export const env = createEnv({
     USER_ICON: z.string(),
     PRODUCT_LOGO: z.string(),
     PRODUCT_IMAGE: z.string(),
+    GMAIL_ADDRESS: z.string(),
+    GMAIL_PASSWORD: z.string(),
+    SUPABASE_URL: z.string(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_PROJECT: z.string(),
@@ -15,8 +18,11 @@ export const env = createEnv({
     USER_ICON: process.env.NEXT_PUBLIC_USER_ICON,
     PRODUCT_LOGO: process.env.NEXT_PUBLIC_PRODUCT_LOGO,
     PRODUCT_IMAGE: process.env.NEXT_PUBLIC_PRODUCT_IMAGE,
+    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PROJECT: process.env.NEXT_PUBLIC_SUPABASE_PROJECT,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
+    GMAIL_PASSWORD: process.env.GMAIL_PASSWORD,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });

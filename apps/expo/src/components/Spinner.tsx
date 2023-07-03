@@ -1,10 +1,19 @@
 import React from "react";
-import { Spinner, YStack } from "tamagui";
+import { Spinner as Loader, YStack } from "tamagui";
 
-export const SpinnerComponent = () => {
-  return (
-    <YStack flex={1} alignItems="center" justifyContent="center" space={4}>
-      <Spinner size="large" color="$accent" />
-    </YStack>
-  );
+interface Props {
+  background?: boolean;
+  color?: string;
+}
+
+export const Spinner = ({ background, color = "$accent" }: Props) => {
+  if (background) {
+    return (
+      <YStack flex={1} alignItems="center" justifyContent="center" space={4}>
+        <Loader color={color} />
+      </YStack>
+    );
+  }
+
+  return <Loader color={color} />;
 };

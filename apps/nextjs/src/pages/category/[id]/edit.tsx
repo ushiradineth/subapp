@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,10 +10,13 @@ import { prisma, type Category } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { CategorySchema, type CategoryFormData } from "~/utils/validators";
+import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { env } from "~/env.mjs";
 import { formalizeDate } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -31,6 +34,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const category = await prisma.category.findUnique({ where: { id: context.params?.id as string } });
 
+  if (!category) return { props: {} };
+
   return {
     props: {
       category: {
@@ -45,14 +50,25 @@ interface pageProps {
   category: Category;
 }
 
+type ImageState = {
+  completed: boolean;
+  loading: boolean;
+};
+
 export default function EditCategory({ category }: pageProps) {
+  const [upload, setUpload] = useState(false);
+  const [iconState, setIconState] = useState<ImageState>({ completed: false, loading: false });
+
   const form = useForm<CategoryFormData>({
     resolver: yupResolver(CategorySchema),
   });
 
   const { mutate, isLoading } = api.category.update.useMutation({
     onError: (error) => toast.error(error.message),
-    onSuccess: () => toast.success("Category has been created"),
+    onSuccess: () => {
+      setUpload(true);
+      setIconState({ completed: false, loading: true });
+    },
   });
 
   const onSubmit = (data: CategoryFormData) => {
@@ -60,9 +76,19 @@ export default function EditCategory({ category }: pageProps) {
   };
 
   useEffect(() => {
-    form.setValue("Name", category.name);
-    form.setValue("Description", category.description);
+    if (category) {
+      form.setValue("Name", category.name);
+      form.setValue("Description", category.description);
+    }
   }, [category]);
+
+  useEffect(() => {
+    if (iconState.completed) {
+      toast.success("Category has been updated");
+    }
+  }, [iconState.completed]);
+
+  if (!category) return <div>Category not found</div>;
 
   return (
     <>
@@ -70,39 +96,72 @@ export default function EditCategory({ category }: pageProps) {
         <title>Edit {category.name} - SubM</title>
       </Head>
       <main>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
-            <FormField
-              control={form.control}
-              name="Name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name of the Category" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Brief description of the Category" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" loading={isLoading}>
-              Submit
-            </Button>
-          </form>
-        </Form>
+        <Card>
+          <CardHeader>
+            <CardTitle>Category</CardTitle>
+            <CardDescription>Edit &quot;{category.name}&quot;</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
+                <FormField
+                  control={form.control}
+                  name="Icon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category Icon</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          upload={upload}
+                          itemId={category.id}
+                          onUpload={() => setIconState({ completed: true, loading: false })}
+                          setUpload={(value: boolean) => setUpload(value)}
+                          setLoading={(value: boolean) =>
+                            setIconState((prev) => {
+                              return { ...prev, loading: value };
+                            })
+                          }
+                          setValue={(value: string) => form.setValue("Icon", value)}
+                          bucket={env.NEXT_PUBLIC_CATEGORY_ICON}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Name of the Category" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Brief description of the Category" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" loading={isLoading || iconState.loading}>
+                  Submit
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
       </main>
     </>
   );

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { BadgeCheck, LinkIcon, UserCircle2 } from "lucide-react";
 import { getSession } from "next-auth/react";
 
-import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma, type Vendor } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -30,6 +29,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!vendor) return { props: {} };
+
   if (session.user.id !== vendor?.id && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -40,21 +41,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: avatarFolder } = await supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).list(vendor?.id, { limit: 1 });
-
-  let avatar = "";
-
-  if (avatarFolder) {
-    const { data } = supabase.storage.from(env.NEXT_PUBLIC_USER_ICON).getPublicUrl(`${vendor?.id}/${avatarFolder[0]?.name}`);
-    avatar = data.publicUrl;
-  }
   return {
     props: {
       vendor: {
         ...vendor,
         createdAt: generalizeDate(vendor?.createdAt),
       },
-      avatar,
+      avatar: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${vendor.id}/0.jpg`,
     },
   };
 };
@@ -65,6 +58,8 @@ interface pageProps {
 }
 
 export default function Vendor({ vendor, avatar }: pageProps) {
+  if (!vendor) return <div>Vendor not found</div>;
+
   return (
     <>
       <Head>

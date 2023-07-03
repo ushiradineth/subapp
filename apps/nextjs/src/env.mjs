@@ -17,8 +17,11 @@ export const env = createEnv({
 
   client: {
     NEXT_PUBLIC_USER_ICON: z.string(),
+    NEXT_PUBLIC_CATEGORY_ICON: z.string(),
     NEXT_PUBLIC_PRODUCT_LOGO: z.string(),
     NEXT_PUBLIC_PRODUCT_IMAGE: z.string(),
+    NEXT_PUBLIC_GMAIL_ADDRESS: z.string(),
+    NEXT_PUBLIC_SUPABASE_URL: z.string()
   },
 
   runtimeEnv: {
@@ -26,8 +29,11 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_USER_ICON: process.env.NEXT_PUBLIC_USER_ICON,
     NEXT_PUBLIC_PRODUCT_LOGO: process.env.NEXT_PUBLIC_PRODUCT_LOGO,
     NEXT_PUBLIC_PRODUCT_IMAGE: process.env.NEXT_PUBLIC_PRODUCT_IMAGE,
+    NEXT_PUBLIC_GMAIL_ADDRESS: process.env.NEXT_PUBLIC_GMAIL_ADDRESS,
+    NEXT_PUBLIC_CATEGORY_ICON: process.env.NEXT_PUBLIC_CATEGORY_ICON,
   },
 });

@@ -27,6 +27,10 @@ import { supabase } from "./lib/supabase";
  */
 type CreateContextOptions = {
   session: Session | null;
+  auth: {
+    id: string;
+    role: string;
+  };
 };
 
 /**
@@ -43,6 +47,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
     session: opts.session,
     prisma,
     supabase,
+    auth: opts.auth,
   };
 };
 
@@ -59,6 +64,10 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     session,
+    auth: {
+      id: req.headers.authorization ?? "",
+      role: req.headers.authorization !== "" ? "User" : "",
+    },
   });
 };
 
@@ -108,14 +117,28 @@ export const publicProcedure = t.procedure;
  * procedure
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user) {
+  if (!ctx.session?.user && !ctx.auth.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
+  if (ctx.auth.id) {
+    return next({
+      ctx: {
+        auth: { id: ctx.auth.id, role: ctx.auth.role },
+      },
+    });
+  }
+
+  if (ctx.session?.user) {
+    return next({
+      ctx: {
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  }
+
   return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
+    ctx: {},
   });
 });
 

@@ -7,6 +7,7 @@ const tierCreateValidation = z.object({
   period: z.number(),
   price: z.number(),
   description: z.string(),
+  points: z.array(z.string()),
   productId: z.string(),
 });
 
@@ -16,6 +17,7 @@ const tierUpdateValidation = z.object({
   period: z.number(),
   price: z.number(),
   description: z.string(),
+  points: z.array(z.string()),
 });
 
 export const tierRouter = createTRPCRouter({
@@ -26,6 +28,7 @@ export const tierRouter = createTRPCRouter({
         period: input.period,
         price: input.price,
         description: input.description,
+        points: input.points,
         product: { connect: { id: input.productId } },
       },
     });
@@ -39,6 +42,7 @@ export const tierRouter = createTRPCRouter({
         period: input.period,
         price: input.price,
         description: input.description,
+        points: input.points,
       },
     });
 
@@ -49,5 +53,20 @@ export const tierRouter = createTRPCRouter({
     const tier = await ctx.prisma.tier.delete({ where: { id: input.id } });
 
     return tier;
+  }),
+
+  getByProductId: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return await ctx.prisma.tier.findMany({ where: { product: { id: input.id } } });
+  }),
+
+  getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return await ctx.prisma.tier.findUnique({
+      where: { id: input.id },
+      include: {
+        product: {
+          select: { name: true, link: true },
+        },
+      },
+    });
   }),
 });

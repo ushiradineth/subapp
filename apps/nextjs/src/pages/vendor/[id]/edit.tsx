@@ -9,9 +9,10 @@ import { toast } from "react-toastify";
 import { prisma, type Vendor } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { UserSchema, type UserFormData } from "~/utils/validators";
+import { UserEditFormSchema, type UserEditFormData } from "~/utils/validators";
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { env } from "~/env.mjs";
@@ -32,6 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const vendor = await prisma.vendor.findUnique({ where: { id: context.params?.id as string } });
 
+  if (!vendor) return { props: {} };
+
   return {
     props: {
       vendor: {
@@ -50,8 +53,8 @@ export default function EditVendor({ vendor }: pageProps) {
   const [loading, setLoading] = useState(false);
   const [upload, setUpload] = useState(false);
 
-  const form = useForm<UserFormData>({
-    resolver: yupResolver(UserSchema),
+  const form = useForm<UserEditFormData>({
+    resolver: yupResolver(UserEditFormSchema),
   });
 
   const { mutate, isLoading } = api.vendor.update.useMutation({
@@ -62,9 +65,9 @@ export default function EditVendor({ vendor }: pageProps) {
     },
   });
 
-  const onSubmit = (data: UserFormData) => {
-    if (data.Name !== vendor.name) {
-      mutate({ id: vendor.id, name: data.Name });
+  const onSubmit = (data: UserEditFormData) => {
+    if (data.Name !== vendor.name || data.Password !== "") {
+      mutate({ id: vendor.id, name: data.Name, password: data.Password || "" });
     }
     if (typeof form.watch("Image") !== "undefined" && form.watch("Image") !== "") {
       setUpload(true);
@@ -72,11 +75,13 @@ export default function EditVendor({ vendor }: pageProps) {
   };
 
   useEffect(() => {
-    if (vendor.name && vendor.email) {
+    if (vendor && vendor.email) {
       form.setValue("Name", vendor.name);
       form.setValue("Email", vendor.email);
     }
   }, [vendor]);
+
+  if (!vendor) return <div>Vendor not found</div>;
 
   return (
     <>
@@ -84,52 +89,73 @@ export default function EditVendor({ vendor }: pageProps) {
         <title>Edit Vendor {vendor.name}</title>
       </Head>
       <main>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
-            <FormField
-              control={form.control}
-              name="Image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>User Image</FormLabel>
-                  <FormControl>
-                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} delete={true} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Email of the vendor" disabled={true} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name of the vendor" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "")}>
-              Submit
-            </Button>
-          </form>
-        </Form>
+        <Card>
+          <CardHeader>
+            <CardTitle>Vendor</CardTitle>
+            <CardDescription>Edit &quot;{vendor.name}&quot;</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
+                <FormField
+                  control={form.control}
+                  name="Image"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>User Image</FormLabel>
+                      <FormControl>
+                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} setLoading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email of the vendor" disabled={true} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Name of the vendor" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Password of the user" type="password" {...field} value={form.getValues("Password") || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "") && form.watch("Password") === ""}>
+                  Submit
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
       </main>
     </>
   );

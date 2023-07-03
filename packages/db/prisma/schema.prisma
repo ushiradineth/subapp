@@ -90,7 +90,7 @@ model User {
   wishlist             Product[]      @relation("wishlist")
   productsInterested   Product[]      @relation("productsInterested")
   productsUninterested Product[]      @relation("productsUninterested")
-  templates            Product[]      @relation("userTemplates")
+  templates            Template[]     @relation("userTemplates")
   categoriesFollowing  Category[]     @relation("categoriesFollowing")
   categoriesHidden     Category[]     @relation("categoriesHidden")
   notifications        Notification[] @relation("notifications")
@@ -100,29 +100,42 @@ model User {
 model Subscription {
   id        String    @id @default(cuid())
   user      User      @relation("userSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
-  product   Product   @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
+  product   Product?  @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
+  template  Template? @relation("templateSubscription", fields: [templateId], references: [id], onDelete: Cascade)
+  tier      Tier      @relation("tierSubscriptions", fields: [tierId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
+  startedAt DateTime  @default(now())
   deletedAt DateTime?
-  active    Boolean
-  reccuring Boolean
-  userId    String
-  productId String
+  active    Boolean   @default(true)
+
+  userId     String
+  productId  String?
+  tierId     String
+  templateId String? @unique
 
   @@index([userId])
   @@index([productId])
+  @@index([tierId])
+  @@index([templateId])
 }
 
 model Tier {
-  id          String   @id @default(cuid())
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId   String
-  period      Int
-  price       Float
-  description String?
-  name        String?
-  createdAt   DateTime @default(now())
+  id            String         @id @default(cuid())
+  product       Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  template      Template?      @relation("templateTier", fields: [templateId], references: [id])
+  period        Int
+  price         Float
+  description   String?
+  name          String?
+  points        String[]
+  createdAt     DateTime       @default(now())
+  subscriptions Subscription[] @relation("tierSubscriptions")
+
+  productId  String?
+  templateId String? @unique
 
   @@index([productId])
+  @@index([templateId])
 }
 
 model Product {
@@ -131,7 +144,7 @@ model Product {
   description       String
   verified          Boolean
   tiers             Tier[]
-  vendor            Vendor?        @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
+  vendor            Vendor         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
   wishlistedUsers   User[]         @relation("wishlist")
   subscriptions     Subscription[] @relation("productSubscriptions")
   usersInterested   User[]         @relation("productsInterested")
@@ -141,15 +154,26 @@ model Product {
   link              String?
   reviews           Review[]       @relation("productReviews")
 
-  user         User?          @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
   productNotifications Notification[] @relation("notificationsProduct")
 
-  vendorId   String?
-  userId     String?
+  vendorId   String
   categoryId String
 
   @@index([categoryId])
   @@index([vendorId])
+}
+
+model Template {
+  id           String        @id @default(cuid())
+  name         String
+  description  String
+  createdAt    DateTime      @default(now())
+  link         String?
+  user         User          @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  subscription Subscription? @relation("templateSubscription")
+  tier         Tier?         @relation("templateTier")
+
   @@index([userId])
 }
 
@@ -219,4 +243,11 @@ model Notification {
   @@index([reviewId])
   @@index([commentId])
   @@index([categoryId])
+}
+
+model PasswordResetRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  otp       String
+  createdAt DateTime @default(now())
 }

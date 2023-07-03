@@ -3,7 +3,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, ChevronLeft, ChevronRight, Circle, LinkIcon, XCircle } from "lucide-react";
+import { BadgeCheck, ChevronLeft, ChevronRight, Circle, ImageOff, LinkIcon, UserCircle2 } from "lucide-react";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
@@ -11,6 +11,7 @@ import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
+import Caption from "~/components/Caption";
 import { type ProductWithDetails } from "~/components/Products";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -50,6 +51,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  if (!product) return { props: {} };
+
   if (session.user.id !== product?.vendorId && session.user.role !== "Admin") {
     return {
       redirect: {
@@ -69,15 +72,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     images.push({ url: url?.publicUrl ?? "" });
   });
 
-  const { data: logoFolder } = await supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).list(product?.id, { limit: 1 });
-
-  let logo = "";
-
-  if (logoFolder) {
-    const { data } = supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_LOGO).getPublicUrl(`${product?.id}/${logoFolder[0]?.name}`);
-    logo = data.publicUrl;
-  }
-
   return {
     props: {
       product: {
@@ -85,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: generalizeDate(product?.createdAt),
       },
       images,
-      logo,
+      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${product.id}/0.jpg`,
     },
   };
 };
@@ -95,12 +89,38 @@ const ImageView = ({ images }: { images: { url: string }[] }) => {
 
   return (
     <div className={"grid h-full w-[400px] transform select-none place-items-center rounded-2xl border p-8 text-gray-300"}>
-      <div className="flex h-[300px] w-full items-center justify-center transition-all duration-300">
-        <ChevronLeft onClick={() => index > 0 && setIndex(index - 1)} className={"fixed left-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " + (index > 0 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")} />
-        <Image src={images[index]?.url || ""} key="image" className="h-full w-full object-contain" height={1000} width={1000} alt={"images"} />
-        <ChevronRight onClick={() => index < (images.length || 0) - 1 && setIndex(index + 1)} className={"fixed right-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " + (index < (images.length || 0) - 1 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")} />
-        <Bullets count={images.length} index={index} setIndex={setIndex} />
-      </div>
+      {images.length === 0 ? (
+        <>
+          <ImageOff width={200} height={200} />
+          <Caption>No product images</Caption>
+        </>
+      ) : (
+        <div className="flex h-[300px] w-full items-center justify-center transition-all duration-300">
+          <ChevronLeft
+            onClick={() => index > 0 && setIndex(index - 1)}
+            className={
+              "fixed left-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " +
+              (index > 0 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")
+            }
+          />
+          <Image
+            src={images[index]?.url || ""}
+            key="image"
+            className="h-full w-full object-contain"
+            height={1000}
+            width={1000}
+            alt={"images"}
+          />
+          <ChevronRight
+            onClick={() => index < (images.length || 0) - 1 && setIndex(index + 1)}
+            className={
+              "fixed right-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " +
+              (index < (images.length || 0) - 1 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")
+            }
+          />
+          <Bullets count={images.length} index={index} setIndex={setIndex} />
+        </div>
+      )}
     </div>
   );
 };
@@ -134,6 +154,8 @@ export default function Product({ product, images, logo }: pageProps) {
     },
   });
 
+  if (!product) return <div>Product not found</div>;
+
   return (
     <>
       <Head>
@@ -146,7 +168,7 @@ export default function Product({ product, images, logo }: pageProps) {
               <Avatar>
                 <AvatarImage src={logo} alt="Product Avatar" width={200} height={200} />
                 <AvatarFallback>
-                  <XCircle width={200} height={200} />
+                  <UserCircle2 width={200} height={200} />
                 </AvatarFallback>
               </Avatar>
               <div className="grid grid-flow-row md:h-fit md:gap-3">
@@ -157,7 +179,9 @@ export default function Product({ product, images, logo }: pageProps) {
                   </div>
                   {product.verified && <BadgeCheck className="text-green-500" />}
                 </div>
-                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">Created {String(product.createdAt)}</div>
+                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">
+                  Created {String(product.createdAt)}
+                </div>
                 <Link className="flex items-center gap-2 text-sm font-light text-gray-400" href={product.link || ""}>
                   <LinkIcon className="h-4 w-4" /> Visit the product website
                 </Link>

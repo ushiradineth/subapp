@@ -7,7 +7,9 @@ export const nameValidator = yup.string().min(1).max(100).required();
 export const urlValidator = yup.string().url().required();
 export const fileValidator = yup.string().required();
 export const numberValidator = yup.number().required();
+export const pointsValidator = yup.array(yup.string().min(1).max(200).required()).nonNullable().required();
 export const periodValidtor = yup.number().min(1).max(365).oneOf([1, 7, 28, 365], "Period has to be either 1, 7, 28, or 365").required();
+export const otpValidtor = yup.string().min(1).max(6).required();
 
 export const passwordValidator = yup
   .string()
@@ -47,9 +49,30 @@ export const RegisterSchema = yup
 
 export type RegisterFormData = yup.InferType<typeof RegisterSchema>;
 
+export const ForgetPasswordSchema = yup
+  .object()
+  .shape({
+    Email: emailValidator,
+  })
+  .required();
+
+export type ForgetPasswordFormData = yup.InferType<typeof ForgetPasswordSchema>;
+
+export const ResetPasswordSchema = yup
+  .object()
+  .shape({
+    OTP: otpValidtor,
+    Password: passwordValidator,
+  })
+  .required();
+
+export type ResetPasswordFormData = yup.InferType<typeof ResetPasswordSchema>;
+
 export const TierSchema = yup
   .object()
   .shape({
+    Point: yup.string().min(1).max(200),
+    Points: pointsValidator,
     Period: periodValidtor,
     Price: numberValidator,
     Description: textValidator,
@@ -76,6 +99,7 @@ export type ProductFormData = yup.InferType<typeof ProductSchema>;
 export const CategorySchema = yup
   .object()
   .shape({
+    Icon: fileValidator,
     Description: textValidator,
     Name: nameValidator,
   })
@@ -93,3 +117,15 @@ export const UserSchema = yup
   .required();
 
 export type UserFormData = yup.InferType<typeof UserSchema>;
+
+export const UserEditFormSchema = yup
+  .object()
+  .shape({
+    Image: fileValidator,
+    Password: passwordValidator.notRequired(),
+    Name: nameValidator,
+    Email: emailValidator,
+  })
+  .required();
+
+export type UserEditFormData = yup.InferType<typeof UserEditFormSchema>;

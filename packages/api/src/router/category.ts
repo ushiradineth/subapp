@@ -21,4 +21,21 @@ export const categoryRouter = createTRPCRouter({
       },
     });
   }),
+
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.category.findMany({
+      orderBy: { products: { _count: "desc" } },
+      include: { _count: { select: { products: true } } },
+    });
+  }),
+
+  getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return await ctx.prisma.category.findUnique({
+      where: { id: input.id },
+      include: {
+        products: { select: { _count: { select: { subscriptions: true } }, name: true, id: true } },
+        _count: { select: { products: true } },
+      },
+    });
+  }),
 });

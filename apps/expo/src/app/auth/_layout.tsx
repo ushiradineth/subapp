@@ -4,27 +4,21 @@ export default function Layout() {
   return (
     <Stack>
       <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="login"
         options={{
-          title: "Login",
+          title: "Login to SubM",
         }}
       />
       <Stack.Screen
         name="register"
         options={{
-          title: "Register",
+          title: "Register to SubM",
         }}
       />
       <Stack.Screen
-        name="password-reset"
+        name="reset"
         options={{
-          title: "Reset Password",
+          title: "Reset your Password",
         }}
       />
     </Stack>

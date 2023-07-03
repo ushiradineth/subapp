@@ -1,49 +1,51 @@
 import React from "react";
-import { useColorScheme } from "react-native";
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 import { useFonts } from "expo-font";
-import { ToastProvider } from "@tamagui/toast";
+import { SplashScreen } from "expo-router";
 import { TamaguiProvider, Theme } from "tamagui";
 
 import config from "../../tamagui.config";
-import { SplashScreen } from "expo-router";
-
-const ThemeContext = React.createContext<{
-  theme: "light" | "dark" | "useColorScheme";
-  setTheme: (theme: "light" | "dark") => void;
-}>({
-  theme: "light",
-  setTheme: (theme) => console.warn("no theme provided"),
-});
-
-export const useTheme = () => React.useContext(ThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const color = useColorScheme();
-  const [theme, setTheme] = React.useState<"light" | "dark" | "uCS">(color === "light" ? "light" : "dark");
-  const [internal, setInternal] = React.useState<"light" | "dark">(color === "light" ? "light" : "dark");
-
-  React.useEffect(() => {
-    if (theme === "uCS") setInternal(color === "light" ? "light" : "dark");
-    else setInternal(theme);
-  }, [theme]);
-
   const [loaded] = useFonts({
     Montserrat: require("../../assets/Montserrat-Regular.ttf"),
     MontserratBold: require("../../assets/Montserrat-Bold.ttf"),
   });
 
   return (
-    <ThemeContext.Provider value={{ theme: internal, setTheme }}>
-      <TamaguiProvider config={config}>
-          <Theme name={internal}>
-            {loaded ? (
-              children
-            ) : (
-              <SplashScreen />
-            )}
-          </Theme>
-          <ToastProvider />
-      </TamaguiProvider>
-    </ThemeContext.Provider>
+    <TamaguiProvider config={config}>
+      <Theme name={"light"}>{loaded ? children : <SplashScreen />}</Theme>
+      <Toast
+        position="bottom"
+        bottomOffset={20}
+        visibilityTime={2500}
+        config={{
+          success: (props) => (
+            <BaseToast
+              {...props}
+              style={{ borderLeftColor: "green", height: "100%", paddingVertical: 10 }}
+              text1Style={{
+                fontSize: 17,
+              }}
+              text2Style={{
+                fontSize: 15,
+              }}
+            />
+          ),
+          error: (props) => (
+            <ErrorToast
+              {...props}
+              style={{ borderLeftColor: "red", height: "100%", paddingVertical: 10 }}
+              text1Style={{
+                fontSize: 17,
+              }}
+              text2Style={{
+                fontSize: 15,
+              }}
+            />
+          ),
+        }}
+      />
+    </TamaguiProvider>
   );
 };

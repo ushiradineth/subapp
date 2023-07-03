@@ -13,6 +13,7 @@ import { api } from "~/utils/api";
 import { UserSchema, type UserFormData } from "~/utils/validators";
 import { ImageUpload } from "~/components/ImageUpload";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { env } from "~/env.mjs";
@@ -31,7 +32,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const user = session?.user.role === "Admin" ? await prisma.admin.findUnique({ where: { id: session?.user.id } }) : await prisma.vendor.findUnique({ where: { id: session?.user.id } });
+  const user =
+    session?.user.role === "Admin"
+      ? await prisma.admin.findUnique({ where: { id: session?.user.id } })
+      : await prisma.vendor.findUnique({ where: { id: session?.user.id } });
 
   return {
     props: {
@@ -96,52 +100,71 @@ export default function Settings({ user }: pageProps) {
         <title>Settings - SubM</title>
       </Head>
       <main>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
-            <FormField
-              control={form.control}
-              name="Image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>User Image</FormLabel>
-                  <FormControl>
-                    <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={user.id} loading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} onUpload={() => toast.success("Image has been uploaded")} bucket={env.NEXT_PUBLIC_USER_ICON} delete={true} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Email of the user" disabled={true} defaultValue={user.email || ""} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="Name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name of the user" defaultValue={user.name || ""} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" loading={isLoadingAdmin || isLoadingVendor || loading} disabled={form.watch("Name") === user.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "")}>
-              Submit
-            </Button>
-          </form>
-        </Form>
+        <Card>
+          <CardHeader>
+            <CardTitle>Settings</CardTitle>
+            <CardDescription>Manage your profile</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-[400px] space-y-8">
+                <FormField
+                  control={form.control}
+                  name="Image"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>User Image</FormLabel>
+                      <FormControl>
+                        <ImageUpload
+                          upload={upload}
+                          setUpload={(value: boolean) => setUpload(value)}
+                          itemId={user.id}
+                          setLoading={(value: boolean) => setLoading(value)}
+                          setValue={(value: string) => form.setValue("Image", value)}
+                          onUpload={() => toast.success("Image has been uploaded")}
+                          bucket={env.NEXT_PUBLIC_USER_ICON}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email of the user" disabled={true} defaultValue={user.email || ""} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="Name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Name of the user" defaultValue={user.name || ""} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="submit"
+                  loading={isLoadingAdmin || isLoadingVendor || loading}
+                  disabled={form.watch("Name") === user.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "")}>
+                  Submit
+                </Button>
+              </form>
+            </Form>{" "}
+          </CardContent>
+        </Card>
       </main>
     </>
   );

@@ -4,7 +4,10 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        <meta name="description" content="SubM by Ushira Dineth" />
+        <meta
+          name="description"
+          content="SubM: Subscription management platform for small businesses. Connect subscriptions, consumers & providers. Manage all in one place."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <body>
