@@ -88,7 +88,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     include: {
       _count: {
         select: {
-          subscriptions: true,
+          subscriptions: {
+            where: { active: true },
+          },
         },
       },
     },

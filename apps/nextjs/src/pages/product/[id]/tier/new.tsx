@@ -70,8 +70,6 @@ export default function NewTier() {
   });
 
   const onSubmit = async (data: TierFormData) => {
-    console.log("ad");
-
     mutate({
       name: data.Name,
       description: data.Description,

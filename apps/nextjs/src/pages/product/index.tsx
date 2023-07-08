@@ -22,6 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const search = context.query.search ? (context.query.search as string).split(" ").join(" | ") : "";
+  const showall = context.query.showall ? (context.query.showall as string) : "";
 
   const searchQuery = {
     OR: [
@@ -45,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? {}
       : { vendorId: { equals: session?.user.id } };
 
-  const filter = session.user.role === "Admin" ? { verified: true } : {};
+  const filter = session.user.role === "Admin" ? (showall === "true" ? {} : { verified: true }) : {};
 
   const products = await prisma.product.findMany({
     take: ITEMS_PER_PAGE,
@@ -75,8 +76,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
   });
-
-  console.log(products);
 
   const count = await prisma.product.count({ where: { ...where, ...filter } });
 
