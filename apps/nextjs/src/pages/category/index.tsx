@@ -7,10 +7,10 @@ import { getSession, useSession } from "next-auth/react";
 
 import { prisma, type Category } from "@acme/db";
 
-import PageNumbers from "~/components/PageNumbers";
-import Search from "~/components/Search";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import PageNumbers from "~/components/Atoms/PageNumbers";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import Search from "~/components/Molecules/Search";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "~/components/Molecules/Table";
 import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;

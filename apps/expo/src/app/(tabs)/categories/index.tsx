@@ -4,9 +4,9 @@ import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { Spinner } from "~/components/Spinner";
-import CardItemWide from "~/components/ui/card-item-wide/CardItemWide";
-import NoData from "~/components/NoData";
+import CardItemWide from "~/components/Atoms/CardItemWide";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 export default function Categories() {
   const router = useRouter();

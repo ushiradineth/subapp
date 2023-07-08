@@ -8,8 +8,8 @@ import { Button, H2, Image, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { Spinner } from "~/components/Spinner";
-import ReviewItem from "~/components/ui/review-item/ReviewItem";
+import { Spinner } from "~/components/Atoms/Spinner";
+import ReviewItem from "~/components/Molecules/ReviewItem";
 
 const Product: React.FC = () => {
   const router = useRouter();

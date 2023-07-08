@@ -13,7 +13,7 @@ import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
 import { supabase } from "~/utils/supabase";
 import { UserSchema, type UserFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
 
 const EditProfile = () => {

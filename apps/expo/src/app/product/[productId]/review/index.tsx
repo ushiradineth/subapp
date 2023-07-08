@@ -3,9 +3,9 @@ import { useSearchParams } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { Spinner } from "~/components/Spinner";
-import ReviewItem from "~/components/ui/review-item/ReviewItem";
-import NoData from "~/components/NoData";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
+import ReviewItem from "~/components/Molecules/ReviewItem";
 
 const Reviews = () => {
   const { productId } = useSearchParams();

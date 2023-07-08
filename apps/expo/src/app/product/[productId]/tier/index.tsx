@@ -2,9 +2,9 @@ import { useSearchParams } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { Spinner } from "~/components/Spinner";
-import TierItem from "~/components/ui/tier-item/TierItem";
-import NoData from "~/components/NoData";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
+import TierItem from "~/components/Molecules/TierItem";
 
 export default function Tiers() {
   const { productId } = useSearchParams();

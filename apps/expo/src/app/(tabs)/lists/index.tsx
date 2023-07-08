@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
 
-import ButtonWide from "~/components/ui/button-wide/ButtonWide";
+import ButtonWide from "~/components/Atoms/ButtonWide";
 
 export default function Lists() {
   const router = useRouter();

@@ -7,8 +7,8 @@ import { toast } from "react-toastify";
 
 import { supabase } from "@acme/api/src/lib/supabase";
 
-import Loader from "./Loader";
-import { Card } from "./ui/card";
+import Loader from "../Atoms/Loader";
+import { Card } from "./Card";
 
 type props = {
   multiple?: boolean;

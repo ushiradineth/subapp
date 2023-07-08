@@ -3,7 +3,7 @@ import { getSession, useSession } from "next-auth/react";
 
 import { prisma } from "@acme/db";
 
-import Products, { type ProductWithDetails } from "~/components/Products";
+import Products, { type ProductWithDetails } from "~/components/Templates/Products";
 import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;

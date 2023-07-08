@@ -32,3 +32,13 @@ export function formalizeDate(input: any) {
 export function generalizeDate(input: any) {
   return moment(input).fromNow();
 }
+
+export function getPercentage(current: number, previous: number) {
+  if (previous === 0) {
+    current = current + 1;
+    previous = previous + 1;
+  }
+
+  const percentage = ((current - previous) / Math.abs(previous)) * 100;
+  return Number.isNaN(percentage) ? 0 : !Number.isFinite(percentage) ? -9999 : percentage.toPrecision(4);
+}

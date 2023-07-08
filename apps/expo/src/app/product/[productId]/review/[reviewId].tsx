@@ -7,9 +7,9 @@ import { Input, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { CommentSchema, type CommentFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
-import CommentItem from "~/components/ui/comment-item/CommentItem";
-import ReviewItem from "~/components/ui/review-item/ReviewItem";
+import { Spinner } from "~/components/Atoms/Spinner";
+import CommentItem from "~/components/Molecules/CommentItem";
+import ReviewItem from "~/components/Molecules/ReviewItem";
 
 const Review: React.FC = () => {
   const { reviewId } = useSearchParams();

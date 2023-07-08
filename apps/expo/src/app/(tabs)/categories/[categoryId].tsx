@@ -4,9 +4,9 @@ import { Stack, useRouter, useSearchParams } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import NoData from "~/components/NoData";
-import { Spinner } from "~/components/Spinner";
-import CardItemWide from "~/components/ui/card-item-wide/CardItemWide";
+import CardItemWide from "~/components/Atoms/CardItemWide";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Category: React.FC = () => {
   const { categoryId } = useSearchParams();

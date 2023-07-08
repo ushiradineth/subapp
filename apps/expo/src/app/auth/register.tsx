@@ -6,7 +6,7 @@ import { Button, H2, H6, Input, ScrollView, Text, XStack, YStack } from "tamagui
 
 import { api } from "~/utils/api";
 import { RegisterSchema, type RegisterFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 export default function Register() {
   const router = useRouter();
