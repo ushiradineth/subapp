@@ -47,7 +47,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     include: {
       _count: {
         select: {
-          products: true,
+          products: {
+            where: { verified: true },
+          },
         },
       },
     },

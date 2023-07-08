@@ -95,7 +95,7 @@ export default function Requests({ products, count, total }: pageProps) {
       total={total}
       itemsPerPage={ITEMS_PER_PAGE}
       requests={true}
-      title="Products"
+      title="Product requests"
       description={"A list of all products that are awaiting approval."}
     />
   );
