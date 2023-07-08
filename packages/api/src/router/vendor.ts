@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
+import moment from "moment";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 
@@ -90,7 +91,6 @@ export const vendorRouter = createTRPCRouter({
           text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         transporter.sendMail(mailOptions, async function (error) {
           if (error) {
             resolve(false);
@@ -103,7 +103,7 @@ export const vendorRouter = createTRPCRouter({
             const hashedOtp = bcrypt.hashSync(OTP, salt);
 
             await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor?.id } });
-            await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id || "", otp: hashedOtp } });
+            await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id ?? "", otp: hashedOtp } });
 
             resolve(true);
           }
@@ -129,7 +129,7 @@ export const vendorRouter = createTRPCRouter({
       }
 
       const request = await ctx.prisma.passwordResetRequest.findFirst({ where: { userId: vendor.id } });
-      
+
       if (!request) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -161,4 +161,178 @@ export const vendorRouter = createTRPCRouter({
 
       return await ctx.prisma.vendor.update({ where: { id: vendor.id }, data: { password: hashedPassword } });
     }),
+
+  dashboard: protectedProcedure.query(async ({ ctx }) => {
+    const currentWeekUsers = await ctx.prisma.user.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(7, "d").toDate() },
+        subscriptions: { every: { product: { vendorId: ctx.session?.user.id } } },
+      },
+    });
+    const previousWeekUsers = await ctx.prisma.user.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+        subscriptions: { every: { product: { vendorId: ctx.session?.user.id } } },
+      },
+    });
+
+    const currentWeekProducts = await ctx.prisma.product.findMany({
+      where: { createdAt: { gte: moment().subtract(7, "d").toDate() }, vendorId: ctx.session?.user.id },
+    });
+    const previousWeekProducts = await ctx.prisma.product.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+        vendorId: ctx.session?.user.id,
+      },
+    });
+
+    const currentWeekSubscriptions = await ctx.prisma.subscription.findMany({
+      where: { createdAt: { gte: moment().subtract(7, "d").toDate() }, product: { vendorId: ctx.session?.user.id } },
+    });
+    const previousWeekSubscriptions = await ctx.prisma.subscription.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+        product: { vendorId: ctx.session?.user.id },
+      },
+    });
+
+    const currentWeekPopularProducts = await ctx.prisma.product.findMany({
+      where: {
+        subscriptions: {
+          every: {
+            createdAt: { gte: moment().subtract(7, "d").toDate() },
+          },
+        },
+        vendorId: ctx.session?.user.id,
+      },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            subscriptions: true,
+          },
+        },
+      },
+      orderBy: {
+        subscriptions: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const previousWeekPopularProducts = await ctx.prisma.product.findMany({
+      where: {
+        id: {
+          in: currentWeekPopularProducts.map((product) => product.id),
+        },
+        subscriptions: {
+          every: {
+            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+          },
+        },
+        vendorId: ctx.session?.user.id,
+      },
+      select: {
+        _count: {
+          select: {
+            subscriptions: true,
+          },
+        },
+      },
+      orderBy: {
+        subscriptions: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const currentWeekPopularCategories = await ctx.prisma.category.findMany({
+      where: {
+        products: {
+          every: {
+            createdAt: { gte: moment().subtract(7, "d").toDate() },
+            vendorId: ctx.session?.user.id,
+          },
+        },
+      },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+      orderBy: {
+        products: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const previousWeekPopularCategories = await ctx.prisma.category.findMany({
+      where: {
+        id: {
+          in: currentWeekPopularProducts.map((product) => product.id),
+        },
+        products: {
+          every: {
+            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+            vendorId: ctx.session?.user.id,
+          },
+        },
+      },
+      select: {
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+      orderBy: {
+        products: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const allProducts = await ctx.prisma.product.findMany({
+      where: {
+        vendorId: ctx.session?.user.id,
+      },
+      include: {
+        subscriptions: true,
+      },
+    });
+    
+    return {
+      users: {
+        currentWeek: currentWeekUsers,
+        previousWeek: previousWeekUsers,
+      },
+      products: {
+        currentWeek: currentWeekProducts,
+        previousWeek: previousWeekProducts,
+      },
+      subscriptions: {
+        currentWeek: currentWeekSubscriptions,
+        previousWeek: previousWeekSubscriptions,
+      },
+      popularProducts: {
+        currentWeek: currentWeekPopularProducts,
+        previousWeek: previousWeekPopularProducts,
+      },
+      popularCategories: {
+        currentWeek: currentWeekPopularCategories,
+        previousWeek: previousWeekPopularCategories,
+      },
+      allProducts,
+      totalUsers: await ctx.prisma.user.count({ where: { subscriptions: { some: { product: { vendorId: ctx.session?.user.id } } } } }),
+      totalProducts: await ctx.prisma.product.count({ where: { vendorId: ctx.session?.user.id } }),
+    };
+  }),
 });

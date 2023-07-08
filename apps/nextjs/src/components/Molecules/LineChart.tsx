@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { Line, LineChart as LineChartRecharts, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 
 import { theme } from "~/utils/consts";
 import { getPercentage } from "~/lib/utils";
 import ComparisonLabel from "../Atoms/ComparisonLabel";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./Card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./Card";
 
 type Props = {
   title: string;
@@ -14,19 +14,24 @@ type Props = {
   height?: number;
   width?: number;
   href?: string;
+  mainCard?: boolean;
 };
 
-export default function ChartCard({ title, dataKey, currentWeek, previousWeek, height = 100, width = 200, href }: Props) {
+export default function LineChart({ title, dataKey, currentWeek, previousWeek, height = 100, width = 200, href, mainCard }: Props) {
   const router = useRouter();
 
   return (
-    <Card onClick={() => (href ? router.push(href) : null)}>
+    <Card className={!mainCard ? "border-transparent" : ""} onClick={() => (href ? router.push(href) : null)}>
       <CardHeader>
-        <CardTitle className="flex w-full justify-center">{title}</CardTitle>
+        {mainCard ? (
+          <CardTitle className="flex w-full justify-center">{title}</CardTitle>
+        ) : (
+          <CardDescription className="flex w-full justify-center">{title}</CardDescription>
+        )}
       </CardHeader>
       <CardContent className="flex items-center justify-center gap-x-4">
         <ResponsiveContainer width={width} height={height}>
-          <LineChart
+          <LineChartRecharts
             id={title}
             title={title}
             width={width}
@@ -38,7 +43,7 @@ export default function ChartCard({ title, dataKey, currentWeek, previousWeek, h
             <XAxis hide dataKey="name" />
             <Tooltip labelStyle={{ color: theme.colors.accent }} itemStyle={{ color: "black" }} />
             <Line type="monotone" dataKey={dataKey} stroke={theme.colors.accent} />
-          </LineChart>
+          </LineChartRecharts>
         </ResponsiveContainer>
       </CardContent>
       <CardFooter className="flex items-center justify-center gap-2">
