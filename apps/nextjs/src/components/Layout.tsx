@@ -36,6 +36,7 @@ function Layout(props: { children: React.ReactNode }) {
   return (
     <main className="bg-bgc border-bc dark flex min-h-screen flex-col">
       <div
+        style={{ zIndex: 100 }}
         className={`border-bc bg-bgc/30 sticky top-0 flex h-14 items-center border-b backdrop-blur ${
           NAVBAR_HIDDEN__PATHS.includes(router.pathname) && "hidden"
         }`}>
@@ -45,7 +46,9 @@ function Layout(props: { children: React.ReactNode }) {
         <NavItems />
         <AuthButton />
       </div>
-      <div className={`flex flex-grow flex-col items-center justify-center text-white ${router.pathname !== "/auth" && "my-10"}`}>
+      <div
+        style={{ zIndex: 50, position: "relative" }}
+        className={`flex flex-grow flex-col items-center justify-center text-white ${router.pathname !== "/auth" && "my-10"}`}>
         {props.children}
       </div>
     </main>
