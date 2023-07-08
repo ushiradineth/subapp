@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -60,55 +60,70 @@ export default Layout;
 function NavItems() {
   const { data: session, status } = useSession();
 
+  const VendorNavItems = useCallback(
+    () => (
+      <>
+        <Link href={"/product/new"}>
+          <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create new product</NavigationMenuItem>
+        </Link>
+        <Link href={"/product"}>
+          <NavigationMenuItem className={navigationMenuTriggerStyle()}>View your products</NavigationMenuItem>
+        </Link>
+      </>
+    ),
+    [],
+  );
+
+  const AdminNavItems = useCallback(
+    () => (
+      <>
+        <Link href={"/vendor"}>
+          <NavigationMenuItem className={navigationMenuTriggerStyle()}>Vendors</NavigationMenuItem>
+        </Link>
+        <Link href={"/user"}>
+          <NavigationMenuItem className={navigationMenuTriggerStyle()}>Users</NavigationMenuItem>
+        </Link>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className={`flex w-[400px] flex-col gap-3 p-4 md:grid-cols-2`}>
+              <Link href={"/product"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Products</NavigationMenuItem>
+              </Link>
+              <Link href={"/product/new"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Product</NavigationMenuItem>
+              </Link>
+              <Link href={"/product/requests"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Product Requests</NavigationMenuItem>
+              </Link>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className={`flex w-[400px] flex-col gap-3 p-4 md:grid-cols-2`}>
+              <Link href={"/category"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Categories</NavigationMenuItem>
+              </Link>
+              <Link href={"/category/new"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Category</NavigationMenuItem>
+              </Link>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </>
+    ),
+    [],
+  );
+
   return (
     <>
       {status === "authenticated" && (
         <NavigationMenu className="absolute left-1/2 -translate-x-1/2 transform">
           <NavigationMenuList>
-            {session?.user.role === "Admin" && (
-              <Link href={"/vendor"}>
-                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Vendors</NavigationMenuItem>
-              </Link>
-            )}
-            {session?.user.role === "Admin" && (
-              <Link href={"/user"}>
-                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Users</NavigationMenuItem>
-              </Link>
-            )}
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                  <Link href={"/product"}>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Products</NavigationMenuItem>
-                  </Link>
-                  <Link href={"/product/new"}>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Product</NavigationMenuItem>
-                  </Link>
-                  {session?.user.role === "Admin" && (
-                    <Link href={"/product/requests"}>
-                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>Product Requests</NavigationMenuItem>
-                    </Link>
-                  )}
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-
-            {session?.user.role === "Admin" && (
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className={`flex flex-col gap-3 p-4 md:grid-cols-2 ${session?.user.role === "Admin" ? "w-[400px]" : "w-[200px]"}`}>
-                    <Link href={"/category"}>
-                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>All Categories</NavigationMenuItem>
-                    </Link>
-                    <Link href={"/category/new"}>
-                      <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create Category</NavigationMenuItem>
-                    </Link>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            )}
+            {session.user.role === "Vendor" && <VendorNavItems />}
+            {session?.user.role === "Admin" && <AdminNavItems />}
           </NavigationMenuList>
         </NavigationMenu>
       )}
@@ -119,6 +134,29 @@ function NavItems() {
 function AuthButton() {
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const Profile = useCallback(
+    () => (
+      <Link href={session?.user.role === "Vendor" ? `/vendor/${session?.user.id}` : `#`}>
+        <MenubarItem className="flex flex-col items-center justify-center p-4">
+          <Avatar>
+            <AvatarImage
+              src={`${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${session?.user.id}/0.jpg`}
+              alt="User Avatar"
+              width={100}
+              height={100}
+            />
+            <AvatarFallback>
+              <UserCircle2 width={100} height={100} />
+            </AvatarFallback>
+          </Avatar>
+          <p>{session?.user.name}</p>
+          <p>{session?.user.email}</p>
+        </MenubarItem>
+      </Link>
+    ),
+    [],
+  );
 
   return (
     <>
@@ -153,29 +191,5 @@ function AuthButton() {
         )
       )}
     </>
-  );
-}
-
-function Profile() {
-  const { data: session } = useSession();
-
-  return (
-    <Link href={session?.user.role === "Vendor" ? `/vendor/${session?.user.id}` : `#`}>
-      <MenubarItem className="flex flex-col items-center justify-center p-4">
-        <Avatar>
-          <AvatarImage
-            src={`${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${session?.user.id}/0.jpg`}
-            alt="User Avatar"
-            width={100}
-            height={100}
-          />
-          <AvatarFallback>
-            <UserCircle2 width={100} height={100} />
-          </AvatarFallback>
-        </Avatar>
-        <p>{session?.user.name}</p>
-        <p>{session?.user.email}</p>
-      </MenubarItem>
-    </Link>
   );
 }
