@@ -115,7 +115,6 @@ export const userRouter = createTRPCRouter({
           text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         transporter.sendMail(mailOptions, async function (error) {
           if (error) {
             resolve(false);
