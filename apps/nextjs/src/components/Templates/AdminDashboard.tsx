@@ -4,7 +4,7 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
-import { Card, CardContent, CardHeader, CardTitle } from "../Molecules/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
 import Carousel from "../Molecules/Carousel";
 import LineChart from "../Molecules/LineChart";
 import PieChart from "../Molecules/PieChart";
@@ -43,8 +43,12 @@ export default function AdminDashboard() {
       <Head>
         <title>Admin Dashboard - SubM</title>
       </Head>
-      <main className="flex flex-col gap-2">
-        <div className="flex flex-col items-center justify-center gap-2 xl:flex-row">
+      <Card className="flex flex-col gap-2">
+        <CardHeader>
+          <CardTitle>Admin Dashboard</CardTitle>
+          <CardDescription>Visualize and monitor the SubM Platform here.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center gap-2 xl:flex-row">
           <Carousel indicators navButtons autoScroll>
             {mainCarouselData.map((item) => (
               <LineChart
@@ -96,8 +100,8 @@ export default function AdminDashboard() {
               />
             </Card>
           </div>
-        </div>
-        <div className="grid gap-2 md:grid-cols-2 xl:flex xl:flex-row">
+        </CardContent>
+        <div className="grid gap-2 md:grid-cols-2 xl:flex xl:flex-row px-6 pb-6">
           <Card className="flex flex-col items-center justify-center">
             <h2 className="pt-8 text-2xl ">Popular products</h2>
             <Carousel indicators navButtons autoScroll>
@@ -150,12 +154,12 @@ export default function AdminDashboard() {
             </Carousel>
           </Card>
         </div>
-        <div className="grid h-48 grid-cols-3 gap-2">
+        <div className="grid h-48 grid-cols-3 gap-2 px-6 pb-6">
           <NumberCard number={data?.totalUsers} text="Concurrent Users" />
           <NumberCard number={data?.totalVendors} text="Concurrent Vendors" />
           <NumberCard number={data?.totalProducts} text="Concurrent Products" />
         </div>
-      </main>
+      </Card>
     </>
   );
 }

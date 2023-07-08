@@ -4,7 +4,7 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
-import { Card, CardHeader, CardTitle } from "../Molecules/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
 import Carousel from "../Molecules/Carousel";
 import ChartCard from "../Molecules/LineChart";
 import PieChart from "../Molecules/PieChart";
@@ -44,8 +44,12 @@ export default function VendorDashboard() {
       <Head>
         <title>Vendor Dashboard - SubM</title>
       </Head>
-      <main className="flex flex-col gap-2">
-        <div className="flex flex-col items-center justify-center gap-2 xl:flex-row">
+      <Card className="flex flex-col p-4">
+        <CardHeader>
+          <CardTitle>Vendor Dashboard</CardTitle>
+          <CardDescription>Visualize and monitor your products on the SubM Platform here.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center gap-2 xl:flex-row">
           <Carousel indicators navButtons autoScroll>
             {mainCarouselData.map((item) => (
               <ChartCard
@@ -88,8 +92,8 @@ export default function VendorDashboard() {
               <NumberCard number={data?.totalProducts} text="Concurrent Products" />
             </div>
           </div>
-        </div>
-        <div className="grid gap-2 md:grid-cols-2">
+        </CardContent>
+        <div className="grid gap-2 md:grid-cols-2 px-6 pb-6">
           <Card className="flex flex-col items-center justify-center">
             <h2 className="pt-8 text-2xl ">Popular products</h2>
             <Carousel indicators navButtons autoScroll>
@@ -125,7 +129,7 @@ export default function VendorDashboard() {
             </Carousel>
           </Card>
         </div>
-      </main>
+      </Card>
     </>
   );
 }
