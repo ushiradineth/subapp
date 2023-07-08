@@ -26,7 +26,6 @@ export default function VendorDashboard() {
         currentWeek: data?.users.currentWeek.length,
         previousWeek: data?.users.previousWeek.length,
         title: "Users",
-        href: "/user",
       },
       {
         currentWeek: data?.subscriptions.currentWeek.length,

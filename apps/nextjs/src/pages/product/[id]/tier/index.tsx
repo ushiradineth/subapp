@@ -103,8 +103,8 @@ export default function Tiers({ tiers: serverTier, count }: pageProps) {
       <main>
         <Card>
           <CardHeader>
-            <CardTitle>Vendors</CardTitle>
-            <CardDescription>A list of all vendors.</CardDescription>
+            <CardTitle>Tiers</CardTitle>
+            <CardDescription>A list of all tiers.</CardDescription>
             <Search
               search={router.query.search as string}
               placeholder="Search for tiers"
