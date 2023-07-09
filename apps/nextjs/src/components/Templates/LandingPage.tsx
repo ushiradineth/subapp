@@ -3,8 +3,8 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../Molecules/Card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import Image from "next/image";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../Molecules/Accordion";
 
 function LandingPage() {
   return (
