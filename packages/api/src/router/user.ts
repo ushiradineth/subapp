@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import { z } from "zod";
 
 import { env } from "../../env.mjs";
-import { deleteFiles, supabase } from "../lib/supabase";
+import { deleteFiles } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({

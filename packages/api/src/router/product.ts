@@ -158,4 +158,32 @@ export const productRouter = createTRPCRouter({
 
     return await ctx.prisma.user.update({ where: { id: ctx.auth.id }, data: { wishlist: action } });
   }),
+
+  search: protectedProcedure.input(z.object({ keys: z.string() })).mutation(async ({ ctx, input }) => {
+    const keywords = input.keys.split(" ").join(" | ");
+
+    return await ctx.prisma.product.findMany({
+      where: {
+        OR: [
+          { name: { search: keywords } },
+          {
+            category: { OR: [{ name: { search: keywords } }, { description: { search: keywords } }] },
+          },
+          { vendor: { name: { search: keywords } } },
+        ],
+      },
+      include: {
+        vendor: {
+          select: {
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }),
 });
