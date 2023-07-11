@@ -26,3 +26,7 @@ export function formalizeDate(input: any) {
 export function generalizeDate(input: any) {
   return moment(input).fromNow();
 }
+
+export function trimString(input: string, length: number) {
+  return input.length > length ? input.substring(0, length).trim() + "..." : input;
+}

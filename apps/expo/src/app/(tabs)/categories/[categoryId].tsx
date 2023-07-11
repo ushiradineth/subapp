@@ -1,9 +1,9 @@
-import { View } from "react-native";
 import Constants from "expo-constants";
 import { Stack, useRouter, useSearchParams } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
@@ -21,7 +21,7 @@ const Category: React.FC = () => {
     <ScrollView backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: category.name,
+          headerTitle: trimString(category.name ?? "", 18),
         }}
       />
       <YStack space className="p-4">
@@ -32,8 +32,8 @@ const Category: React.FC = () => {
               router.back();
               router.replace(`product/${product.id}`);
             }}
-            title={product.name}
-            text1={`${product._count.subscriptions} subscriptions`}
+            title={trimString(product.name, 16)}
+            text1={trimString(`${product._count.subscriptions} subscriptions`, 18)}
             image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
           />
         ))}

@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { H1, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/utils/utils";
 import CardItem from "~/components/Atoms/CardItem";
 import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
@@ -25,8 +26,8 @@ export default function Home() {
               <CardItem
                 key={product.id}
                 onPress={() => router.push(`product/${product.id}`)}
-                title={product.name}
-                text1={product.category.name}
+                title={trimString(product.name, 14)}
+                text1={trimString(product.category.name, 12)}
                 image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
               />
             ))}
