@@ -240,6 +240,7 @@ export const userRouter = createTRPCRouter({
         where: { id: ctx.auth.id },
         include: {
           subscriptions: {
+            orderBy: input.showTerminatedSubscripitions ? { deletedAt: "desc" } : { createdAt: "desc" },
             where: {
               active: !input.showTerminatedSubscripitions,
             },
