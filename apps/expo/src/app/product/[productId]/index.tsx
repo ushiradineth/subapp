@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
-import { ExternalLink, Star } from "lucide-react-native";
+import { ExternalLink } from "lucide-react-native";
 import { Button, H2, Image, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
@@ -85,15 +85,15 @@ const Product: React.FC = () => {
               <Spinner />
             </View>
           ) : data?.subscribed ? (
-            <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
-              <Text className="text-accent text-[16px] font-bold">Subscribed</Text>
+            <View className="bg-accent border-accent flex h-full w-full items-center justify-center rounded-3xl border">
+              <Text className="text-[16px] font-bold text-white">Subscribed</Text>
             </View>
           ) : (
             <>
               <Button
                 onPress={() => router.push(`${pathname}/tier`)}
-                className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
-                <Text className="text-accent text-[16px] font-bold">Subscribe</Text>
+                className="bg-accent border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
+                <Text className="text-[16px] font-bold text-white">Subscribe</Text>
               </Button>
               <Button
                 onPress={() => wishlist({ id: productId, wishlist: !wishlisted })}
