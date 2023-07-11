@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { Input, ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import { Spinner } from "~/components/Atoms/Spinner";
 import useDebounce from "~/hooks/useDebounce";
@@ -48,9 +49,9 @@ export default function Search() {
                 router.back();
                 router.push(`product/${product.id}`);
               }}
-              title={product.name}
-              text1={product.vendor.name}
-              text2={product.category.name}
+              title={trimString(product.name, 16)}
+              text1={trimString(product.vendor.name, 16)}
+              text2={trimString(product.category.name, 16)}
               image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
             />
           ))

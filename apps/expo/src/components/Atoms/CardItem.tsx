@@ -13,8 +13,8 @@ const CardItem = ({ image, title, text1, onPress }: Props) => {
     <YStack onPress={onPress} className="w-36">
       <Image className="bg-foreground rounded-t-2xl" source={{ uri: image, height: 144, width: 144 }} alt={title?.toString()} />
       <YStack className="bg-background flex h-12 w-full justify-center rounded-b-2xl pl-2">
-        <Text className="h-4 text-xs font-semibold">{title}</Text>
-        {text1 && <Text className="h-4 text-xs">{text1}</Text>}
+        <Text className="text-xs font-semibold">{title}</Text>
+        {text1 && <Text className="text-xs">{text1}</Text>}
       </YStack>
     </YStack>
   );

@@ -3,11 +3,12 @@ import { Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
-import { ExternalLink, Star } from "lucide-react-native";
+import { ExternalLink } from "lucide-react-native";
 import { Button, H2, Image, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
+import { trimString } from "~/utils/utils";
 import { Spinner } from "~/components/Atoms/Spinner";
 import ReviewItem from "~/components/Molecules/ReviewItem";
 
@@ -52,7 +53,7 @@ const Product: React.FC = () => {
     <ScrollView className="h-fit" backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: data?.product?.name,
+          headerTitle: trimString(data?.product?.name ?? "", 18),
         }}
       />
       <YStack space className="p-4">
@@ -69,8 +70,8 @@ const Product: React.FC = () => {
             className="bg-foreground h-36 w-36 rounded-3xl"
           />
           <YStack className="ml-4">
-            <H2 className="text-2xl font-bold">{data?.product?.name}</H2>
-            <Text>{data?.product?.category.name}</Text>
+            <H2 className="text-2xl font-bold">{trimString(data?.product?.name ?? "", 10)}</H2>
+            <Text>{trimString(data?.product?.category.name ?? "", 18)}</Text>
             <Link className="mt-2" href={data?.product?.link ?? ""}>
               <XStack className="text-accent flex items-center text-xs font-bold">
                 <ExternalLink size={20} color={theme.colors.accent} />
@@ -85,15 +86,15 @@ const Product: React.FC = () => {
               <Spinner />
             </View>
           ) : data?.subscribed ? (
-            <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
-              <Text className="text-accent text-[16px] font-bold">Subscribed</Text>
+            <View className="bg-accent border-accent flex h-full w-full items-center justify-center rounded-3xl border">
+              <Text className="text-[16px] font-bold text-white">Subscribed</Text>
             </View>
           ) : (
             <>
               <Button
                 onPress={() => router.push(`${pathname}/tier`)}
-                className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
-                <Text className="text-accent text-[16px] font-bold">Subscribe</Text>
+                className="bg-accent border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
+                <Text className="text-[16px] font-bold text-white">Subscribe</Text>
               </Button>
               <Button
                 onPress={() => wishlist({ id: productId, wishlist: !wishlisted })}

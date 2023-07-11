@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
@@ -24,8 +25,8 @@ export default function Wishlist() {
           <CardItemWide
             key={product.id}
             onPress={() => router.push(`product/${product.id}`)}
-            title={product.name}
-            text1={product.category.name}
+            title={trimString(product.name, 20)}
+            text1={trimString(product.category.name, 20)}
             image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
           />
         ))}

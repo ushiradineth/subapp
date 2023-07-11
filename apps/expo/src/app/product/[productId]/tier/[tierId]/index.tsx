@@ -4,6 +4,7 @@ import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-route
 import { ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/utils/utils";
 import BackButton from "~/components/Atoms/BackButton";
 import { Spinner } from "~/components/Atoms/Spinner";
 
@@ -30,7 +31,7 @@ const Tier: React.FC = () => {
     <ScrollView className="h-fit" backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: tier.product?.name,
+          headerTitle: trimString(tier.product?.name ?? "", 18),
           headerLeft: () => <BackButton />,
           headerRight: () => (
             <Pressable onPress={() => router.push(pathname + "/subscribe")}>

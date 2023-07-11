@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
+import { trimString } from "~/utils/utils";
 
 export default function Categories() {
   const router = useRouter();
@@ -22,8 +23,8 @@ export default function Categories() {
           <CardItemWide
             key={category.id}
             onPress={() => router.push(`/categories/${category.id}`)}
-            title={category.name}
-            text1={`${category._count.products} products`}
+            title={trimString(category.name, 16)}
+            text1={trimString(`${category._count.products} products`, 18)}
             image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}/0.jpg`}
           />
         ))}

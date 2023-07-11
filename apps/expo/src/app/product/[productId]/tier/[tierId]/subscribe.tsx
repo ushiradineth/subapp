@@ -10,6 +10,7 @@ import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 import { api } from "~/utils/api";
 import BackButton from "~/components/Atoms/BackButton";
 import { Spinner } from "~/components/Atoms/Spinner";
+import { trimString } from "~/utils/utils";
 
 const Subscribe: React.FC = () => {
   const { tierId } = useSearchParams();
@@ -38,7 +39,7 @@ const Subscribe: React.FC = () => {
     <ScrollView className="h-fit" backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: tier.product?.name,
+          headerTitle: trimString(tier.product?.name ?? "", 18),
           headerLeft: () => <BackButton />,
         }}
       />
