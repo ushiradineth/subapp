@@ -79,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: generalizeDate(product?.createdAt),
       },
       images,
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${product.id}/0.jpg`,
+      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_LOGO}/${product.id}/0.jpg`,
     },
   };
 };
