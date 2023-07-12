@@ -3,9 +3,9 @@ import type { ExpoConfig } from "@expo/config";
 const defineConfig = (): ExpoConfig => ({
   name: "SubM",
   slug: "subm",
+  scheme: "subm",
   description:
     "SubM: Subscription management platform for small businesses. Connect subscriptions, consumers & providers. Manage all in one place.",
-  scheme: "SubM",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -16,6 +16,10 @@ const defineConfig = (): ExpoConfig => ({
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/c04f12c2-1b92-4789-99f7-9374fffca094",
+  },
+  runtimeVersion: {
+    policy: "sdkVersion",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
