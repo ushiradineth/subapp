@@ -8,6 +8,12 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://subapp-git-dev-ushiradineth.vercel.app/"
       }
     },
     "preview": {
@@ -15,11 +21,20 @@
       "ios": {
         "simulator": true,
         "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://subapp-git-dev-ushiradineth.vercel.app/"
       }
     },
     "production": {
       "ios": {
         "resourceClass": "m-medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://subapp.vercel.app"
       }
     }
   },
