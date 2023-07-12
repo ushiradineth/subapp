@@ -65,8 +65,6 @@ export default function SubscriptionPage() {
               }/0.jpg`,
             }}
             alt={data?.tier.product?.name}
-            width="100%"
-            height="100%"
             className="bg-foreground h-36 w-36 rounded-3xl"
           />
           <YStack className="ml-4">

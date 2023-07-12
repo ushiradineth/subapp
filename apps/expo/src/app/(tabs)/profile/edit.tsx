@@ -100,8 +100,6 @@ const EditProfile = () => {
               uri: imageRemoved ? "" : image ? image.uri : `${Constants.expoConfig?.extra?.USER_ICON}/${auth.session.id}/0.jpg`,
             }}
             alt={auth.session.name}
-            width="100%"
-            height="100%"
             className="bg-foreground h-16 w-16 rounded-full"
           />
           {/* <Pressable onPress={pickImage}>

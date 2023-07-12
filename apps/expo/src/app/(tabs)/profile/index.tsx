@@ -27,8 +27,6 @@ export default function Profile() {
               uri: `${Constants.expoConfig?.extra?.USER_ICON}/${auth.session.id}/0.jpg`,
             }}
             alt={auth.session.name}
-            width="100%"
-            height="100%"
             className="bg-foreground h-24 w-24 rounded-full"
           />
           <YStack>
