@@ -1,5 +1,5 @@
-import React from "react";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+import React, { useCallback } from "react";
+import Toast, { BaseToast, ErrorToast, type ToastConfigParams } from "react-native-toast-message";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import { TamaguiProvider, Theme } from "tamagui";
@@ -12,6 +12,38 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     MontserratBold: require("../../assets/Montserrat-Bold.ttf"),
   });
 
+  const MemoizedSuccessToast = useCallback(
+    (props: ToastConfigParams<unknown>) => (
+      <BaseToast
+        {...props}
+        style={{ borderLeftColor: "green", height: "100%", paddingVertical: 10 }}
+        text1Style={{
+          fontSize: 17,
+        }}
+        text2Style={{
+          fontSize: 15,
+        }}
+      />
+    ),
+    [],
+  );
+
+  const MemoizedErrorToast = useCallback(
+    (props: ToastConfigParams<unknown>) => (
+      <ErrorToast
+        {...props}
+        style={{ borderLeftColor: "red", height: "100%", paddingVertical: 10 }}
+        text1Style={{
+          fontSize: 17,
+        }}
+        text2Style={{
+          fontSize: 15,
+        }}
+      />
+    ),
+    [],
+  );
+
   return (
     <TamaguiProvider config={config}>
       <Theme name={"light"}>{loaded ? children : <SplashScreen />}</Theme>
@@ -20,30 +52,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         bottomOffset={20}
         visibilityTime={2500}
         config={{
-          success: (props) => (
-            <BaseToast
-              {...props}
-              style={{ borderLeftColor: "green", height: "100%", paddingVertical: 10 }}
-              text1Style={{
-                fontSize: 17,
-              }}
-              text2Style={{
-                fontSize: 15,
-              }}
-            />
-          ),
-          error: (props) => (
-            <ErrorToast
-              {...props}
-              style={{ borderLeftColor: "red", height: "100%", paddingVertical: 10 }}
-              text1Style={{
-                fontSize: 17,
-              }}
-              text2Style={{
-                fontSize: 15,
-              }}
-            />
-          ),
+          success: (props) => MemoizedSuccessToast(props),
+          error: (props) => MemoizedErrorToast(props),
         }}
       />
     </TamaguiProvider>

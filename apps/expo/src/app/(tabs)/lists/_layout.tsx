@@ -24,7 +24,7 @@ const StackLayout = () => {
         options={{
           headerTitle: "Subscriptions",
           headerTitleAlign: "center",
-          headerShown: pathname === "/lists/subscriptions",
+          headerShown: pathname === "/lists/subscriptions"
         }}
       />
     </Stack>

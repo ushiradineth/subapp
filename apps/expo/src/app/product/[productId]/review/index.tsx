@@ -1,6 +1,6 @@
 import React from "react";
 import { useSearchParams } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import NoData from "~/components/Atoms/NoData";

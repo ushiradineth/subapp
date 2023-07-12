@@ -91,7 +91,7 @@ const Verify = () => {
       />
 
       <YStack alignItems="center" marginTop="$2">
-        {error && <Text color={"red"}>{error}</Text>}
+        {Boolean(error) && <Text color={"red"}>{error}</Text>}
         {success && <Text color={"green"}>{"Your password has been updated"}</Text>}
       </YStack>
 

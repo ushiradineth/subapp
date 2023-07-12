@@ -11,9 +11,8 @@ import { Button, H6, Text, TextArea, XStack, YStack } from "tamagui";
 import { api } from "~/utils/api";
 import { ReviewSchema, type ReviewFormData } from "~/utils/validators";
 import { Spinner } from "~/components/Atoms/Spinner";
-import { type Review } from ".prisma/client";
 
-export default function Review() {
+export default function ReviewProduct() {
   const router = useRouter();
   const { reviewId, productId } = useSearchParams();
 
@@ -46,7 +45,7 @@ export default function Review() {
     onSuccess: () => {
       Toast.show({ type: "success", text1: "Review has been created" });
     },
-    onError: (err) => {
+    onError: () => {
       Toast.show({ type: "error", text1: "Failed creating the review" });
     },
   });

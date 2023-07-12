@@ -20,7 +20,6 @@ export default function PasswordReset() {
     control,
     watch,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = useForm<ForgetPasswordFormData>({
     resolver: yupResolver(ForgetPasswordSchema),

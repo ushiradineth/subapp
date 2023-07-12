@@ -189,7 +189,16 @@ export const userRouter = createTRPCRouter({
   profile: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.auth.id },
-      include: { subscriptions: { select: { tier: { select: { price: true, period: true } } } } },
+      include: {
+        subscriptions: {
+          where: { active: true },
+          include: {
+            tier: { select: { price: true, period: true, name: true } },
+            template: { select: { name: true } },
+            product: { select: { name: true } },
+          },
+        },
+      },
     });
 
     const getMultiplicator = (period: number) => {
@@ -215,6 +224,7 @@ export const userRouter = createTRPCRouter({
       joined: user?.createdAt,
       cost,
       count: user?.subscriptions.length,
+      subscriptions: user?.subscriptions,
     };
   }),
 

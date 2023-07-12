@@ -125,8 +125,8 @@ model Tier {
   template      Template?      @relation("templateTier", fields: [templateId], references: [id])
   period        Int
   price         Float
-  description   String?
-  name          String?
+  description   String
+  name          String
   points        String[]
   createdAt     DateTime       @default(now())
   subscriptions Subscription[] @relation("tierSubscriptions")

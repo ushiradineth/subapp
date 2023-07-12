@@ -1,7 +1,5 @@
 import { Stack } from "expo-router";
 
-import BackButton from "~/components/Atoms/BackButton";
-
 export default function Layout() {
   return (
     <Stack>

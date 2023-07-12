@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
@@ -12,12 +12,14 @@ type Session = {
   name: string;
 };
 
+type Status = "loading" | "authenticated" | "unauthenticated";
+
 export const AuthContext = createContext<{
   session: Session;
   setSession: (arg0: Session) => void;
   logout: () => void;
   status: "loading" | "authenticated" | "unauthenticated";
-}>({ session: { id: "", email: "", name: "" }, setSession(arg) {}, logout() {}, status: "loading" });
+}>({ session: { id: "", email: "", name: "" }, setSession: () => undefined, logout: () => undefined, status: "loading" });
 
 const RootLayout = () => {
   const pathname = usePathname();
@@ -28,15 +30,24 @@ const RootLayout = () => {
     email: "",
     name: "",
   });
-  const [status, setStatus] = useState<"loading" | "authenticated" | "unauthenticated">("loading");
+  const [status, setStatus] = useState<Status>("loading");
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setSession({ email: "", id: "", name: "" });
     setStatus("unauthenticated");
     await deleteItemAsync("id");
     await deleteItemAsync("email");
     await deleteItemAsync("name");
-  };
+  }, []);
+
+  const memoizedAuthObject = useMemo(() => {
+    return {
+      session,
+      setSession,
+      logout,
+      status,
+    };
+  }, [logout, session, status]);
 
   useEffect(() => {
     const initSession = async () => {
@@ -75,13 +86,7 @@ const RootLayout = () => {
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        setSession,
-        logout,
-        status,
-      }}>
+    <AuthContext.Provider value={memoizedAuthObject}>
       <TRPCProvider>
         <ThemeProvider>
           <Stack
