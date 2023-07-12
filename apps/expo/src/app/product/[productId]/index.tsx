@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
@@ -43,6 +43,39 @@ const Product: React.FC = () => {
     },
   });
 
+  const memoizedCTAs = useMemo(() => {
+    if (isRefetching) {
+      return (
+        <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
+          <Spinner />
+        </View>
+      );
+    } else if (data?.subscribed) {
+      return (
+        <View className="bg-accent border-accent flex h-full w-full items-center justify-center rounded-3xl border">
+          <Text className="text-[16px] font-bold text-white">Subscribed</Text>
+        </View>
+      );
+    } else {
+      return (
+        <>
+          <Button
+            onPress={() => router.push(`${pathname}/tier`)}
+            className="bg-accent border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
+            <Text className="text-[16px] font-bold text-white">Subscribe</Text>
+          </Button>
+          <Button
+            onPress={() => wishlist({ id: productId, wishlist: !wishlisted })}
+            className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
+            <Text className="text-accent text-[16px] font-bold">
+              {wishlisting ? <Spinner /> : wishlisted ? "Wishlisted" : "Add to Wishlist"}
+            </Text>
+          </Button>
+        </>
+      );
+    }
+  }, [data?.subscribed, isRefetching, pathname, productId, router, wishlist, wishlisted, wishlisting]);
+
   useEffect(() => {
     refetch();
   }, [pathname]);
@@ -78,32 +111,7 @@ const Product: React.FC = () => {
             </Link>
           </YStack>
         </XStack>
-        <XStack className="flex h-16 items-center justify-between">
-          {isRefetching ? (
-            <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
-              <Spinner />
-            </View>
-          ) : data?.subscribed ? (
-            <View className="bg-accent border-accent flex h-full w-full items-center justify-center rounded-3xl border">
-              <Text className="text-[16px] font-bold text-white">Subscribed</Text>
-            </View>
-          ) : (
-            <>
-              <Button
-                onPress={() => router.push(`${pathname}/tier`)}
-                className="bg-accent border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
-                <Text className="text-[16px] font-bold text-white">Subscribe</Text>
-              </Button>
-              <Button
-                onPress={() => wishlist({ id: productId, wishlist: !wishlisted })}
-                className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
-                <Text className="text-accent text-[16px] font-bold">
-                  {wishlisting ? <Spinner /> : wishlisted ? "Wishlisted" : "Add to Wishlist"}
-                </Text>
-              </Button>
-            </>
-          )}
-        </XStack>
+        <XStack className="flex h-16 items-center justify-between">{memoizedCTAs}</XStack>
         <XStack className="bg-background flex h-16 items-center justify-between rounded-3xl">
           <XStack className="flex w-[50%] items-center justify-center">
             <Rating rating={data?.review?.[0]?.rating} caption={`from ${data?.product?._count.reviews ?? 0} users`} />

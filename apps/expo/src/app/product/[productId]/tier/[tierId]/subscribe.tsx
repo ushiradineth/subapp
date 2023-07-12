@@ -28,7 +28,7 @@ const Subscribe: React.FC = () => {
     onError: () => Toast.show({ type: "error", text1: "Failed to subscribe" }),
   });
 
-  const onChange = (event: any, selectedDate: Date | undefined) => {
+  const onChange = (event: unknown, selectedDate: Date | undefined) => {
     setShow(false);
     setStartedAt(selectedDate ?? new Date());
   };

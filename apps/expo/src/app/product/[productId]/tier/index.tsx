@@ -1,5 +1,5 @@
 import { useSearchParams } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import NoData from "~/components/Atoms/NoData";
@@ -19,7 +19,16 @@ export default function Tiers() {
     <ScrollView className="h-fit" backgroundColor="$background">
       <YStack space className="p-4">
         {tiers?.map((tier) => (
-          <TierItem key={tier.id} tier={tier} />
+          <TierItem
+            key={tier.id}
+            tier={{
+              id: tier.id,
+              name: tier.name,
+              period: tier.period,
+              price: tier.price,
+              productId,
+            }}
+          />
         ))}
       </YStack>
     </ScrollView>
