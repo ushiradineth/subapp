@@ -9,6 +9,7 @@ export const env = createEnv({
     GMAIL_ADDRESS: z.string(),
     GMAIL_PASSWORD: z.string(),
     SUPABASE_URL: z.string(),
+    JWT_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_PROJECT: z.string(),
@@ -22,7 +23,8 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_PROJECT: process.env.NEXT_PUBLIC_SUPABASE_PROJECT,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
-    GMAIL_PASSWORD: process.env.GMAIL_PASSWORD,
+    GMAIL_PASSWORD: process.env.GMAIL_PASSWORD, 
+    JWT_SECRET: process.env.NEXTAUTH_SECRET,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });

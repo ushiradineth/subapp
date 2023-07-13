@@ -35,21 +35,21 @@ export const TRPCProvider: React.FC<{
           httpBatchLink({
             headers() {
               return {
-                authorization: auth.session.id,
+                authorization: auth.session.token,
               };
             },
             url: `${getBaseUrl()}/api/trpc`,
           }),
         ],
       }),
-    [auth.session.id],
+    [auth.session.token],
   );
 
   const [trpcClient, setTrpcClient] = React.useState(() => CreateTRPCClient);
 
   useEffect(() => {
     setTrpcClient(CreateTRPCClient);
-  }, [auth.session.id]);
+  }, [auth.session.token]);
 
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>

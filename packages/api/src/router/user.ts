@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
+import * as jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 
@@ -19,12 +20,17 @@ export const userRouter = createTRPCRouter({
     }
     const userVerified = bcrypt.compareSync(input.password, user.password);
 
+    const userData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
+
     if (userVerified) {
       return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: "User",
+        ...userData,
+        token: jwt.sign(userData, env.JWT_SECRET),
+        expiration: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).getTime() // 24 Hours
       };
     }
     throw new TRPCError({
@@ -246,7 +252,7 @@ export const userRouter = createTRPCRouter({
   subscriptions: protectedProcedure
     .input(z.object({ showTerminatedSubscripitions: z.boolean().optional().default(false) }))
     .query(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findUnique({
+      return await ctx.prisma.user.findUnique({
         where: { id: ctx.auth.id },
         include: {
           subscriptions: {
@@ -276,9 +282,5 @@ export const userRouter = createTRPCRouter({
           },
         },
       });
-
-      return {
-        subscriptions: user?.subscriptions,
-      };
     }),
 });

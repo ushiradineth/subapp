@@ -1,18 +1,19 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import * as jwt from "jsonwebtoken";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { getServerSession, type Session } from "@acme/auth";
 import { prisma } from "@acme/db";
 
+import { env } from "../env.mjs";
 import { supabase } from "./lib/supabase";
 
 type CreateContextOptions = {
   session: Session | null;
   auth: {
     id: string;
-    role: string;
   };
 };
 
@@ -25,16 +26,34 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   };
 };
 
+type JWT = {
+  id: string;
+  email: string;
+  name: string;
+  iat: number;
+};
+
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
-
   const session = await getServerSession({ req, res });
+  let userId = "";
+
+  if (req.headers.authorization && !session) {
+    try {
+      const decodedJwt = jwt.verify(req.headers.authorization, env.JWT_SECRET) as JWT;
+      userId = decodedJwt.id;
+    } catch (err) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Token is invalid or expired",
+      });
+    }
+  }
 
   return createInnerTRPCContext({
     session,
     auth: {
-      id: req.headers.authorization ?? "",
-      role: req.headers.authorization !== "" ? "User" : "",
+      id: userId,
     },
   });
 };
@@ -63,7 +82,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (ctx.auth.id) {
     return next({
       ctx: {
-        auth: { id: ctx.auth.id, role: ctx.auth.role },
+        auth: { id: ctx.auth.id },
       },
     });
   }
