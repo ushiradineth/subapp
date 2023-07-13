@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
-import { useRouter } from "expo-router";
-import { Input, ScrollView, Text, YStack } from "tamagui";
+import { Stack, useRouter } from "expo-router";
+import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
@@ -22,19 +22,23 @@ export default function Search() {
   useDebounce(() => search !== "" && !queried && mutate({ keys: search }), 800);
 
   return (
-    <ScrollView backgroundColor={"$background"}>
-      <YStack space className="flex items-center justify-center p-4">
-        <YStack className="w-full">
-          <Input
-            placeholder="Search for products"
-            autoCapitalize={"none"}
-            onChangeText={(value) => {
+    <ScrollView contentInsetAdjustmentBehavior="automatic" backgroundColor={"$background"}>
+      <Stack.Screen
+        options={{
+          headerSearchBarOptions: {
+            autoCapitalize: "none",
+            autoFocus: true,
+            hideWhenScrolling: false,
+            onChangeText: (value) => {
               setQueried(false);
-              setSearch(value);
-            }}
-            value={search}
-          />
-        </YStack>
+              setSearch(value.nativeEvent.text);
+            },
+            textColor: "black",
+            onCancelButtonPress: () => router.back()
+          },
+        }}
+      />
+      <YStack space className="flex items-center justify-center p-4">
         {search === "" ? (
           <Text className="text-lg font-semibold text-gray-500">Search for products or categories</Text>
         ) : isLoading ? (
