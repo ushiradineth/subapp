@@ -9,6 +9,7 @@ import { Button, H2, Image, ScrollView, XStack, YStack } from "tamagui";
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
 import { trimString } from "~/utils/utils";
+import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 import ReviewItem from "~/components/Molecules/ReviewItem";
 
@@ -81,6 +82,7 @@ const Product: React.FC = () => {
   }, [pathname]);
 
   if (isLoading) return <Spinner background />;
+  if (!data) return <NoData background>No product found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">

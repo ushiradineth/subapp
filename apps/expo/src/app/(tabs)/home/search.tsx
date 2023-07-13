@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { Stack, useRouter } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
+import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 import useDebounce from "~/hooks/useDebounce";
 
@@ -34,17 +35,17 @@ export default function Search() {
               setSearch(value.nativeEvent.text);
             },
             textColor: "black",
-            onCancelButtonPress: () => router.back()
+            onCancelButtonPress: () => router.back(),
           },
         }}
       />
       <YStack space className="flex items-center justify-center p-4">
-        {search === "" ? (
-          <Text className="text-lg font-semibold text-gray-500">Search for products or categories</Text>
-        ) : isLoading ? (
-          <Spinner />
-        ) : !data || data.length === 0 ? (
-          <Text className="text-lg font-semibold text-gray-500">No product found</Text>
+        {isLoading ? (
+          <Spinner background />
+        ) : search === "" ? (
+          <NoData>Search for products or categories</NoData>
+        ) : (!data || data.length === 0) && queried ? (
+          <NoData background>No products found</NoData>
         ) : (
           data?.map((product) => (
             <CardItemWide

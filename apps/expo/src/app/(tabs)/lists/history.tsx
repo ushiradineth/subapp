@@ -14,7 +14,7 @@ export default function History() {
   const { data, isLoading } = api.user.subscriptions.useQuery({ showTerminatedSubscripitions: true });
 
   if (isLoading) return <Spinner background />;
-  if (data?.subscriptions?.length === 0) return <NoData>No Subscriptions found</NoData>;
+  if (!data || data?.subscriptions?.length === 0) return <NoData background>No subscriptions found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>

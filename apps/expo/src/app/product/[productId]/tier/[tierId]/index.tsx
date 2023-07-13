@@ -6,6 +6,7 @@ import { ScrollView, Text, XStack, YStack } from "tamagui";
 import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
 import BackButton from "~/components/Atoms/BackButton";
+import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 
 export const PERIODS = [
@@ -23,9 +24,10 @@ const Tier: React.FC = () => {
   const { tierId } = useSearchParams();
   if (!tierId || typeof tierId !== "string") throw new Error("Tier id not found");
 
-  const { data: tier } = api.tier.getById.useQuery({ id: tierId });
+  const { data: tier, isLoading } = api.tier.getById.useQuery({ id: tierId });
 
-  if (!tier) return <Spinner background />;
+  if (isLoading) return <Spinner background />;
+  if (!tier) return <NoData background>No tier found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">

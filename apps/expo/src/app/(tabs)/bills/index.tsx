@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
@@ -7,6 +8,7 @@ import { api } from "~/utils/api";
 import { generalizeDate, trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import { Spinner } from "~/components/Atoms/Spinner";
+import { AuthContext } from "~/app/_layout";
 
 const PERIODS = [
   { period: 1, label: "Day", standard: "days" },
@@ -17,8 +19,14 @@ const PERIODS = [
 
 export default function Bills() {
   const router = useRouter();
-
+  const auth = useContext(AuthContext);
   const { data: user } = api.user.profile.useQuery();
+
+  if (!user) {
+    Toast.show({ type: "error", text1: "Not logged in" });
+    auth.logout();
+  }
+
   return (
     <ScrollView backgroundColor="$background">
       <YStack space className="p-4">

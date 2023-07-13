@@ -74,7 +74,7 @@ export const productRouter = createTRPCRouter({
       select: { id: true },
     });
 
-    const product = await ctx.prisma.product.findFirst({
+    const product = await ctx.prisma.product.findUniqueOrThrow({
       where: { id: input.id },
       include: {
         category: true,

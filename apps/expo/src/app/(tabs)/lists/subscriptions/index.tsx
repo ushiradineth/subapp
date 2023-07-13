@@ -21,7 +21,7 @@ export default function Subscriptions() {
   const { data, isLoading } = api.user.subscriptions.useQuery({});
 
   if (isLoading) return <Spinner background />;
-  if (data?.subscriptions?.length === 0) return <NoData>No Subscriptions found</NoData>;
+  if (!data || data?.subscriptions?.length === 0) return <NoData background>No subscriptions found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>
