@@ -3,7 +3,7 @@ import { Stack, usePathname, useRouter } from "expo-router";
 import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
 
-import { ThemeProvider } from "~/utils/Theme";
+import { ThemeProvider } from "~/utils/ThemeProvider";
 import { TRPCProvider } from "~/utils/api";
 
 type Session = {
