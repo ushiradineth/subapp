@@ -14,7 +14,7 @@ export default function Categories() {
   const { data: categories, isLoading } = api.category.getAll.useQuery();
 
   if (isLoading) return <Spinner background />;
-  if (categories?.length === 0) return <NoData>No Categories found</NoData>;
+  if (!categories) return <NoData background>No categories found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>

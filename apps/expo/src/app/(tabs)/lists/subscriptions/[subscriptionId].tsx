@@ -8,16 +8,10 @@ import { Button, H2, Image, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { generalizeDate } from "~/utils/utils";
+import { PERIODS, generalizeDate } from "~/utils/utils";
 import InfoCard from "~/components/Atoms/InfoCard";
+import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
-
-const PERIODS = [
-  { period: 1, label: "Day", standard: "days" },
-  { period: 7, label: "Week", standard: "weeks" },
-  { period: 28, label: "Month", standard: "months" },
-  { period: 365, label: "Year", standard: "years" },
-];
 
 export default function SubscriptionPage() {
   const router = useRouter();
@@ -51,6 +45,7 @@ export default function SubscriptionPage() {
   );
 
   if (isLoading) return <Spinner background />;
+  if (!data) return <NoData background>No subscription found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>
@@ -70,7 +65,7 @@ export default function SubscriptionPage() {
           <YStack className="ml-4">
             <H2 className="text-2xl font-bold">{data?.tier.product?.name ?? data?.tier.template?.name}</H2>
             {data?.tier.product?.category.name && <Text>{data?.tier.product?.category.name}</Text>}
-            <Text className="text-accent font-semibold mt-1">{`$${data?.tier.price} per ${
+            <Text className="text-accent mt-1 font-semibold">{`$${data?.tier.price} per ${
               PERIODS.find((p) => p.period == data?.tier.period)?.label
             }`}</Text>
             {data?.productId && (

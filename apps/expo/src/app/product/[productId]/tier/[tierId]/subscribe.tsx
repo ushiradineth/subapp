@@ -8,9 +8,10 @@ import { Calendar } from "lucide-react-native";
 import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import BackButton from "~/components/Atoms/BackButton";
-import { Spinner } from "~/components/Atoms/Spinner";
 import { trimString } from "~/utils/utils";
+import BackButton from "~/components/Atoms/BackButton";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Subscribe: React.FC = () => {
   const { tierId } = useSearchParams();
@@ -18,9 +19,9 @@ const Subscribe: React.FC = () => {
   const [show, setShow] = useState(false);
   if (!tierId || typeof tierId !== "string") throw new Error("Tier id not found");
 
-  const { data: tier } = api.tier.getById.useQuery({ id: tierId });
+  const { data: tier, isLoading } = api.tier.getById.useQuery({ id: tierId });
   const [startedAt, setStartedAt] = useState(new Date());
-  const { mutate, isLoading } = api.subscription.create.useMutation({
+  const { mutate, isLoading: isCreating } = api.subscription.create.useMutation({
     onSuccess: () => {
       router.push(`/product/${tier?.productId}`);
       Toast.show({ type: "success", text1: "Your subscription was successful" });
@@ -33,7 +34,8 @@ const Subscribe: React.FC = () => {
     setStartedAt(selectedDate ?? new Date());
   };
 
-  if (!tier) return <Spinner background />;
+  if (isLoading) return <Spinner background />;
+  if (!tier) return <NoData background>No tier found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">
@@ -56,7 +58,7 @@ const Subscribe: React.FC = () => {
           )}
         </XStack>
         <Button onPress={() => mutate({ tierId: tierId, productId: tier.productId ?? "", startedAt })} theme="alt2">
-          {isLoading ? <Spinner /> : "Subscribe"}
+          {isCreating ? <Spinner /> : "Subscribe"}
         </Button>
       </YStack>
       {Platform.OS === "ios" && <StatusBar style="light" />}

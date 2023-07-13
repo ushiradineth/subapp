@@ -12,10 +12,13 @@ const Category: React.FC = () => {
   const { categoryId } = useSearchParams();
   const router = useRouter();
 
-  const { data: category } = api.category.getById.useQuery({ id: typeof categoryId !== "undefined" ? (categoryId as string) : "" });
+  const { data: category, isLoading } = api.category.getById.useQuery({
+    id: typeof categoryId !== "undefined" ? (categoryId as string) : "",
+  });
 
-  if (!category) return <Spinner background />;
-  if (category.products.length === 0) return <NoData>No products yet</NoData>;
+  if (isLoading) return <Spinner background />;
+  if (!category) return <NoData background>No category found</NoData>;
+  if (category.products.length === 0) return <NoData background>No products yet</NoData>;
 
   return (
     <ScrollView backgroundColor="$background">

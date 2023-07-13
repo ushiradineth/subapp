@@ -6,6 +6,7 @@ import { H1, ScrollView, XStack, YStack } from "tamagui";
 import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
 import CardItem from "~/components/Atoms/CardItem";
+import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
 
@@ -15,6 +16,7 @@ export default function Home() {
   const { data, isLoading } = api.product.getHomeFeed.useQuery(undefined, { enabled: auth.session.id !== "", retry: 0 });
 
   if (isLoading) return <Spinner background />;
+  if (!data) return <NoData background>No products found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>

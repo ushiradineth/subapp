@@ -11,12 +11,13 @@ import { Button, Image, Input, ScrollView, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { supabase } from "~/utils/supabase";
 import { UserSchema, type UserFormData } from "~/utils/validators";
 import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
+import { useRouter } from "expo-router";
 
 const EditProfile = () => {
+  const router = useRouter()
   const auth = useContext(AuthContext);
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [imageRemoved, setImageRemoved] = useState(false);
@@ -26,6 +27,7 @@ const EditProfile = () => {
     onSuccess: (data) => {
       Toast.show({ type: "success", text1: "Profile has been updated" });
       auth.setSession({ ...auth.session, name: data.name });
+      router.back()
     },
     onError: () => Toast.show({ type: "error", text1: "Failed to update profile" }),
   });
@@ -62,9 +64,9 @@ const EditProfile = () => {
   };
 
   const onDelete = async () => {
-    const { data, error } = await supabase.storage.from(Constants.expoConfig?.extra?.USER_ICON_BUCKET).remove([`${auth.session.id}/0.jpg`]);
+    // const { data, error } = await supabase.storage.from(Constants.expoConfig?.extra?.USER_ICON_BUCKET).remove([`${auth.session.id}/0.jpg`]);
 
-    if (error) Toast.show({ type: "error", text1: "Failed to update profile" });
+    // if (error) Toast.show({ type: "error", text1: "Failed to update profile" });
 
     setImageRemoved(true);
   };

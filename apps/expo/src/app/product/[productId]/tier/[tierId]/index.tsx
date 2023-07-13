@@ -4,16 +4,10 @@ import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-route
 import { ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { trimString } from "~/utils/utils";
+import { PERIODS, trimString } from "~/utils/utils";
 import BackButton from "~/components/Atoms/BackButton";
+import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
-
-export const PERIODS = [
-  { period: 1, label: "Day" },
-  { period: 7, label: "Week" },
-  { period: 28, label: "Month" },
-  { period: 365, label: "Year" },
-];
 
 const Tier: React.FC = () => {
   const [clamp, setClamp] = useState(true);
@@ -23,9 +17,10 @@ const Tier: React.FC = () => {
   const { tierId } = useSearchParams();
   if (!tierId || typeof tierId !== "string") throw new Error("Tier id not found");
 
-  const { data: tier } = api.tier.getById.useQuery({ id: tierId });
+  const { data: tier, isLoading } = api.tier.getById.useQuery({ id: tierId });
 
-  if (!tier) return <Spinner background />;
+  if (isLoading) return <Spinner background />;
+  if (!tier) return <NoData background>No tier found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">

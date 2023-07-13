@@ -5,35 +5,18 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import { prisma } from "@acme/db";
 
-/**
- * Module augmentation for `next-auth` types
- * Allows us to add custom properties to the `session` object
- * and keep type safety
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- **/
-
 type UserRoles = "Admin" | "Vendor"
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
       role: UserRoles;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
-/**
- * Options for NextAuth.js used to configure
- * adapters, providers, callbacks, etc.
- * @see https://next-auth.js.org/configuration/options
- **/
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",

@@ -14,7 +14,7 @@ const Reviews = () => {
   const { data: reviews, isLoading } = api.review.getByProductId.useQuery({ id: productId });
 
   if (isLoading) return <Spinner background />;
-  if (reviews?.length === 0) return <NoData>No reviews found</NoData>;
+  if (!reviews || reviews?.length === 0) return <NoData background>No reviews found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">

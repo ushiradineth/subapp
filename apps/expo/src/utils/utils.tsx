@@ -30,3 +30,10 @@ export function generalizeDate(input: any) {
 export function trimString(input: string, length: number) {
   return input.length > length ? input.substring(0, length).trim() + "..." : input;
 }
+
+export const PERIODS = [
+  { period: 1, label: "Day", standard: "days" },
+  { period: 7, label: "Week", standard: "weeks" },
+  { period: 28, label: "Month", standard: "months" },
+  { period: 365, label: "Year", standard: "years" },
+];

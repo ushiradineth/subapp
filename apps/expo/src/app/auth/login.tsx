@@ -15,15 +15,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const { mutate, isLoading } = api.user.authorize.useMutation({
     onSuccess(data) {
-      auth.setSession({ id: data.id, email: data.email, name: data.name });
+      auth.setSession({ id: data.id, email: data.email, name: data.name, token: data.token, expiration: data.expiration });
       router.push("/home");
     },
     onError(error) {
       setError(error.message);
     },
   });
-
-  console.log(auth.session);
 
   const {
     control,

@@ -1,9 +1,7 @@
 import { Asset } from "expo-asset";
 import { Stack, useRouter } from "expo-router";
-import { Bell, Search } from "lucide-react-native";
+import { Search } from "lucide-react-native";
 import { Image, Text } from "tamagui";
-
-import BackButton from "~/components/Atoms/BackButton";
 
 const StackLayout = () => {
   const router = useRouter();
@@ -20,11 +18,11 @@ const StackLayout = () => {
               alt="Icon"
             />
           ),
-          headerLeft: () => (
-            <Text className="mt-2" onPress={() => router.push("/home/notifications")}>
-              <Bell color="black" />
-            </Text>
-          ),
+          // headerLeft: () => (
+          //   <Text className="mt-2" onPress={() => router.push("/home/notifications")}>
+          //     <Bell color="black" />
+          //   </Text>
+          // ),
           headerRight: () => (
             <Text className="mt-2" onPress={() => router.push("/home/search")}>
               <Search color="black" />
@@ -37,9 +35,7 @@ const StackLayout = () => {
         name="search"
         options={{
           headerTitle: "Search",
-          headerLeft: () => <BackButton />,
           presentation: "modal",
-          headerTitleAlign: "center",
         }}
       />
     </Stack>

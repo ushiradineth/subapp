@@ -13,7 +13,7 @@ export default function Tiers() {
   const { data: tiers, isLoading } = api.tier.getByProductId.useQuery({ id: productId });
 
   if (isLoading) return <Spinner background />;
-  if (tiers?.length === 0) return <NoData>No Tiers found</NoData>;
+  if (!tiers || tiers?.length === 0) return <NoData background>No tiers found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">

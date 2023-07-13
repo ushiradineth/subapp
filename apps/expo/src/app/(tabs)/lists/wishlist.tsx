@@ -16,7 +16,7 @@ export default function Wishlist() {
   const { data, isLoading } = api.user.wishlist.useQuery({ id: auth.session.id });
 
   if (isLoading) return <Spinner background />;
-  if (data?.wishlist?.length === 0) return <NoData>No products found</NoData>;
+  if (!data || data?.wishlist?.length === 0) return <NoData background>No products found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>

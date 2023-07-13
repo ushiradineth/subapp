@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Text } from "react-native";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { Edit, LogOut } from "lucide-react-native";
@@ -14,7 +15,12 @@ import { AuthContext } from "~/app/_layout";
 export default function Profile() {
   const router = useRouter();
   const auth = useContext(AuthContext);
-  const { data: user } = api.user.profile.useQuery();
+  const { data: user, isLoading } = api.user.profile.useQuery();
+
+  if (!isLoading && !user) {
+    Toast.show({ type: "error", text1: "Not logged in" });
+    auth.logout();
+  }
 
   return (
     <ScrollView className="h-fit px-4 py-6" backgroundColor="$background">

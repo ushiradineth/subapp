@@ -4,24 +4,17 @@ import { useRouter } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { generalizeDate, trimString } from "~/utils/utils";
+import { PERIODS, generalizeDate, trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
-
-export const PERIODS = [
-  { period: 1, label: "Day" },
-  { period: 7, label: "Week" },
-  { period: 28, label: "Month" },
-  { period: 365, label: "Year" },
-];
 
 export default function Subscriptions() {
   const router = useRouter();
   const { data, isLoading } = api.user.subscriptions.useQuery({});
 
   if (isLoading) return <Spinner background />;
-  if (data?.subscriptions?.length === 0) return <NoData>No Subscriptions found</NoData>;
+  if (!data || data?.subscriptions?.length === 0) return <NoData background>No subscriptions found</NoData>;
 
   return (
     <ScrollView backgroundColor={"$background"}>
