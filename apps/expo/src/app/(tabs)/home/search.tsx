@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { Stack, useRouter } from "expo-router";
-import { ScrollView, YStack } from "tamagui";
+import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
@@ -57,6 +57,15 @@ export default function Search() {
               title={trimString(product.name, 16)}
               text1={trimString(product.vendor.name, 16)}
               text2={trimString(product.category.name, 16)}
+              text3={
+                product.subscriptions.length > 0 && (
+                  <YStack className="flex justify-end mt-1">
+                    <YStack className="bg-accent rounded-lg p-1">
+                      <Text className="font-semibold text-white">Subscribed</Text>
+                    </YStack>
+                  </YStack>
+                )
+              }
               image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
             />
           ))

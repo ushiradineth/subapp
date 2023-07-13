@@ -184,6 +184,12 @@ export const productRouter = createTRPCRouter({
             name: true,
           },
         },
+        subscriptions: {
+          where: {
+            active: true,
+            userId: ctx.auth.id,
+          },
+        },
       },
     });
   }),
