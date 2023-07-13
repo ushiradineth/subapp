@@ -8,17 +8,10 @@ import { Button, H2, Image, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { generalizeDate } from "~/utils/utils";
+import { PERIODS, generalizeDate } from "~/utils/utils";
 import InfoCard from "~/components/Atoms/InfoCard";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
-
-const PERIODS = [
-  { period: 1, label: "Day", standard: "days" },
-  { period: 7, label: "Week", standard: "weeks" },
-  { period: 28, label: "Month", standard: "months" },
-  { period: 365, label: "Year", standard: "years" },
-];
 
 export default function SubscriptionPage() {
   const router = useRouter();

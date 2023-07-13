@@ -11,15 +11,9 @@ import { Button, H6, Image, Input, ScrollView, Spinner, Text, TextArea, ToggleGr
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
+import { PERIODS } from "~/utils/utils";
 import { TemplateSchema, type TemplateFormData } from "~/utils/validators";
 import { AuthContext } from "~/app/_layout";
-
-export const PERIODS = [
-  { period: "1", label: "Daily" },
-  { period: "7", label: "Weekly" },
-  { period: "28", label: "Monthly" },
-  { period: "365", label: "Annually" },
-];
 
 const Custom = () => {
   const router = useRouter();
@@ -177,20 +171,20 @@ const Custom = () => {
                   type={"single"}
                   size={"$6"}
                   disableDeactivation={true}>
-                  <ToggleGroup.Item value={PERIODS[0]?.period ?? ""} backgroundColor={"white"} aria-label="Left aligned">
-                    <Text>{PERIODS[0]?.period} </Text>
+                  <ToggleGroup.Item value={String(PERIODS[0]?.period ?? "")} backgroundColor={"white"} aria-label="Left aligned">
+                    <Text>{PERIODS[0]?.period}</Text>
                   </ToggleGroup.Item>
 
-                  <ToggleGroup.Item value={PERIODS[1]?.period ?? ""} backgroundColor={"white"} aria-label="Center aligned">
-                    <Text> {PERIODS[1]?.period}</Text>
+                  <ToggleGroup.Item value={String(PERIODS[1]?.period ?? "")} backgroundColor={"white"} aria-label="Center aligned">
+                    <Text>{PERIODS[1]?.period}</Text>
                   </ToggleGroup.Item>
 
-                  <ToggleGroup.Item value={PERIODS[2]?.period ?? ""} backgroundColor={"white"} aria-label="Center aligned">
-                    <Text> {PERIODS[2]?.period}</Text>
+                  <ToggleGroup.Item value={String(PERIODS[2]?.period ?? "")} backgroundColor={"white"} aria-label="Center aligned">
+                    <Text>{PERIODS[2]?.period}</Text>
                   </ToggleGroup.Item>
 
-                  <ToggleGroup.Item value={PERIODS[3]?.period ?? ""} backgroundColor={"white"} aria-label="Right aligned">
-                    <Text> {PERIODS[3]?.period}</Text>
+                  <ToggleGroup.Item value={String(PERIODS[3]?.period ?? "")} backgroundColor={"white"} aria-label="Right aligned">
+                    <Text>{PERIODS[3]?.period}</Text>
                   </ToggleGroup.Item>
                 </ToggleGroup>
               </XStack>

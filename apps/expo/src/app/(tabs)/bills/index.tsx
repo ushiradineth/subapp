@@ -5,17 +5,10 @@ import { useRouter } from "expo-router";
 import { ScrollView, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { generalizeDate, trimString } from "~/utils/utils";
+import { PERIODS, generalizeDate, trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
-
-const PERIODS = [
-  { period: 1, label: "Day", standard: "days" },
-  { period: 7, label: "Week", standard: "weeks" },
-  { period: 28, label: "Month", standard: "months" },
-  { period: 365, label: "Year", standard: "years" },
-];
 
 export default function Bills() {
   const router = useRouter();
