@@ -11,7 +11,6 @@ import { Button, H6, Image, Input, ScrollView, Spinner, Text, TextArea, ToggleGr
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { supabase } from "~/utils/supabase";
 import { TemplateSchema, type TemplateFormData } from "~/utils/validators";
 import { AuthContext } from "~/app/_layout";
 
@@ -75,11 +74,11 @@ const Custom = () => {
   };
 
   const onDelete = async () => {
-    const { data, error } = await supabase.storage
-      .from(Constants.expoConfig?.extra?.TEMPLATE_ICON_BUCKET)
-      .remove([`${auth.session.id}/0.jpg`]);
+    // const { data, error } = await supabase.storage
+    //   .from(Constants.expoConfig?.extra?.TEMPLATE_ICON_BUCKET)
+    //   .remove([`${auth.session.id}/0.jpg`]);
 
-    if (error) Toast.show({ type: "error", text1: "Failed to update profile" });
+    // if (error) Toast.show({ type: "error", text1: "Failed to update profile" });
 
     setImageRemoved(true);
   };
