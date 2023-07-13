@@ -13,9 +13,9 @@ import { AuthContext } from "~/app/_layout";
 export default function Bills() {
   const router = useRouter();
   const auth = useContext(AuthContext);
-  const { data: user } = api.user.profile.useQuery();
+  const { data: user, isLoading } = api.user.profile.useQuery();
 
-  if (!user) {
+  if (!isLoading && !user) {
     Toast.show({ type: "error", text1: "Not logged in" });
     auth.logout();
   }

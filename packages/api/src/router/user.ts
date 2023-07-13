@@ -30,7 +30,7 @@ export const userRouter = createTRPCRouter({
       return {
         ...userData,
         token: jwt.sign(userData, env.JWT_SECRET),
-        expiration: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).getTime() // 24 Hours
+        expiration: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).getTime(), // 24 Hours
       };
     }
     throw new TRPCError({
@@ -197,6 +197,7 @@ export const userRouter = createTRPCRouter({
       where: { id: ctx.auth.id },
       include: {
         subscriptions: {
+          orderBy: { createdAt: "desc" },
           where: { active: true },
           include: {
             tier: { select: { price: true, period: true, name: true } },
