@@ -142,6 +142,17 @@ export const productRouter = createTRPCRouter({
       images.push({ url: url?.publicUrl ?? "" });
     });
 
+    await ctx.prisma.user.update({
+      where: { id: ctx.auth.id },
+      data: {
+        activity: {
+          create: {
+            product: { connect: { id: input.id } },
+          },
+        },
+      },
+    });
+
     return {
       product,
       rank: rank ?? 0,
