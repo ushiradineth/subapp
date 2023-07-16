@@ -225,7 +225,7 @@ export const vendorRouter = createTRPCRouter({
     const previousWeekPopularProducts = await ctx.prisma.product.findMany({
       where: {
         id: {
-          in: currentWeekPopularProducts.map((product) => product.id),
+          in: [...currentWeekPopularProducts.map((product) => product.id)],
         },
         subscriptions: {
           every: {
@@ -277,7 +277,7 @@ export const vendorRouter = createTRPCRouter({
     const previousWeekPopularCategories = await ctx.prisma.category.findMany({
       where: {
         id: {
-          in: currentWeekPopularProducts.map((product) => product.id),
+          in: [...currentWeekPopularProducts.map((product) => product.id)],
         },
         products: {
           every: {
