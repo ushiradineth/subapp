@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import Head from "next/head";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/lib/utils";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
@@ -77,7 +78,7 @@ export default function VendorDashboard() {
                     <PieChart
                       key={product.id}
                       id={product.id}
-                      title={product.name}
+                      title={trimString(product.name, 20)}
                       truthy={{ title: "Active users", value: product.subscriptions.filter((subscription) => subscription.active).length }}
                       falsity={{
                         title: "Terminated users",
@@ -93,7 +94,7 @@ export default function VendorDashboard() {
             </div>
           </div>
         </CardContent>
-        <div className="grid gap-2 md:grid-cols-2 px-6 pb-6">
+        <div className="grid gap-2 px-6 pb-6 md:grid-cols-2">
           <Card className="flex flex-col items-center justify-center">
             <h2 className="pt-8 text-2xl ">Popular products</h2>
             <Carousel indicators navButtons autoScroll>
@@ -102,8 +103,8 @@ export default function VendorDashboard() {
                   key={product.id}
                   currentWeek={data.popularProducts.currentWeek[index]?._count.subscriptions ?? 0}
                   previousWeek={data.popularProducts.previousWeek[index]?._count.subscriptions ?? 0}
-                  dataKey={product.name}
-                  title={product.name}
+                  dataKey={trimString(product.name, 20)}
+                  title={trimString(product.name, 20)}
                   width={521.55}
                   height={200}
                   href={`/product/${product.id}`}
@@ -119,8 +120,8 @@ export default function VendorDashboard() {
                   key={category.id}
                   currentWeek={data.popularCategories.currentWeek[index]?._count.products ?? 0}
                   previousWeek={data.popularCategories.previousWeek[index]?._count.products ?? 0}
-                  dataKey={category.name}
-                  title={category.name}
+                  dataKey={trimString(category.name, 32)}
+                  title={trimString(category.name, 32)}
                   width={521.55}
                   height={200}
                   href={`/category/${category.id}`}

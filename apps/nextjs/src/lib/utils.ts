@@ -42,3 +42,7 @@ export function getPercentage(current: number, previous: number) {
   const percentage = ((current - previous) / Math.abs(previous)) * 100;
   return Number.isNaN(percentage) ? 0 : !Number.isFinite(percentage) ? -9999 : percentage.toPrecision(4);
 }
+
+export function trimString(input: string, length: number) {
+  return input.length > length ? input.substring(0, length).trim() + "..." : input;
+}

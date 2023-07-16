@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import Head from "next/head";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/lib/utils";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
@@ -101,7 +102,7 @@ export default function AdminDashboard() {
             </Card>
           </div>
         </CardContent>
-        <div className="grid gap-2 md:grid-cols-2 xl:flex xl:flex-row px-6 pb-6">
+        <div className="grid gap-2 px-6 pb-6 md:grid-cols-2 xl:flex xl:flex-row">
           <Card className="flex flex-col items-center justify-center">
             <h2 className="pt-8 text-2xl ">Popular products</h2>
             <Carousel indicators navButtons autoScroll>
@@ -110,8 +111,8 @@ export default function AdminDashboard() {
                   key={product.id}
                   currentWeek={data.popularProducts.currentWeek[index]?._count.subscriptions ?? 0}
                   previousWeek={data.popularProducts.previousWeek[index]?._count.subscriptions ?? 0}
-                  dataKey={product.name}
-                  title={product.name}
+                  dataKey={trimString(product.name, 20)}
+                  title={trimString(product.name, 20)}
                   width={362}
                   height={200}
                   href={`/product/${product.id}`}
@@ -127,8 +128,8 @@ export default function AdminDashboard() {
                   key={category.id}
                   currentWeek={data.popularCategories.currentWeek[index]?._count.products ?? 0}
                   previousWeek={data.popularCategories.previousWeek[index]?._count.products ?? 0}
-                  dataKey={category.name}
-                  title={category.name}
+                  dataKey={trimString(category.name, 32)}
+                  title={trimString(category.name, 32)}
                   width={362}
                   height={200}
                   href={`/category/${category.id}`}
@@ -144,8 +145,8 @@ export default function AdminDashboard() {
                   key={vendor.id}
                   currentWeek={data.popularVendors.currentWeek[index]?._count.products ?? 0}
                   previousWeek={data.popularVendors.previousWeek[index]?._count.products ?? 0}
-                  dataKey={vendor.name}
-                  title={vendor.name}
+                  dataKey={trimString(vendor.name, 20)}
+                  title={trimString(vendor.name, 20)}
                   width={362}
                   height={200}
                   href={`/vendor/${vendor.id}`}
