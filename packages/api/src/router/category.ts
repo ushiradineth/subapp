@@ -30,6 +30,17 @@ export const categoryRouter = createTRPCRouter({
   }),
 
   getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    await ctx.prisma.user.update({
+      where: { id: ctx.auth.id },
+      data: {
+        activity: {
+          create: {
+            category: { connect: { id: input.id } },
+          },
+        },
+      },
+    });
+
     return await ctx.prisma.category.findUnique({
       where: { id: input.id },
       include: {

@@ -9,6 +9,7 @@ generator client {
 datasource db {
   provider     = "postgresql"
   url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -61,9 +62,10 @@ model Vendor {
   emailVerified   DateTime?
   accountVerified Boolean
   createdAt       DateTime  @default(now())
-  accounts        Account[]
-  sessions        Session[]
-  products        Product[] @relation("vendorProducts")
+
+  accounts Account[]
+  sessions Session[]
+  products Product[] @relation("vendorProducts")
 }
 
 model VerificationToken {
@@ -75,43 +77,41 @@ model VerificationToken {
 }
 
 model User {
-  id                   String         @id @default(cuid())
-  email                String         @unique
-  name                 String
-  password             String
-  createdAt            DateTime       @default(now())
-  subscriptions        Subscription[] @relation("userSubscriptions")
-  reviews              Review[]       @relation("userReviews")
-  likedReviews         Review[]       @relation("likedReviews")
-  dislikedReviews      Review[]       @relation("dislikedReviews")
-  comments             Comment[]      @relation("userComments")
-  likedComments        Comment[]      @relation("likedComment")
-  dislikedComments     Comment[]      @relation("dislikedComment")
-  wishlist             Product[]      @relation("wishlist")
-  productsInterested   Product[]      @relation("productsInterested")
-  productsUninterested Product[]      @relation("productsUninterested")
-  templates            Template[]     @relation("userTemplates")
-  categoriesFollowing  Category[]     @relation("categoriesFollowing")
-  categoriesHidden     Category[]     @relation("categoriesHidden")
-  notifications        Notification[] @relation("notifications")
-  userNotifications    Notification[] @relation("notificationUsers")
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+
+  subscriptions    Subscription[]  @relation("userSubscriptions")
+  reviews          Review[]        @relation("userReviews")
+  likedReviews     Review[]        @relation("likedReviews")
+  dislikedReviews  Review[]        @relation("dislikedReviews")
+  comments         Comment[]       @relation("userComments")
+  likedComments    Comment[]       @relation("likedComment")
+  dislikedComments Comment[]       @relation("dislikedComment")
+  wishlist         Product[]       @relation("wishlist")
+  templates        Template[]      @relation("userTemplates")
+  notifications    Notification[]  @relation("notifications")
+  activity         VisitActivity[] @relation("userActivity")
 }
 
 model Subscription {
   id        String    @id @default(cuid())
-  user      User      @relation("userSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
-  product   Product?  @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
-  template  Template? @relation("templateSubscription", fields: [templateId], references: [id], onDelete: Cascade)
-  tier      Tier      @relation("tierSubscriptions", fields: [tierId], references: [id], onDelete: Cascade)
+  active    Boolean   @default(true)
   createdAt DateTime  @default(now())
   startedAt DateTime  @default(now())
   deletedAt DateTime?
-  active    Boolean   @default(true)
 
   userId     String
   productId  String?
   tierId     String
   templateId String? @unique
+
+  user     User      @relation("userSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  product  Product?  @relation("productSubscriptions", fields: [productId], references: [id], onDelete: Cascade)
+  template Template? @relation("templateSubscription", fields: [templateId], references: [id], onDelete: Cascade)
+  tier     Tier      @relation("tierSubscriptions", fields: [tierId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([productId])
@@ -120,44 +120,46 @@ model Subscription {
 }
 
 model Tier {
-  id            String         @id @default(cuid())
-  product       Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  template      Template?      @relation("templateTier", fields: [templateId], references: [id])
-  period        Int
-  price         Float
-  description   String
-  name          String
-  points        String[]
-  createdAt     DateTime       @default(now())
-  subscriptions Subscription[] @relation("tierSubscriptions")
+  id          String   @id @default(cuid())
+  period      Int
+  price       Float
+  description String
+  name        String
+  points      String[]
+  createdAt   DateTime @default(now())
 
   productId  String?
   templateId String? @unique
+
+  product       Product?       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  template      Template?      @relation("templateTier", fields: [templateId], references: [id])
+  subscriptions Subscription[] @relation("tierSubscriptions")
 
   @@index([productId])
   @@index([templateId])
 }
 
 model Product {
-  id                String         @id @default(cuid())
-  name              String
-  description       String
-  verified          Boolean
-  tiers             Tier[]
-  vendor            Vendor         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
-  wishlistedUsers   User[]         @relation("wishlist")
-  subscriptions     Subscription[] @relation("productSubscriptions")
-  usersInterested   User[]         @relation("productsInterested")
-  usersUninterested User[]         @relation("productsUninterested")
-  category          Category       @relation("productCategory", fields: [categoryId], references: [id])
-  createdAt         DateTime       @default(now())
-  link              String?
-  reviews           Review[]       @relation("productReviews")
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  verified    Boolean
+  link        String?
+  createdAt   DateTime @default(now())
 
-  productNotifications Notification[] @relation("notificationsProduct")
+  tiers         Tier[]
+  vendor        Vendor         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)
+  subscriptions Subscription[] @relation("productSubscriptions")
+  category      Category       @relation("productCategory", fields: [categoryId], references: [id])
+  reviews       Review[]       @relation("productReviews")
 
   vendorId   String
   categoryId String
+
+  // cross reference rows
+  wishlistedUsers      User[]          @relation("wishlist")
+  productNotifications Notification[]  @relation("notificationsProduct")
+  productActivity      VisitActivity[] @relation("productActivity")
 
   @@index([categoryId])
   @@index([vendorId])
@@ -170,67 +172,71 @@ model Template {
   createdAt    DateTime      @default(now())
   link         String?
   user         User          @relation("userTemplates", fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
   subscription Subscription? @relation("templateSubscription")
   tier         Tier?         @relation("templateTier")
+
+  userId String
 
   @@index([userId])
 }
 
 model Review {
-  id                  String         @id @default(cuid())
-  user                User           @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade)
-  product             Product        @relation("productReviews", fields: [productId], references: [id], onDelete: Cascade)
-  createdAt           DateTime       @default(now())
-  rating              Float
-  review              String?
-  likes               User[]         @relation("likedReviews")
-  dislikes            User[]         @relation("dislikedReviews")
-  comments            Comment[]      @relation("reviewComments")
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  rating    Float
+  review    String?
+
+  userId    String
+  productId String
+
+  user     User      @relation("userReviews", fields: [userId], references: [id], onDelete: Cascade)
+  product  Product   @relation("productReviews", fields: [productId], references: [id], onDelete: Cascade)
+  likes    User[]    @relation("likedReviews")
+  dislikes User[]    @relation("dislikedReviews")
+  comments Comment[] @relation("reviewComments")
+
+  // cross reference rows
   reviewNotifications Notification[] @relation("notificationsReview")
-  userId              String
-  productId           String
 
   @@index([productId])
   @@index([userId])
 }
 
 model Comment {
-  id                   String         @id @default(cuid())
-  user                 User           @relation("userComments", fields: [userId], references: [id], onDelete: Cascade)
-  review               Review         @relation("reviewComments", fields: [reviewId], references: [id], onDelete: Cascade)
-  createdAt            DateTime       @default(now())
-  likes                User[]         @relation("likedComment")
-  dislikes             User[]         @relation("dislikedComment")
-  comment              String
+  id        String   @id @default(cuid())
+  comment   String
+  createdAt DateTime @default(now())
+
+  userId   String
+  reviewId String
+
+  user     User   @relation("userComments", fields: [userId], references: [id], onDelete: Cascade)
+  review   Review @relation("reviewComments", fields: [reviewId], references: [id], onDelete: Cascade)
+  likes    User[] @relation("likedComment")
+  dislikes User[] @relation("dislikedComment")
+
+  // cross reference rows
   commentNotifications Notification[] @relation("notificationsComment")
-  userId               String
-  reviewId             String
 
   @@index([reviewId])
   @@index([userId])
 }
 
 model Category {
-  id                    String         @id @default(cuid())
-  name                  String
-  description           String
-  createdAt             DateTime       @default(now())
-  usersInterested       User[]         @relation("categoriesFollowing")
-  usersUninterested     User[]         @relation("categoriesHidden")
-  products              Product[]      @relation("productCategory")
-  categoryNotifications Notification[] @relation("notificationsCategory")
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+
+  products Product[] @relation("productCategory")
+
+  // cross reference rows
+  categoryNotifications Notification[]  @relation("notificationsCategory")
+  categoryActivity      VisitActivity[] @relation("categoryActivity")
 }
 
 model Notification {
-  id         String    @id @default(cuid())
-  user       User[]    @relation("notifications")
-  createdAt  DateTime  @default(now())
-  product    Product?  @relation("notificationsProduct", fields: [productId], references: [id], onDelete: Cascade)
-  review     Review?   @relation("notificationsReview", fields: [reviewId], references: [id], onDelete: Cascade)
-  comment    Comment?  @relation("notificationsComment", fields: [commentId], references: [id], onDelete: Cascade)
-  category   Category? @relation("notificationsCategory", fields: [categoryId], references: [id], onDelete: Cascade)
-  users      User[]    @relation("notificationUsers")
+  id         String   @id @default(cuid())
   type       String
   text       String
   preview    String?
@@ -238,6 +244,13 @@ model Notification {
   reviewId   String?
   commentId  String?
   categoryId String?
+  createdAt  DateTime @default(now())
+
+  user     User[]    @relation("notifications")
+  product  Product?  @relation("notificationsProduct", fields: [productId], references: [id], onDelete: Cascade)
+  review   Review?   @relation("notificationsReview", fields: [reviewId], references: [id], onDelete: Cascade)
+  comment  Comment?  @relation("notificationsComment", fields: [commentId], references: [id], onDelete: Cascade)
+  category Category? @relation("notificationsCategory", fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([reviewId])
@@ -250,4 +263,21 @@ model PasswordResetRequest {
   userId    String
   otp       String
   createdAt DateTime @default(now())
+}
+
+model VisitActivity {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  user     User      @relation("userActivity", fields: [userId], references: [id], onDelete: Cascade)
+  product  Product?  @relation("productActivity", fields: [productId], references: [id], onDelete: Cascade)
+  category Category? @relation("categoryActivity", fields: [categoryId], references: [id], onDelete: Cascade)
+
+  userId     String
+  productId  String?
+  categoryId String?
+
+  @@index([userId])
+  @@index([productId])
+  @@index([categoryId])
 }
