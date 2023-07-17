@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { RefreshControl } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
@@ -13,7 +14,7 @@ import { AuthContext } from "~/app/_layout";
 export default function Bills() {
   const router = useRouter();
   const auth = useContext(AuthContext);
-  const { data: user, isLoading } = api.user.getSubscriptionsPage.useQuery();
+  const { data: user, isLoading, refetch, isRefetching } = api.user.getSubscriptionsPage.useQuery();
 
   if (!isLoading && !user) {
     Toast.show({ type: "error", text1: "Not logged in" });
@@ -21,7 +22,9 @@ export default function Bills() {
   }
 
   return (
-    <ScrollView backgroundColor="$background">
+    <ScrollView
+      backgroundColor="$background"
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space className="p-4">
         <YStack className="bg-background flex h-28 w-full items-center justify-center rounded-3xl p-4" space={"$1"}>
           {user ? (
@@ -36,11 +39,13 @@ export default function Bills() {
         </YStack>
         <XStack className="flex h-16 items-center justify-between">
           <Button
+            disabled={isRefetching}
             onPress={() => router.push(`subscriptions/wishlist`)}
             className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
             <Text className="text-accent text-[16px] font-bold">Wishlist</Text>
           </Button>
           <Button
+            disabled={isRefetching}
             onPress={() => router.push(`subscriptions/history`)}
             className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
             <Text className="text-accent text-[16px] font-bold">History</Text>
