@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -18,7 +18,6 @@ export default function PasswordReset() {
 
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<ForgetPasswordFormData>({
@@ -27,9 +26,13 @@ export default function PasswordReset() {
 
   const onSubmit = (data: ForgetPasswordFormData) => mutate({ email: data.Email });
 
-  useEffect(() => {
-    error !== "" && setError("");
-  }, [watch("Email")]);
+  const onInputChange = useCallback(
+    (input: string, onChange: (input: string) => void) => {
+      error !== "" && setError("");
+      onChange(input);
+    },
+    [error],
+  );
 
   return (
     <YStack className="flex-1 items-center justify-center p-8" space backgroundColor="$background">
@@ -43,7 +46,14 @@ export default function PasswordReset() {
         render={({ field: { onChange, onBlur, value } }) => (
           <YStack className="w-full">
             <H6 className="font-bold">Email</H6>
-            <Input className="my-1" placeholder="Email" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+            <Input
+              className="my-1"
+              placeholder="Email"
+              autoCapitalize={"none"}
+              onBlur={onBlur}
+              onChangeText={(input) => onInputChange(input, onChange)}
+              value={value}
+            />
             <YStack className="flex items-center justify-center">
               {errors.Email && <Text color={"red"}>{errors.Email.message}</Text>}
             </YStack>
