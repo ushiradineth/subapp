@@ -73,8 +73,7 @@ const RootLayout = () => {
       const name = await getItemAsync("name");
       const token = await getItemAsync("token");
       const expiration = await getItemAsync("expiration");
-      setSession({ email: email ?? "", id: id ?? "", name: name ?? "", token: token ?? "", expiration: Number(expiration) ?? 0 });
-      console.log(Number(expiration) > moment.now());
+      setSession({ email: email ?? "", id: id ?? "", name: name ?? "", token: token ?? "", expiration: Number(expiration ?? 0) });
 
       if (token !== "" && Number(expiration) > moment.now()) {
         setStatus("authenticated");
@@ -83,7 +82,8 @@ const RootLayout = () => {
       }
     };
 
-    initSession();
+    void initSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // UEF to update the securestore with the session key values
@@ -98,12 +98,9 @@ const RootLayout = () => {
       if (session.token !== "") setStatus("authenticated");
       else setStatus("unauthenticated");
     };
-    updateStore();
-  }, [session]);
 
-  useEffect(() => {
-    console.log(session, status);
-  }, [status]);
+    void updateStore();
+  }, [session]);
 
   if (status === "unauthenticated" && session.token === "" && !pathname.includes("/auth")) {
     return router.replace("/auth");
@@ -129,7 +126,7 @@ export default RootLayout;
 
 export function ErrorBoundary(props: ErrorBoundaryProps) {
   return (
-    <View className="h-screen flex items-center justify-center">
+    <View className="flex h-screen items-center justify-center">
       <View className="flex items-center justify-center">
         <Text className="text-2xl">Something went wrong.</Text>
         <Text className="text-lg">{props.error.message}</Text>

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Platform } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { useRouter, useSearchParams } from "expo-router";
+import { Stack, useRouter, useSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -70,6 +70,7 @@ export default function ReviewProduct() {
 
   useEffect(() => {
     clearErrors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (Boolean(reviewId) && isLoading) {
@@ -79,6 +80,11 @@ export default function ReviewProduct() {
   return (
     <YStack className="h-full p-4" space backgroundColor={"$background"}>
       {Platform.OS === "ios" && <StatusBar style="light" />}
+      <Stack.Screen
+        options={{
+          headerTitle: review ? "Edit review" : "Add review",
+        }}
+      />
       <YStack>
         <Text className="text-2xl font-bold">Share your experience</Text>
       </YStack>
