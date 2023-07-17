@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export function formalizeDate(input: any) {
+export function formalizeDate(input: string | number | Date) {
   const options = {
     hour: "numeric",
     minute: "numeric",
@@ -13,7 +13,7 @@ export function formalizeDate(input: any) {
 
   const date = new Date(input);
 
-  // @ts-ignore
+  // @ts-expect-error Works as intended
   const formattedDate = date.toLocaleString("en-US", options);
 
   const parts = formattedDate.split(", ");
@@ -23,7 +23,7 @@ export function formalizeDate(input: any) {
   return `${parts[1]}, ${datePart?.[1]}/${datePart?.[0]}/${datePart?.[2]}`;
 }
 
-export function generalizeDate(input: any) {
+export function generalizeDate(input: moment.MomentInput) {
   return moment(input).fromNow();
 }
 

@@ -16,7 +16,7 @@ const getBaseUrl = () => {
   const debuggerHost = Constants.manifest?.debuggerHost ?? Constants.manifest2?.extra?.expoGo?.debuggerHost;
   const localhost = debuggerHost?.split(":")[0];
   if (!localhost) {
-    return Constants.expoConfig?.extra?.WEB_URL;
+    return Constants.expoConfig?.extra?.WEB_URL as string;
   }
   return `http://${localhost}:3000`;
 };
@@ -49,6 +49,7 @@ export const TRPCProvider: React.FC<{
 
   useEffect(() => {
     setTrpcClient(CreateTRPCClient);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.session.token]);
 
   return (
