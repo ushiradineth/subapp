@@ -8,7 +8,9 @@ import config from "../../tamagui.config";
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [loaded] = useFonts({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     Montserrat: require("../../assets/Montserrat-Regular.ttf"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     MontserratBold: require("../../assets/Montserrat-Bold.ttf"),
   });
 
