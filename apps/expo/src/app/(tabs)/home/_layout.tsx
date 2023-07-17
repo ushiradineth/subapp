@@ -1,7 +1,8 @@
+import { Pressable } from "react-native";
 import { Asset } from "expo-asset";
 import { Stack, useRouter } from "expo-router";
 import { Search } from "lucide-react-native";
-import { Image, Text } from "tamagui";
+import { Image } from "tamagui";
 
 const StackLayout = () => {
   const router = useRouter();
@@ -24,9 +25,9 @@ const StackLayout = () => {
           //   </Text>
           // ),
           headerRight: () => (
-            <Text className="mt-2" onPress={() => router.push("/home/search")}>
+            <Pressable android_ripple={{ color: "gray", borderless: true, radius: 20 }} onPress={() => router.push("/home/search")}>
               <Search color="black" />
-            </Text>
+            </Pressable>
           ),
           headerTitleAlign: "center",
         }}

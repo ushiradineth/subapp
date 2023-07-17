@@ -42,7 +42,6 @@ const Subscribe: React.FC = () => {
       <Stack.Screen
         options={{
           headerTitle: trimString(tier.product?.name ?? "", 18),
-          headerLeft: () => <BackButton />,
         }}
       />
       <YStack className="p-4" space="$4">
