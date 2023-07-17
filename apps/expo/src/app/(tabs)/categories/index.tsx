@@ -1,23 +1,26 @@
 import React from "react";
+import { RefreshControl } from "react-native";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
+import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
-import { trimString } from "~/utils/utils";
 
 export default function Categories() {
   const router = useRouter();
-  const { data: categories, isLoading } = api.category.getAll.useQuery();
+  const { data: categories, isLoading, refetch, isRefetching } = api.category.getAll.useQuery();
 
   if (isLoading) return <Spinner background />;
   if (!categories) return <NoData background>No categories found</NoData>;
 
   return (
-    <ScrollView backgroundColor={"$background"}>
+    <ScrollView
+      backgroundColor={"$background"}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space className="p-4">
         {categories?.map((category) => (
           <CardItemWide

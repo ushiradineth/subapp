@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { RefreshControl } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
@@ -20,7 +21,7 @@ export default function SubscriptionPage() {
 
   if (!subscriptionId || typeof subscriptionId !== "string") throw new Error("Subscription id not found");
 
-  const { data, isLoading, isRefetching } = api.subscription.getById.useQuery({ id: subscriptionId });
+  const { data, isLoading, refetch, isRefetching } = api.subscription.getById.useQuery({ id: subscriptionId });
   const { mutate, isLoading: isUnsubscribing } = api.subscription.delete.useMutation({
     onSuccess: () => router.back(),
     onError: () => Toast.show({ type: "error", text1: "An error occurred while unsubscribing" }),
@@ -48,7 +49,9 @@ export default function SubscriptionPage() {
   if (!data) return <NoData background>No subscription found</NoData>;
 
   return (
-    <ScrollView backgroundColor={"$background"}>
+    <ScrollView
+      backgroundColor={"$background"}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space className="p-4">
         <XStack className="flex items-center">
           <Image
@@ -79,10 +82,11 @@ export default function SubscriptionPage() {
           </YStack>
         </XStack>
         {data?.active && (
-          <Button onPress={() => mutate({ id: subscriptionId })} className={`flex h-16 w-full items-center rounded-3xl bg-red-500`}>
-            <Text className="text-[16px] font-semibold text-white">
-              {isUnsubscribing || isRefetching ? <Spinner color="white" /> : "Unsubscribe"}
-            </Text>
+          <Button
+            disabled={isRefetching}
+            onPress={() => mutate({ id: subscriptionId })}
+            className={`flex h-16 w-full items-center rounded-3xl bg-red-500`}>
+            <Text className="text-[16px] font-semibold text-white">{isUnsubscribing ? <Spinner color="white" /> : "Unsubscribe"}</Text>
           </Button>
         )}
         {data?.active ? (
