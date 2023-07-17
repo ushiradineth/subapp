@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { PERIODS, generalizeDate, trimString } from "~/utils/utils";
@@ -34,12 +34,24 @@ export default function Bills() {
             <Spinner />
           )}
         </YStack>
+        <XStack className="flex h-16 items-center justify-between">
+          <Button
+            onPress={() => router.push(`subscriptions/wishlist`)}
+            className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
+            <Text className="text-accent text-[16px] font-bold">Wishlist</Text>
+          </Button>
+          <Button
+            onPress={() => router.push(`subscriptions/history`)}
+            className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
+            <Text className="text-accent text-[16px] font-bold">History</Text>
+          </Button>
+        </XStack>
         <ScrollView backgroundColor="$background">
           <YStack space>
             {user?.subscriptions?.map((subscription) => (
               <CardItemWide
                 key={subscription.id}
-                onPress={() => router.push(`lists/subscriptions/${subscription.id}`)}
+                onPress={() => router.push(`subscriptions/${subscription.id}`)}
                 title={trimString(subscription.product?.name ?? subscription.template?.name ?? "", 16)}
                 text1={trimString(subscription.tier?.name ?? "", 16)}
                 text2={trimString(`Subscribed ${generalizeDate(subscription.startedAt)}`, 24)}

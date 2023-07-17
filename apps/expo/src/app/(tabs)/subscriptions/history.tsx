@@ -1,17 +1,17 @@
 import React from "react";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { PERIODS, generalizeDate, trimString } from "~/utils/utils";
+import { generalizeDate, trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 
-export default function Subscriptions() {
+export default function History() {
   const router = useRouter();
-  const { data, isLoading } = api.user.subscriptions.useQuery({});
+  const { data, isLoading } = api.user.subscriptions.useQuery({ showTerminatedSubscripitions: true });
 
   if (isLoading) return <Spinner background />;
   if (!data || data?.subscriptions?.length === 0) return <NoData background>No subscriptions found</NoData>;
@@ -22,15 +22,10 @@ export default function Subscriptions() {
         {data?.subscriptions?.map((subscription) => (
           <CardItemWide
             key={subscription.id}
-            onPress={() => router.push(`lists/subscriptions/${subscription.id}`)}
-            title={trimString(subscription.product?.name ?? subscription.template?.name ?? "", 20)}
-            text1={trimString(subscription.tier?.name ?? "", 20)}
-            text2={trimString(`${generalizeDate(subscription.createdAt)}`, 20)}
-            text3={
-              <Text className="text-accent font-semibold">
-                {trimString(`$${subscription.tier.price} per ${PERIODS.find((p) => p.period == subscription.tier.period)?.label}`, 20)}
-              </Text>
-            }
+            onPress={() => router.push(`subscriptions/${subscription.id}`)}
+            title={trimString(subscription.product?.name ?? subscription.template?.name ?? "", 16)}
+            text1={trimString(subscription.tier?.name ?? "", 16)}
+            text2={trimString(`Canceled ${generalizeDate(subscription.deletedAt)}`, 24)}
             image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${subscription.productId}/0.jpg`}
           />
         ))}
