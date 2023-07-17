@@ -17,13 +17,14 @@ export const passwordValidator = yup
   .min(8)
   .max(20)
   .matches(/(?=.*[A-Z])/, "Password must have atleast one Uppercase Character")
-  .matches(/(?=.*[0-9])/, "Password must have atleast one Number")
-  .matches(/(?=.*[!@#\$%\^&\*])/, "Password must have atleast one Special Character");
+  .matches(/(?=.*\d)/, "Password must have atleast one Number")
+  .matches(/(?=.*[!@#$%^&*])/, "Password must have atleast one Special Character");
 
 export const confirmPasswordValidator = yup
   .string()
   .required("Confirm Password is a required field")
   .test("passwords-match", "Passwords must match", function (value) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return this.parent.Password === value;
   });
 

@@ -108,9 +108,9 @@ const ReviewItem = ({ review, clampText }: Props) => {
         </XStack>
       </XStack>
       <Text className={"flex w-full justify-center truncate rounded-b-2xl py-2 text-xs"}>
-        {clamp && (review.review?.length || 0) > 200 ? `${review.review?.slice(0, 200)}...` : review.review}
+        {clamp && (review.review?.length ?? 0) > 200 ? `${review.review?.slice(0, 200)}...` : review.review}
       </Text>
-      {(review.review?.length || 0) > 200 && clampText && (
+      {(review.review?.length ?? 0) > 200 && clampText && (
         <Pressable onPress={() => setClamp((prev) => !prev)}>
           <Text className="text-accent mt-1 text-[10px] font-bold">{clamp ? "SHOW MORE" : "SHOW LESS"}</Text>
         </Pressable>
