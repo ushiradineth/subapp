@@ -6,7 +6,7 @@ import { Stack, useRouter, useSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Button, H6, Text, TextArea, XStack, YStack } from "tamagui";
+import { Button, H6, ScrollView, Text, TextArea, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ReviewSchema, type ReviewFormData } from "~/utils/validators";
@@ -78,84 +78,86 @@ export default function ReviewProduct() {
   }
 
   return (
-    <YStack className="h-full p-4" space backgroundColor={"$background"}>
-      {Platform.OS === "ios" && <StatusBar style="light" />}
-      <Stack.Screen
-        options={{
-          headerTitle: review ? "Edit review" : "Add review",
-        }}
-      />
-      <YStack>
-        <Text className="text-2xl font-bold">Share your experience</Text>
-      </YStack>
+    <ScrollView backgroundColor={"$background"}>
+      <YStack className="p-4" space>
+        <YStack>
+          <Text className="text-2xl font-bold">Share your experience</Text>
+        </YStack>
 
-      <YStack space="$4">
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange } }) => (
-            <YStack className="w-full">
-              <XStack>
-                <H6 className="w-[80px] font-bold">Rating</H6>
-                <StarRating starSize={24} rating={watch("Rating")} onChange={onChange} maxStars={5} enableHalfStar enableSwiping />
-              </XStack>
-              <YStack className="flex items-center justify-center">
-                {errors.Rating && <Text color={"red"}>{errors.Rating.message}</Text>}
+        <YStack space="$4">
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange } }) => (
+              <YStack className="w-full">
+                <XStack>
+                  <H6 className="w-[80px] font-bold">Rating</H6>
+                  <StarRating starSize={24} rating={watch("Rating")} onChange={onChange} maxStars={5} enableHalfStar enableSwiping />
+                </XStack>
+                <YStack className="flex items-center justify-center">
+                  {errors.Rating && <Text color={"red"}>{errors.Rating.message}</Text>}
+                </YStack>
               </YStack>
-            </YStack>
-          )}
-          name="Rating"
-        />
+            )}
+            name="Rating"
+          />
 
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <YStack className="w-full">
-              <XStack>
-                <H6 className="w-[80px] font-bold">Review</H6>
-                <TextArea
-                  defaultValue={review?.review ?? ""}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  autoCapitalize="none"
-                  flex={1}
-                  maxHeight={200}
-                  minHeight={100}
-                  id="review"
-                  placeholder="Describe your experience"
-                />
-              </XStack>
-              <YStack className="flex items-center justify-center">
-                {errors.Review && <Text color={"red"}>{errors.Review.message}</Text>}
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <YStack className="w-full">
+                <XStack>
+                  <H6 className="w-[80px] font-bold">Review</H6>
+                  <TextArea
+                    defaultValue={review?.review ?? ""}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    autoCapitalize="none"
+                    flex={1}
+                    maxHeight={200}
+                    minHeight={100}
+                    id="review"
+                    placeholder="Describe your experience"
+                  />
+                </XStack>
+                <YStack className="flex items-center justify-center">
+                  {errors.Review && <Text color={"red"}>{errors.Review.message}</Text>}
+                </YStack>
               </YStack>
-            </YStack>
-          )}
-          name="Review"
-        />
+            )}
+            name="Review"
+          />
 
-        <XStack alignSelf="flex-end">
-          {review ? (
-            <XStack space={"$2"}>
-              <Button onPress={() => deleteReview({ id: typeof reviewId !== "undefined" ? (reviewId as string) : "" })} theme="red_alt2">
-                {isDeleting ? <Spinner /> : "Delete"}
+          <XStack alignSelf="flex-end">
+            {review ? (
+              <XStack space={"$2"}>
+                <Button onPress={() => deleteReview({ id: typeof reviewId !== "undefined" ? (reviewId as string) : "" })} theme="red_alt2">
+                  {isDeleting ? <Spinner /> : "Delete"}
+                </Button>
+                <Button onPress={handleSubmit(onUpdate)} theme="alt2">
+                  {isUpdating ? <Spinner /> : "Update"}
+                </Button>
+              </XStack>
+            ) : (
+              <Button onPress={handleSubmit(onCreate)} theme="alt2">
+                {isCreating ? <Spinner /> : "Submit"}
               </Button>
-              <Button onPress={handleSubmit(onUpdate)} theme="alt2">
-                {isUpdating ? <Spinner /> : "Update"}
-              </Button>
-            </XStack>
-          ) : (
-            <Button onPress={handleSubmit(onCreate)} theme="alt2">
-              {isCreating ? <Spinner /> : "Submit"}
-            </Button>
-          )}
-        </XStack>
+            )}
+          </XStack>
+        </YStack>
+        <Stack.Screen
+          options={{
+            headerTitle: review ? "Edit review" : "Add review",
+          }}
+        />
+        {Platform.OS === "ios" && <StatusBar style="light" />}
       </YStack>
-    </YStack>
+    </ScrollView>
   );
 }
