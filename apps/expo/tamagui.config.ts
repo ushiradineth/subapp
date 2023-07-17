@@ -2,7 +2,7 @@ import { createAnimations } from "@tamagui/animations-react-native";
 import { createMedia } from "@tamagui/react-native-media-driver";
 import { shorthands } from "@tamagui/shorthands";
 import { color, radius, size, space, themes, zIndex } from "@tamagui/themes";
-import { createFont, createTamagui, createTokens, getVariableValue } from "tamagui";
+import { createFont, createTamagui, createTokens } from "tamagui";
 
 const animations = createAnimations({
   bouncy: {
