@@ -33,7 +33,6 @@ export default function Layout() {
         name="review-product"
         options={{
           title: "Add a review",
-          headerLeft: () => <BackButton />,
           presentation: "modal",
           headerTitleAlign: "center",
         }}

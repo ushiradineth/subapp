@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable } from "react-native";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
+import { Plus } from "lucide-react-native";
 import { ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
@@ -29,8 +30,8 @@ const Tier: React.FC = () => {
           headerTitle: trimString(tier.product?.name ?? "", 18),
           headerLeft: () => <BackButton />,
           headerRight: () => (
-            <Pressable onPress={() => router.push(pathname + "/subscribe")}>
-              <Text className="text-accent text-xs font-bold">Subscribe</Text>
+            <Pressable onPress={() => router.push(pathname + "/subscribe")} android_ripple={{ color: "gray", radius: 20, borderless: true }}>
+              <Plus color="black" />
             </Pressable>
           ),
         }}
