@@ -7,12 +7,18 @@ import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
+import { RefreshControl } from "react-native";
 
 const Category: React.FC = () => {
   const { categoryId } = useSearchParams();
   const router = useRouter();
 
-  const { data: category, isLoading } = api.category.getById.useQuery({
+  const {
+    data: category,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = api.category.getById.useQuery({
     id: typeof categoryId !== "undefined" ? (categoryId as string) : "",
   });
 
@@ -21,7 +27,9 @@ const Category: React.FC = () => {
   if (category.products.length === 0) return <NoData background>No products yet</NoData>;
 
   return (
-    <ScrollView backgroundColor="$background">
+    <ScrollView
+      backgroundColor="$background"
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <Stack.Screen
         options={{
           headerTitle: trimString(category.name ?? "", 18),

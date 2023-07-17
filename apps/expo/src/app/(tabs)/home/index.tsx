@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { RefreshControl, View } from "react-native";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { H1, ScrollView, XStack, YStack } from "tamagui";
@@ -7,23 +8,29 @@ import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
 import CardItem from "~/components/Atoms/CardItem";
 import NoData from "~/components/Atoms/NoData";
-import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
 
 export default function Home() {
   const router = useRouter();
   const auth = useContext(AuthContext);
-  const { data, isLoading } = api.product.getHomeFeed.useQuery(undefined, { enabled: auth.session.id !== "", retry: 0 });
-
-  if (isLoading) return <Spinner background />;
-  if (!data) return <NoData background>No products found</NoData>;
+  const { data, isLoading, refetch, isRefetching } = api.product.getHomeFeed.useQuery(undefined, {
+    enabled: auth.session.id !== "",
+    retry: 0,
+  });
 
   return (
-    <ScrollView backgroundColor={"$background"}>
+    <ScrollView
+      backgroundColor={"$background"}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space>
         <H1 className="pl-4 pt-4 text-xl font-semibold">Welcome, {auth.session?.name}</H1>
         <ScrollView className="pl-4" horizontal>
           <XStack className="mr-8" space={"$2"}>
+            {!data && (!isLoading || !isRefetching) && (
+              <View>
+                <NoData background>No products found</NoData>
+              </View>
+            )}
             {data?.map((product) => (
               <CardItem
                 key={product.id}

@@ -1,4 +1,5 @@
 import React from "react";
+import { RefreshControl } from "react-native";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
@@ -11,13 +12,15 @@ import { Spinner } from "~/components/Atoms/Spinner";
 
 export default function History() {
   const router = useRouter();
-  const { data, isLoading } = api.user.subscriptions.useQuery({ showTerminatedSubscripitions: true });
+  const { data, isLoading, refetch, isRefetching } = api.user.subscriptions.useQuery({ showTerminatedSubscripitions: true });
 
   if (isLoading) return <Spinner background />;
   if (!data || data?.subscriptions?.length === 0) return <NoData background>No subscriptions found</NoData>;
 
   return (
-    <ScrollView backgroundColor={"$background"}>
+    <ScrollView
+      backgroundColor={"$background"}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space className="p-4">
         {data?.subscriptions?.map((subscription) => (
           <CardItemWide

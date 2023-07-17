@@ -192,7 +192,7 @@ export const userRouter = createTRPCRouter({
       return await ctx.prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword } });
     }),
 
-  profile: protectedProcedure.query(async ({ ctx }) => {
+  getSubscriptionsPage: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.auth.id },
       include: {
@@ -228,7 +228,6 @@ export const userRouter = createTRPCRouter({
     }, 0);
 
     return {
-      joined: user?.createdAt,
       cost,
       count: user?.subscriptions.length,
       subscriptions: user?.subscriptions,
@@ -248,6 +247,10 @@ export const userRouter = createTRPCRouter({
     return {
       wishlist: user?.wishlist,
     };
+  }),
+
+  profile: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.user.findUnique({ where: { id: ctx.auth.id }, select: { createdAt: true } });
   }),
 
   subscriptions: protectedProcedure

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, RefreshControl, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
@@ -45,13 +45,7 @@ const Product: React.FC = () => {
   });
 
   const memoizedCTAs = useMemo(() => {
-    if (isRefetching) {
-      return (
-        <View className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border">
-          <Spinner />
-        </View>
-      );
-    } else if (!data?.subscribed) {
+    if (data?.subscribed) {
       return (
         <View className="bg-accent border-accent flex h-full w-full items-center justify-center rounded-3xl border">
           <Text className="text-[16px] font-bold text-white">Subscribed</Text>
@@ -63,11 +57,13 @@ const Product: React.FC = () => {
       return (
         <>
           <Button
+            disabled={isRefetching}
             onPress={() => router.push(`${pathname}/tier`)}
             className="bg-accent border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
             <Text className="text-[16px] font-bold text-white">Subscribe</Text>
           </Button>
           <Button
+            disabled={isRefetching}
             onPress={() => wishlist({ id: productId, wishlist: !wishlisted })}
             className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
             <Text className="text-accent text-[16px] font-bold">{wishlisting ? <Spinner /> : wishlistContent}</Text>
@@ -86,7 +82,10 @@ const Product: React.FC = () => {
   if (!data) return <NoData background>No product found</NoData>;
 
   return (
-    <ScrollView className="h-fit" backgroundColor="$background">
+    <ScrollView
+      className="h-fit"
+      backgroundColor="$background"
+      refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
       <Stack.Screen
         options={{
           headerTitle: trimString(data?.product?.name ?? "", 18),
@@ -146,24 +145,19 @@ const Product: React.FC = () => {
       <ImageSlider images={data?.images} />
 
       <YStack space className="p-4">
-        {isRefetching ? (
-          <Button className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
-            <Spinner />
+        {data?.subscribed && (
+          <Button
+            disabled={isRefetching}
+            onPress={() => {
+              router.push(
+                `${pathname}/review-product?productId=${data?.product?.id}${
+                  data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
+                }`,
+              );
+            }}
+            className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
+            <Text className="text-accent text-[16px] font-bold">{(data?.review?.length ?? 0) > 0 ? "Edit review" : "Add review"}</Text>
           </Button>
-        ) : (
-          data?.subscribed && (
-            <Button
-              onPress={() => {
-                router.push(
-                  `${pathname}/review-product?productId=${data?.product?.id}${
-                    data.review && (data?.review?.length || 0) > 0 ? `&reviewId=${data?.review[0]?.id}` : ""
-                  }`,
-                );
-              }}
-              className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
-              <Text className="text-accent text-[16px] font-bold">{(data?.review?.length ?? 0) > 0 ? "Edit review" : "Add review"}</Text>
-            </Button>
-          )
         )}
 
         <XStack className="flex items-center justify-between">

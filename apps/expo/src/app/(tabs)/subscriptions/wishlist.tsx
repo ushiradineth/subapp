@@ -9,17 +9,20 @@ import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
+import { RefreshControl } from "react-native";
 
 export default function Wishlist() {
   const router = useRouter();
   const auth = useContext(AuthContext);
-  const { data, isLoading } = api.user.wishlist.useQuery({ id: auth.session.id });
+  const { data, isLoading, refetch, isRefetching } = api.user.wishlist.useQuery({ id: auth.session.id });
 
   if (isLoading) return <Spinner background />;
   if (!data || data?.wishlist?.length === 0) return <NoData background>No products found</NoData>;
 
   return (
-    <ScrollView backgroundColor={"$background"}>
+    <ScrollView
+      backgroundColor={"$background"}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space className="p-4">
         {data?.wishlist?.map((product) => (
           <CardItemWide
