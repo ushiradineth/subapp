@@ -9,7 +9,6 @@ import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { trimString } from "~/utils/utils";
-import BackButton from "~/components/Atoms/BackButton";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 

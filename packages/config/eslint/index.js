@@ -24,7 +24,7 @@ const config = {
     ],
     "@typescript-eslint/no-misused-promises": "off"
   },
-  ignorePatterns: ["**/*.config.js", "**/*.config.cjs", "packages/config/**"],
+  ignorePatterns: ["**/*.config.js", "**/*.config.cjs", "packages/config/**", "apps/expo/dist"],
   reportUnusedDisableDirectives: true,
 };
 
