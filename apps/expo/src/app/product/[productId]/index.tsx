@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 import StarRating from "react-native-star-rating-widget";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
@@ -51,13 +51,15 @@ const Product: React.FC = () => {
           <Spinner />
         </View>
       );
-    } else if (data?.subscribed) {
+    } else if (!data?.subscribed) {
       return (
         <View className="bg-accent border-accent flex h-full w-full items-center justify-center rounded-3xl border">
           <Text className="text-[16px] font-bold text-white">Subscribed</Text>
         </View>
       );
     } else {
+      const wishlistContent = wishlisted ? "Wishlisted" : "Add to Wishlist";
+
       return (
         <>
           <Button
@@ -68,9 +70,7 @@ const Product: React.FC = () => {
           <Button
             onPress={() => wishlist({ id: productId, wishlist: !wishlisted })}
             className="bg-background border-accent flex h-full w-[49%] items-center justify-center rounded-3xl border">
-            <Text className="text-accent text-[16px] font-bold">
-              {wishlisting ? <Spinner /> : wishlisted ? "Wishlisted" : "Add to Wishlist"}
-            </Text>
+            <Text className="text-accent text-[16px] font-bold">{wishlisting ? <Spinner /> : wishlistContent}</Text>
           </Button>
         </>
       );
@@ -78,7 +78,8 @@ const Product: React.FC = () => {
   }, [data?.subscribed, isRefetching, pathname, productId, router, wishlist, wishlisted, wishlisting]);
 
   useEffect(() => {
-    refetch();
+    void refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   if (isLoading) return <Spinner background />;
@@ -113,34 +114,28 @@ const Product: React.FC = () => {
             </Link>
           </YStack>
         </XStack>
+
         <XStack className="flex h-16 items-center justify-between">{memoizedCTAs}</XStack>
-        <XStack className="bg-background flex h-16 items-center justify-between rounded-3xl">
-          <XStack className="flex w-[50%] items-center justify-center">
-            <Rating rating={data?.review?.[0]?.rating} caption={`from ${data?.product?._count.reviews ?? 0} users`} />
-          </XStack>
-          <YStack className="bg-foreground h-[90%] w-[2px] rounded-full" />
-          <XStack className="flex w-[50%] items-center justify-center">
-            <Rating rating={data?.review?.[0]?.rating} caption={"Your rating"} />
-          </XStack>
-        </XStack>
-        <XStack className="bg-background flex h-16 items-center justify-between rounded-3xl">
-          <YStack className="flex w-[50%] items-center justify-center">
-            <Text className="text-[10px] font-semibold">#{data?.rank}</Text>
-            <Text className="text-[10px] font-medium">Popularity</Text>
-          </YStack>
-          <YStack className="bg-foreground h-[90%] w-[2px] rounded-full" />
-          <YStack className="flex w-[50%] items-center justify-center">
-            <Text className="text-[10px] font-semibold">{data?.product?._count.subscriptions}</Text>
-            <Text className="text-[10px] font-medium">Users on SubM</Text>
-          </YStack>
-        </XStack>
+
+        <InfoCard>
+          <Rating rating={data?.review?.[0]?.rating} caption={`from ${data?.product?._count.reviews ?? 0} users`} />
+          <Divider />
+          <Rating rating={data?.review?.[0]?.rating} caption={"Your rating"} />
+        </InfoCard>
+
+        <InfoCard>
+          <Stat caption="Popularity" value={`#${data?.rank}`} />
+          <Divider />
+          <Stat caption="Users on SubM" value={data?.product?._count.subscriptions} />
+        </InfoCard>
+
         <XStack className="flex flex-col items-center justify-between">
           <Text className={"overflow-scroll truncate whitespace-normal text-center text-[16px] font-medium"}>
-            {clamp && (data?.product?.description.length || 0) > 200
+            {clamp && (data?.product?.description.length ?? 0) > 200
               ? `${data?.product?.description?.slice(0, 200)}...`
               : data?.product?.description}
           </Text>
-          {(data?.product?.description.length || 0) > 200 && (
+          {(data?.product?.description.length ?? 0) > 200 && (
             <Pressable onPress={() => setClamp((prev) => !prev)}>
               <Text className="text-accent mt-1 text-[10px] font-bold">{clamp ? "SHOW MORE" : "SHOW LESS"}</Text>
             </Pressable>
@@ -148,21 +143,7 @@ const Product: React.FC = () => {
         </XStack>
       </YStack>
 
-      <ScrollView className="px-4 pl-4" horizontal space>
-        <XStack className="border-foreground mr-8 rounded-3xl border p-4" space="$2">
-          {data?.images.map((image, index) => (
-            <YStack key={index} className="h-[144px] w-[144px]">
-              <Image
-                key={index}
-                source={{ uri: image.url, width: 144, height: 144 }}
-                alt={image.url}
-                resizeMode="cover"
-                className={`bg-foreground rounded-lg ${index !== data.images.length - 1 && "mr-4"}`}
-              />
-            </YStack>
-          ))}
-        </XStack>
-      </ScrollView>
+      <ImageSlider images={data?.images} />
 
       <YStack space className="p-4">
         {isRefetching ? (
@@ -180,7 +161,7 @@ const Product: React.FC = () => {
                 );
               }}
               className="bg-background border-accent flex h-10 w-full items-center justify-center rounded-3xl border">
-              <Text className="text-accent text-[16px] font-bold">{data?.review?.length || 0 > 0 ? "Edit review" : "Add review"}</Text>
+              <Text className="text-accent text-[16px] font-bold">{(data?.review?.length ?? 0) > 0 ? "Edit review" : "Add review"}</Text>
             </Button>
           )
         )}
@@ -201,9 +182,9 @@ const Product: React.FC = () => {
 
 export default Product;
 
-function Rating({ rating = 0, caption }: { rating: number | undefined; caption: string }) {
+const Rating = ({ rating = 0, caption }: { rating: number | undefined; caption: string }) => {
   return (
-    <>
+    <XStack className="flex w-[50%] items-center justify-center">
       <YStack className="bg-foreground rounded-xl p-2">
         <Text className="font-bold text-white">{Number.isNaN(rating) ? Number(0).toFixed(1) : rating.toFixed(1)}</Text>
       </YStack>
@@ -220,6 +201,41 @@ function Rating({ rating = 0, caption }: { rating: number | undefined; caption: 
         </XStack>
         <Text className="text-[10px] font-medium">{caption}</Text>
       </YStack>
-    </>
+    </XStack>
   );
-}
+};
+
+const Stat = ({ value, caption }: { value: string | number; caption: string }) => {
+  return (
+    <YStack className="flex w-[50%] items-center justify-center">
+      <Text className="text-[12px] font-semibold">{value}</Text>
+      <Text className="text-[10px] font-medium">{caption}</Text>
+    </YStack>
+  );
+};
+
+const InfoCard = ({ children }: { children: ReactNode }) => {
+  return <XStack className="bg-background flex h-16 items-center justify-between rounded-3xl">{children}</XStack>;
+};
+
+const Divider = () => <YStack className="bg-foreground h-[80%] w-[2px] rounded-full" />;
+
+const ImageSlider = ({ images }: { images: { url: string }[] }) => {
+  return (
+    <ScrollView className="px-4 pl-4" horizontal space>
+      <XStack className="border-foreground mr-8 rounded-3xl border p-4" space="$2">
+        {images.map((image, index) => (
+          <YStack key={index} className="h-[144px] w-[144px]">
+            <Image
+              key={index}
+              source={{ uri: image.url, width: 144, height: 144 }}
+              alt={image.url}
+              resizeMode="cover"
+              className={`bg-foreground rounded-lg ${index !== images.length - 1 && "mr-4"}`}
+            />
+          </YStack>
+        ))}
+      </XStack>
+    </ScrollView>
+  );
+};
