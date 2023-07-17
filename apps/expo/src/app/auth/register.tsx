@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -24,7 +24,6 @@ export default function Register() {
 
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
@@ -32,10 +31,6 @@ export default function Register() {
   });
 
   const onSubmit = (data: RegisterFormData) => mutate({ email: data.Email, password: data.Password, name: data.Name });
-
-  useEffect(() => {
-    error !== "" && setError("");
-  }, [watch("Email"), watch("Password"), watch("Email"), watch("Password")]);
 
   // const confirmOTP = (code: string) => {
   //   if (!isLoaded) {
@@ -52,6 +47,14 @@ export default function Register() {
   //   }
   // };
 
+  const onInputChange = useCallback(
+    (input: string, onChange: (input: string) => void) => {
+      error !== "" && setError("");
+      onChange(input);
+    },
+    [error],
+  );
+
   return (
     <ScrollView backgroundColor="$background" padding="$4" borderRadius="$4">
       <YStack className="flex items-center justify-center p-8" space>
@@ -66,7 +69,14 @@ export default function Register() {
           render={({ field: { onChange, onBlur, value } }) => (
             <YStack className="w-full">
               <H6 className="font-bold">Name</H6>
-              <Input className="my-1" placeholder="Name" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+              <Input
+                className="my-1"
+                placeholder="Name"
+                autoCapitalize={"none"}
+                onBlur={onBlur}
+                onChangeText={(input) => onInputChange(input, onChange)}
+                value={value}
+              />
               <YStack className="flex items-center justify-center">
                 {errors.Name && <Text color={"red"}>{errors.Name.message}</Text>}
               </YStack>
@@ -83,7 +93,14 @@ export default function Register() {
           render={({ field: { onChange, onBlur, value } }) => (
             <YStack className="w-full">
               <H6 className="font-bold">Email</H6>
-              <Input className="my-1" placeholder="Email" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+              <Input
+                className="my-1"
+                placeholder="Email"
+                autoCapitalize={"none"}
+                onBlur={onBlur}
+                onChangeText={(input) => onInputChange(input, onChange)}
+                value={value}
+              />
               <YStack className="flex items-center justify-center">
                 {errors.Email && <Text color={"red"}>{errors.Email.message}</Text>}
               </YStack>
@@ -106,7 +123,7 @@ export default function Register() {
                 autoCapitalize={"none"}
                 secureTextEntry={true}
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(input) => onInputChange(input, onChange)}
                 value={value}
               />
               <YStack className="flex items-center justify-center">
@@ -131,7 +148,7 @@ export default function Register() {
                 autoCapitalize={"none"}
                 secureTextEntry={true}
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(input) => onInputChange(input, onChange)}
                 value={value}
               />
               <YStack className="flex items-center justify-center">
