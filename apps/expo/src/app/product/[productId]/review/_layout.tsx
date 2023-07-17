@@ -1,8 +1,15 @@
+import { useMemo } from "react";
 import { Stack } from "expo-router";
 
 import BackButton from "~/components/Atoms/BackButton";
 
 export default function Layout() {
+  const memoizedValues = useMemo(() => {
+    return {
+      backbutton: <BackButton />,
+    };
+  }, []);
+
   return (
     <Stack>
       <Stack.Screen
@@ -16,7 +23,7 @@ export default function Layout() {
         name="[reviewId]"
         options={{
           title: "Review",
-          headerLeft: () => <BackButton />,
+          headerLeft: () => memoizedValues.backbutton,
           presentation: "modal",
           headerTitleAlign: "center",
         }}

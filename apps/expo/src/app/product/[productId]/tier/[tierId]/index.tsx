@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable } from "react-native";
 import { Link, Stack, usePathname, useRouter, useSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
@@ -20,6 +20,17 @@ const Tier: React.FC = () => {
 
   const { data: tier, isLoading } = api.tier.getById.useQuery({ id: tierId });
 
+  const memoizedValues = useMemo(() => {
+    return {
+      backbutton: <BackButton />,
+      subscribe: (
+        <Pressable onPress={() => router.push(pathname + "/subscribe")} android_ripple={{ color: "gray", radius: 20, borderless: true }}>
+          <Plus color="black" />
+        </Pressable>
+      ),
+    };
+  }, [pathname, router]);
+
   if (isLoading) return <Spinner background />;
   if (!tier) return <NoData background>No tier found</NoData>;
 
@@ -28,12 +39,8 @@ const Tier: React.FC = () => {
       <Stack.Screen
         options={{
           headerTitle: trimString(tier.product?.name ?? "", 18),
-          headerLeft: () => <BackButton />,
-          headerRight: () => (
-            <Pressable onPress={() => router.push(pathname + "/subscribe")} android_ripple={{ color: "gray", radius: 20, borderless: true }}>
-              <Plus color="black" />
-            </Pressable>
-          ),
+          headerLeft: () => memoizedValues.backbutton,
+          headerRight: () => memoizedValues.subscribe,
         }}
       />
       <YStack space className="p-4">

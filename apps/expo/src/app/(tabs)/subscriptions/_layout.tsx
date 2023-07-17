@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Pressable } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Plus } from "lucide-react-native";
@@ -5,6 +6,16 @@ import { Plus } from "lucide-react-native";
 const StackLayout = () => {
   const router = useRouter();
 
+  const memoizedValues = useMemo(() => {
+    return {
+      add: (
+        <Pressable android_ripple={{ color: "gray", borderless: true, radius: 20 }} onPress={() => router.push("subscriptions/custom")}>
+          <Plus color="black" />
+        </Pressable>
+      ),
+    };
+  }, [router]);
+  
   return (
     <Stack>
       <Stack.Screen
@@ -12,11 +23,7 @@ const StackLayout = () => {
         options={{
           headerTitle: "Subscriptions",
           headerTitleAlign: "center",
-          headerRight: () => (
-            <Pressable android_ripple={{ color: "gray", borderless: true, radius: 20 }} onPress={() => router.push("subscriptions/custom")}>
-              <Plus color="black" />
-            </Pressable>
-          ),
+          headerRight: () => memoizedValues.add,
         }}
       />
       <Stack.Screen name="[subscriptionId]" options={{ headerTitle: "Subscription", headerTitleAlign: "center", presentation: "modal" }} />
