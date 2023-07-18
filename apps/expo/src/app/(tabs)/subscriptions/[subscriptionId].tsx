@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import { RefreshControl } from "react-native";
+import { Pressable, RefreshControl } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ExternalLink } from "lucide-react-native";
 import moment from "moment";
 import { Button, H2, Image, ScrollView, Text, XStack, YStack } from "tamagui";
@@ -72,12 +72,17 @@ export default function SubscriptionPage() {
               PERIODS.find((p) => p.period == data?.tier.period)?.label
             }`}</Text>
             {data?.productId && (
-              <Link className="mt-2" href={`product/${data?.productId}`} onPress={() => router.back()}>
+              <Pressable
+                className="mt-2"
+                onPress={() => {
+                  router.back();
+                  router.replace(`product/${data?.productId}`);
+                }}>
                 <XStack className="text-accent flex items-center text-xs font-bold">
                   <ExternalLink size={20} color={theme.colors.accent} />
                   <Text className="text-accent mt-1 text-xs font-bold"> Product</Text>
                 </XStack>
-              </Link>
+              </Pressable>
             )}
           </YStack>
         </XStack>

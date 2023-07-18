@@ -104,7 +104,9 @@ const Product: React.FC = () => {
           />
           <YStack className="ml-4">
             <H2 className="text-2xl font-bold">{trimString(data?.product?.name ?? "", 10)}</H2>
-            <Text>{trimString(data?.product?.category.name ?? "", 18)}</Text>
+            <Link href={`/categories/${data.product.category.id}`}>
+              <Text>{trimString(data?.product?.category.name ?? "", 18)}</Text>
+            </Link>
             <Link className="mt-2" href={data?.product?.link ?? ""}>
               <XStack className="text-accent flex items-center text-xs font-bold">
                 <ExternalLink size={20} color={theme.colors.accent} />
