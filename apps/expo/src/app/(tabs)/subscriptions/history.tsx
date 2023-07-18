@@ -25,7 +25,7 @@ export default function History() {
         {data?.subscriptions?.map((subscription) => (
           <CardItemWide
             key={subscription.id}
-            onPress={() => router.push(`subscriptions/${subscription.id}`)}
+            onPress={() => router.replace(`subscriptions/${subscription.id}`)}
             title={trimString(subscription.product?.name ?? subscription.template?.name ?? "", 16)}
             text1={trimString(subscription.tier?.name ?? "", 16)}
             text2={trimString(`Canceled ${generalizeDate(subscription.deletedAt)}`, 24)}
