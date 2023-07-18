@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { RefreshControl } from "react-native";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
@@ -9,7 +10,6 @@ import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "~/app/_layout";
-import { RefreshControl } from "react-native";
 
 export default function Wishlist() {
   const router = useRouter();
@@ -27,7 +27,10 @@ export default function Wishlist() {
         {data?.wishlist?.map((product) => (
           <CardItemWide
             key={product.id}
-            onPress={() => router.push(`product/${product.id}`)}
+            onPress={() => {
+              router.back();
+              router.replace(`product/${product.id}`);
+            }}
             title={trimString(product.name, 20)}
             text1={trimString(product.category.name, 20)}
             image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
