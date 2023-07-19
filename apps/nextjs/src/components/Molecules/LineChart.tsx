@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Line, LineChart as LineChartRecharts, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { Line, LineChart as LineChartRecharts, Tooltip, XAxis } from "recharts";
 
 import { theme } from "~/utils/consts";
 import { getPercentage } from "~/lib/utils";
@@ -15,9 +15,20 @@ type Props = {
   width?: number;
   href?: string;
   mainCard?: boolean;
+  hasData: boolean;
 };
 
-export default function LineChart({ title, dataKey, currentWeek, previousWeek, height = 100, width = 200, href, mainCard }: Props) {
+export default function LineChart({
+  title,
+  dataKey,
+  currentWeek,
+  previousWeek,
+  height = 100,
+  width = 200,
+  href,
+  mainCard,
+  hasData,
+}: Props) {
   const router = useRouter();
 
   return (
@@ -30,7 +41,7 @@ export default function LineChart({ title, dataKey, currentWeek, previousWeek, h
         )}
       </CardHeader>
       <CardContent className="flex items-center justify-center gap-x-4">
-        <ResponsiveContainer width={width} height={height}>
+        {hasData ? (
           <LineChartRecharts
             id={title}
             title={title}
@@ -44,13 +55,17 @@ export default function LineChart({ title, dataKey, currentWeek, previousWeek, h
             <Tooltip labelStyle={{ color: theme.colors.accent }} itemStyle={{ color: "black" }} />
             <Line type="monotone" dataKey={dataKey} stroke={theme.colors.accent} />
           </LineChartRecharts>
-        </ResponsiveContainer>
+        ) : (
+          <div className="flex h-[340px] w-full items-center justify-center">No data found</div>
+        )}
       </CardContent>
       <CardFooter className="flex items-center justify-center gap-2">
-        <>
-          <ComparisonLabel value={getPercentage(currentWeek, previousWeek)} />
-          <p className="text-muted-foreground flex items-center justify-center text-sm">Compared to last week</p>
-        </>
+        {hasData && (
+          <>
+            <ComparisonLabel value={getPercentage(currentWeek, previousWeek)} />
+            <p className="text-muted-foreground flex items-center justify-center text-sm">Compared to last week</p>
+          </>
+        )}
       </CardFooter>
     </Card>
   );
