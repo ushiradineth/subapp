@@ -1,8 +1,8 @@
-import { useMemo } from "react";
 import Head from "next/head";
+import { useMemo, type ReactNode } from "react";
 
-import { api } from "~/utils/api";
 import { trimString } from "~/lib/utils";
+import { api } from "~/utils/api";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
@@ -62,49 +62,39 @@ export default function AdminDashboard() {
                 height={550}
                 href={item.href ?? ""}
                 mainCard
+                hasData
               />
             ))}
           </Carousel>
           <div className="flex flex-row gap-2 xl:flex-col">
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>User Turn-in Rate</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PieChart
-                  key={"User Turn-in Rate"}
-                  id={"Vendor Turn-in Rate"}
-                  truthy={{ title: "Users with a subscription", value: data?.userTurnInRate.usersWithASubscription }}
-                  falsity={{
-                    title: "Users without a subscription",
-                    value: data?.userTurnInRate.usersWithOutASubscription,
-                  }}
-                  width={300}
-                  height={240}
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex items-center justify-center">
-                <CardTitle>Vendor Turn-in Rate</CardTitle>
-              </CardHeader>
-              <PieChart
-                key={"Vendor Turn-in Rate"}
-                id={"Vendor Turn-in Rate"}
-                truthy={{ title: "Vendors with a product", value: data?.vendorTurnInRate.vendorsWithAProduct }}
-                falsity={{
-                  title: "Vendors without a product",
-                  value: data?.vendorTurnInRate.vendorsWithOutAProduct,
-                }}
-                width={300}
-                height={240}
-              />
-            </Card>
+            <PieChart
+              key={"User Turn-in Rate"}
+              id={"User Turn-in Rate"}
+              truthy={{ title: "Users with a subscription", value: data?.userTurnInRate.usersWithASubscription }}
+              falsity={{
+                title: "Users without a subscription",
+                value: data?.userTurnInRate.usersWithOutASubscription,
+              }}
+              width={345}
+              height={251}
+              hasData={Boolean(data?.userTurnInRate)}
+            />
+            <PieChart
+              key={"Vendor Turn-in Rate"}
+              id={"Vendor Turn-in Rate"}
+              truthy={{ title: "Vendors with a product", value: data?.vendorTurnInRate.vendorsWithAProduct }}
+              falsity={{
+                title: "Vendors without a product",
+                value: data?.vendorTurnInRate.vendorsWithOutAProduct,
+              }}
+              width={345}
+              height={251}
+              hasData={Boolean(data?.vendorTurnInRate)}
+            />
           </div>
         </CardContent>
         <div className="grid gap-2 px-6 pb-6 md:grid-cols-2 xl:flex xl:flex-row">
-          <Card className="flex flex-col items-center justify-center">
-            <h2 className="pt-8 text-2xl ">Popular products</h2>
+          <ChartCardCarousel title={"Popular products"}>
             <Carousel indicators navButtons autoScroll>
               {data?.popularProducts.currentWeek.map((product, index) => (
                 <LineChart
@@ -116,12 +106,12 @@ export default function AdminDashboard() {
                   width={362}
                   height={200}
                   href={`/product/${product.id}`}
+                  hasData={data?.popularProducts.currentWeek.length > 0}
                 />
               ))}
             </Carousel>
-          </Card>
-          <Card className="flex flex-col items-center justify-center">
-            <h2 className="pt-8 text-2xl ">Popular categories</h2>
+          </ChartCardCarousel>
+          <ChartCardCarousel title={"Popular categories"}>
             <Carousel indicators navButtons autoScroll>
               {data?.popularCategories.currentWeek.map((category, index) => (
                 <LineChart
@@ -133,12 +123,12 @@ export default function AdminDashboard() {
                   width={362}
                   height={200}
                   href={`/category/${category.id}`}
+                  hasData={data?.popularCategories.currentWeek.length > 0}
                 />
               ))}
             </Carousel>
-          </Card>
-          <Card className="flex flex-col items-center justify-center">
-            <h2 className="pt-8 text-2xl ">Popular vendors</h2>
+          </ChartCardCarousel>
+          <ChartCardCarousel title={"Popular vendors"}>
             <Carousel indicators navButtons autoScroll>
               {data?.popularVendors.currentWeek.map((vendor, index) => (
                 <LineChart
@@ -150,10 +140,11 @@ export default function AdminDashboard() {
                   width={362}
                   height={200}
                   href={`/vendor/${vendor.id}`}
+                  hasData={data?.popularVendors.currentWeek.length > 0}
                 />
               ))}
             </Carousel>
-          </Card>
+          </ChartCardCarousel>
         </div>
         <div className="grid h-48 grid-cols-3 gap-2 px-6 pb-6">
           <NumberCard number={data?.totalUsers} text="Concurrent Users" />
@@ -164,3 +155,12 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+export const ChartCardCarousel = ({ children, title }: { children: ReactNode; title: string }) => {
+  return (
+    <Card className="flex flex-col items-center justify-center">
+      <h2 className="pt-8 text-2xl ">{title}</h2>
+      {children}
+    </Card>
+  );
+};
