@@ -183,6 +183,7 @@ export const productRouter = createTRPCRouter({
           },
           { vendor: { name: { search: keywords } } },
         ],
+        verified: true,
       },
       include: {
         vendor: {
