@@ -266,12 +266,12 @@ model PasswordResetRequest {
 }
 
 model VisitActivity {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  id String @id @default(cuid())
 
-  user     User      @relation("userActivity", fields: [userId], references: [id], onDelete: Cascade)
-  product  Product?  @relation("productActivity", fields: [productId], references: [id], onDelete: Cascade)
-  category Category? @relation("categoryActivity", fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User        @relation("userActivity", fields: [userId], references: [id], onDelete: Cascade)
+  product    Product?    @relation("productActivity", fields: [productId], references: [id], onDelete: Cascade)
+  category   Category?   @relation("categoryActivity", fields: [categoryId], references: [id], onDelete: Cascade)
+  timestamps Timestamp[] @relation("activity")
 
   userId     String
   productId  String?
@@ -280,4 +280,17 @@ model VisitActivity {
   @@index([userId])
   @@index([productId])
   @@index([categoryId])
+}
+
+model Timestamp {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+
+  visitActivityId String
+
+  // cross reference rows
+  visitActivity VisitActivity @relation("activity", fields: [visitActivityId], references: [id], onDelete: Cascade)
+
+  @@index([visitActivityId])
 }

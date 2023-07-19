@@ -1,3 +1,4 @@
+import { RefreshControl } from "react-native";
 import Constants from "expo-constants";
 import { Stack, useRouter, useSearchParams } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
@@ -7,20 +8,23 @@ import { trimString } from "~/utils/utils";
 import CardItemWide from "~/components/Atoms/CardItemWide";
 import NoData from "~/components/Atoms/NoData";
 import { Spinner } from "~/components/Atoms/Spinner";
-import { RefreshControl } from "react-native";
 
 const Category: React.FC = () => {
   const { categoryId } = useSearchParams();
   const router = useRouter();
 
+  const { mutate } = api.category.categoryVisit.useMutation();
   const {
     data: category,
     isLoading,
     refetch,
     isRefetching,
-  } = api.category.getById.useQuery({
-    id: typeof categoryId !== "undefined" ? (categoryId as string) : "",
-  });
+  } = api.category.getById.useQuery(
+    {
+      id: typeof categoryId !== "undefined" ? (categoryId as string) : "",
+    },
+    { onSuccess: (data) => mutate({ id: data?.id ?? "" }) },
+  );
 
   if (isLoading) return <Spinner background />;
   if (!category) return <NoData background>No category found</NoData>;
