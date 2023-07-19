@@ -24,28 +24,52 @@ export const categoryRouter = createTRPCRouter({
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.category.findMany({
+      where: { products: { every: { verified: true } } },
       orderBy: { products: { _count: "desc" } },
       include: { _count: { select: { products: true } } },
     });
   }),
 
   getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-    await ctx.prisma.user.update({
-      where: { id: ctx.auth.id },
-      data: {
-        activity: {
-          create: {
-            category: { connect: { id: input.id } },
-          },
-        },
-      },
-    });
-
     return await ctx.prisma.category.findUnique({
       where: { id: input.id },
       include: {
         products: { select: { _count: { select: { subscriptions: true } }, name: true, id: true } },
         _count: { select: { products: true } },
+      },
+    });
+  }),
+
+  categoryVisit: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    let activity = await ctx.prisma.visitActivity.findFirst({
+      where: {
+        userId: ctx.auth.id,
+        categoryId: input.id,
+      },
+    });
+
+    if (!activity) {
+      activity = await ctx.prisma.visitActivity.create({
+        data: {
+          user: { connect: { id: ctx.auth.id } },
+          category: { connect: { id: input.id } },
+          timestamps: {
+            create: {
+              createdAt: new Date(),
+            },
+          },
+        },
+      });
+    }
+
+    await ctx.prisma.timestamp.create({
+      data: {
+        createdAt: new Date(),
+        visitActivity: {
+          connect: {
+            id: activity.id,
+          },
+        },
       },
     });
   }),

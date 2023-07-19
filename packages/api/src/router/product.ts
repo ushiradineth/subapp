@@ -204,4 +204,38 @@ export const productRouter = createTRPCRouter({
       },
     });
   }),
+
+  productVisit: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    let activity = await ctx.prisma.visitActivity.findFirst({
+      where: {
+        userId: ctx.auth.id,
+        productId: input.id,
+      },
+    });
+
+    if (!activity) {
+      activity = await ctx.prisma.visitActivity.create({
+        data: {
+          user: { connect: { id: ctx.auth.id } },
+          product: { connect: { id: input.id } },
+          timestamps: {
+            create: {
+              createdAt: new Date(),
+            },
+          },
+        },
+      });
+    }
+
+    await ctx.prisma.timestamp.create({
+      data: {
+        createdAt: new Date(),
+        visitActivity: {
+          connect: {
+            id: activity.id,
+          },
+        },
+      },
+    });
+  }),
 });
