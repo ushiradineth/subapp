@@ -20,11 +20,14 @@ const Product: React.FC = () => {
   const [clamp, setClamp] = useState(true);
 
   if (!productId || typeof productId !== "string") throw new Error("Product id not found");
+
+  const { mutate } = api.product.productVisit.useMutation();
   const { data, isLoading, refetch, isRefetching } = api.product.getProductPage.useQuery(
     { id: productId },
     {
       onSuccess(data) {
         setWishlisted(data.wishlisted);
+        mutate({ id: data.product.id });
       },
     },
   );
@@ -218,7 +221,7 @@ const Divider = () => <YStack className="bg-foreground h-[80%] w-[2px] rounded-f
 
 const ImageSlider = ({ images }: { images: { url: string }[] }) => {
   return (
-    <ScrollView className="px-4 pl-4" horizontal space>
+    <ScrollView className="px-4 pl-4" horizontal space showsHorizontalScrollIndicator={false}>
       <XStack className="border-foreground mr-8 rounded-3xl border p-4" space="$2">
         {images.map((image, index) => (
           <YStack key={index} className="h-[144px] w-[144px]">
