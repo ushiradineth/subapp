@@ -77,7 +77,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...tier,
         createdAt: generalizeDate(tier?.createdAt),
       },
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${tier.productId}/0.jpg`,
+      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_LOGO}/${tier.productId}/0.jpg`,
     },
   };
 };
