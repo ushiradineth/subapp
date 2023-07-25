@@ -47,6 +47,7 @@ export default function Home() {
             title={`Because you are subscribed to ${data?.productSuggestion[1]?.name}`}
           />
         )}
+        {data?.newProducts && <Slider items={data?.newProducts} title="New products" />}
         {data?.forYouCategories
           ?.slice(2)
           .map(
