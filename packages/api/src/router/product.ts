@@ -306,12 +306,31 @@ export const productRouter = createTRPCRouter({
       });
     }
 
+    const newProducts = await ctx.prisma.product.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate() },
+        verified: true,
+      },
+      take: 10,
+      orderBy: {
+        createdAt: "asc",
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
     return {
       forYouProducts,
       trendingProducts,
       mostPopularProducts,
       forYouCategories,
       productSuggestion,
+      newProducts,
     };
   }),
 
