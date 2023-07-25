@@ -1,4 +1,7 @@
+import moment from "moment";
 import { z } from "zod";
+
+import { type Product } from "@acme/db";
 
 import { env } from "../../env.mjs";
 import { deleteFiles, supabase } from "../lib/supabase";
@@ -18,6 +21,17 @@ const productUpdateValidation = z.object({
   category: z.string(),
   link: z.string().nullable(),
 });
+
+interface ForYouProduct extends Product {
+  category: {
+    name: string;
+  };
+}
+
+interface ForYouCategory {
+  categoryId: string;
+  products: ForYouProduct[];
+}
 
 export const productRouter = createTRPCRouter({
   create: protectedProcedure.input(productCreateValidation).mutation(async ({ ctx, input }) => {
@@ -65,7 +79,240 @@ export const productRouter = createTRPCRouter({
   }),
 
   getHomeFeed: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.product.findMany({ include: { category: { select: { name: true } } } });
+    const activity = await ctx.prisma.timestamp.findMany({
+      where: {
+        visitActivity: {
+          userId: ctx.auth.id,
+        },
+        createdAt: { gte: moment().subtract(7, "d").toDate() },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        visitActivity: {
+          select: {
+            productId: true,
+            categoryId: true,
+          },
+        },
+      },
+    });
+
+    const visitedProducts: { [key: string]: number } = {};
+    const visitedCategories: { [key: string]: number } = {};
+
+    for (const num of activity) {
+      if (num.visitActivity.productId) {
+        const productId = num.visitActivity.productId;
+        visitedProducts[productId] = visitedProducts[productId] ? Number(visitedProducts[productId]) + 1 : 1;
+      }
+
+      if (num.visitActivity.categoryId) {
+        const categoryId = num.visitActivity.categoryId;
+        visitedCategories[categoryId] = visitedCategories[categoryId] ? Number(visitedCategories[categoryId]) + 1 : 1;
+      }
+    }
+
+    const forYouProducts: ForYouProduct[] = [];
+
+    if (Object.keys(visitedProducts).length < 5) {
+      forYouProducts.push(
+        ...(await ctx.prisma.product.findMany({
+          where: {
+            id: {
+              notIn: [...Object.keys(visitedProducts)],
+            },
+            subscriptions: {
+              none: {
+                userId: ctx.auth.id,
+              },
+            },
+            verified: true,
+          },
+          take: 10,
+          include: { category: { select: { name: true } } },
+        })),
+      );
+    }
+
+    forYouProducts.push(
+      ...(await ctx.prisma.product.findMany({
+        where: {
+          id: {
+            in: [...Object.keys(visitedProducts)],
+          },
+          subscriptions: {
+            none: {
+              userId: ctx.auth.id,
+            },
+          },
+          verified: true,
+        },
+        take: 10,
+        include: { category: { select: { name: true } } },
+      })),
+    );
+
+    forYouProducts.sort(() => Math.random() - 0.5);
+
+    const trendingProducts = await ctx.prisma.product.findMany({
+      where: {
+        verified: true,
+        subscriptions: {
+          some: {
+            createdAt: { gte: moment().subtract(7, "d").toDate() },
+          },
+        },
+      },
+      take: 10,
+      include: {
+        _count: {
+          select: {
+            subscriptions: {
+              where: {
+                createdAt: { gte: moment().subtract(7, "d").toDate() },
+              },
+            },
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        subscriptions: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const mostPopularProducts = await ctx.prisma.product.findMany({
+      where: {
+        verified: true,
+      },
+      take: 10,
+      orderBy: {
+        subscriptions: {
+          _count: "desc",
+        },
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    const forYouCategories: ForYouCategory[] = [];
+
+    for (const categoryId of Object.keys(visitedCategories)) {
+      forYouCategories.push({
+        categoryId,
+        products: await ctx.prisma.product.findMany({
+          where: {
+            categoryId,
+            subscriptions: {
+              none: {
+                userId: ctx.auth.id,
+              },
+            },
+            verified: true,
+          },
+          take: 10,
+          include: { category: { select: { name: true } } },
+        }),
+      });
+    }
+
+    if (Object.keys(visitedCategories).length < 3) {
+      const categories = await ctx.prisma.category.findMany({
+        where: {
+          id: {
+            notIn: [...Object.keys(visitedCategories)],
+          },
+        },
+        select: {
+          id: true,
+          products: {
+            where: {
+              verified: true,
+              subscriptions: {
+                none: {
+                  userId: ctx.auth.id,
+                },
+              },
+            },
+            include: {
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+        take: 2,
+      });
+
+      categories.forEach((category) => forYouCategories.push({ categoryId: category.id, products: category.products }));
+    }
+
+    forYouCategories.sort(() => Math.random() - 0.5);
+
+    const productSuggestion: { name: string; products: ForYouProduct[] }[] = [];
+
+    const subscriptions = await ctx.prisma.subscription.findMany({ where: { userId: ctx.auth.id }, select: { productId: true }, take: 2 });
+
+    for (const subscription of subscriptions) {
+      const products: ForYouProduct[] = await ctx.prisma.product.findMany({
+        where: {
+          verified: true,
+          subscriptions: {
+            every: {
+              userId: {
+                not: ctx.auth.id,
+              },
+              productId: {
+                not: subscription.productId,
+              },
+            },
+            some: {
+              user: {
+                subscriptions: {
+                  some: {
+                    active: true,
+                    productId: subscription.productId,
+                  },
+                },
+              },
+            },
+          },
+        },
+        include: {
+          category: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      productSuggestion.push({
+        name: (await ctx.prisma.product.findUnique({ where: { id: subscription.productId ?? "" }, select: { name: true } }))?.name ?? "",
+        products,
+      });
+    }
+
+    return {
+      forYouProducts,
+      trendingProducts,
+      mostPopularProducts,
+      forYouCategories,
+      productSuggestion,
+    };
   }),
 
   getProductPage: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
@@ -140,17 +387,6 @@ export const productRouter = createTRPCRouter({
     imageList?.forEach((image) => {
       const { data: url } = supabase.storage.from(env.PRODUCT_IMAGE).getPublicUrl(`${product?.id}/${image.name}`);
       images.push({ url: url?.publicUrl ?? "" });
-    });
-
-    await ctx.prisma.user.update({
-      where: { id: ctx.auth.id },
-      data: {
-        activity: {
-          create: {
-            product: { connect: { id: input.id } },
-          },
-        },
-      },
     });
 
     return {
