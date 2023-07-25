@@ -3,7 +3,7 @@ import { z } from "zod";
 import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const categoryRouter = createTRPCRouter({
-  create: protectedProcedure.input(z.object({ name: z.string(), description: z.string() })).mutation(async ({ ctx, input }) => {
+  create: adminProcedure.input(z.object({ name: z.string(), description: z.string() })).mutation(async ({ ctx, input }) => {
     return await ctx.prisma.category.create({
       data: {
         name: input.name,
@@ -24,9 +24,8 @@ export const categoryRouter = createTRPCRouter({
 
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.category.findMany({
-      where: { products: { every: { verified: true } } },
       orderBy: { products: { _count: "desc" } },
-      include: { _count: { select: { products: true } } },
+      include: { _count: { select: { products: true } }, products: { select: { verified: true } } },
     });
   }),
 
