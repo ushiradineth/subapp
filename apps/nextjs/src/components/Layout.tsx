@@ -21,7 +21,7 @@ import { Button } from "./Atoms/Button";
 import Loader from "./Atoms/Loader";
 
 const ALLOWED_UNAUTHED_PATHS = ["/auth", "/", "/auth/reset", "/learn"];
-const NAVBAR_HIDDEN__PATHS = ["/auth", "/auth/reset"];
+const NAVBAR_HIDDEN_PATHS = ["/auth", "/auth/reset"];
 
 function Layout(props: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -38,7 +38,7 @@ function Layout(props: { children: React.ReactNode }) {
       <div
         style={{ zIndex: 100 }}
         className={`border-bc bg-bgc/30 sticky top-0 flex h-14 items-center border-b backdrop-blur ${
-          NAVBAR_HIDDEN__PATHS.includes(router.pathname) && "hidden"
+          NAVBAR_HIDDEN_PATHS.includes(router.pathname) && "hidden"
         }`}>
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
