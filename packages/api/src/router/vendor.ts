@@ -166,13 +166,25 @@ export const vendorRouter = createTRPCRouter({
     const currentWeekUsers = await ctx.prisma.user.findMany({
       where: {
         createdAt: { gte: moment().subtract(7, "d").toDate() },
-        subscriptions: { every: { product: { vendorId: ctx.session?.user.id } } },
+      },
+      select: {
+        subscriptions: {
+          where: {
+            product: { vendorId: ctx.session?.user.id },
+          },
+        },
       },
     });
     const previousWeekUsers = await ctx.prisma.user.findMany({
       where: {
         createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
-        subscriptions: { every: { product: { vendorId: ctx.session?.user.id } } },
+      },
+      select: {
+        subscriptions: {
+          where: {
+            product: { vendorId: ctx.session?.user.id },
+          },
+        },
       },
     });
 
@@ -196,13 +208,8 @@ export const vendorRouter = createTRPCRouter({
       },
     });
 
-    const currentWeekPopularProducts = await ctx.prisma.product.findMany({
+    const currentWeekActiveProducts = await ctx.prisma.product.findMany({
       where: {
-        subscriptions: {
-          every: {
-            createdAt: { gte: moment().subtract(7, "d").toDate() },
-          },
-        },
         vendorId: ctx.session?.user.id,
       },
       take: 5,
@@ -211,7 +218,11 @@ export const vendorRouter = createTRPCRouter({
         name: true,
         _count: {
           select: {
-            subscriptions: true,
+            subscriptions: {
+              where: {
+                createdAt: { gte: moment().subtract(7, "d").toDate() },
+              },
+            },
           },
         },
       },
@@ -222,22 +233,20 @@ export const vendorRouter = createTRPCRouter({
       },
     });
 
-    const previousWeekPopularProducts = await ctx.prisma.product.findMany({
+    const previousWeekActiveProducts = await ctx.prisma.product.findMany({
       where: {
         id: {
-          in: [...currentWeekPopularProducts.map((product) => product.id)],
+          in: [...currentWeekActiveProducts.map((product) => product.id)],
         },
-        subscriptions: {
-          every: {
-            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
-          },
-        },
-        vendorId: ctx.session?.user.id,
       },
       select: {
         _count: {
           select: {
-            subscriptions: true,
+            subscriptions: {
+              where: {
+                createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+              },
+            },
           },
         },
       },
@@ -248,11 +257,10 @@ export const vendorRouter = createTRPCRouter({
       },
     });
 
-    const currentWeekPopularCategories = await ctx.prisma.category.findMany({
+    const currentWeekActiveCategories = await ctx.prisma.category.findMany({
       where: {
         products: {
-          every: {
-            createdAt: { gte: moment().subtract(7, "d").toDate() },
+          some: {
             vendorId: ctx.session?.user.id,
           },
         },
@@ -263,7 +271,12 @@ export const vendorRouter = createTRPCRouter({
         name: true,
         _count: {
           select: {
-            products: true,
+            products: {
+              where: {
+                createdAt: { gte: moment().subtract(7, "d").toDate() },
+                vendorId: ctx.session?.user.id,
+              },
+            },
           },
         },
       },
@@ -274,22 +287,21 @@ export const vendorRouter = createTRPCRouter({
       },
     });
 
-    const previousWeekPopularCategories = await ctx.prisma.category.findMany({
+    const previousWeekActiveCategories = await ctx.prisma.category.findMany({
       where: {
         id: {
-          in: [...currentWeekPopularProducts.map((product) => product.id)],
-        },
-        products: {
-          every: {
-            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
-            vendorId: ctx.session?.user.id,
-          },
+          in: [...currentWeekActiveCategories.map((category) => category.id)],
         },
       },
       select: {
         _count: {
           select: {
-            products: true,
+            products: {
+              where: {
+                createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+                vendorId: ctx.session?.user.id,
+              },
+            },
           },
         },
       },
@@ -308,7 +320,7 @@ export const vendorRouter = createTRPCRouter({
         subscriptions: true,
       },
     });
-    
+
     return {
       users: {
         currentWeek: currentWeekUsers,
@@ -322,13 +334,13 @@ export const vendorRouter = createTRPCRouter({
         currentWeek: currentWeekSubscriptions,
         previousWeek: previousWeekSubscriptions,
       },
-      popularProducts: {
-        currentWeek: currentWeekPopularProducts,
-        previousWeek: previousWeekPopularProducts,
+      activeProducts: {
+        currentWeek: currentWeekActiveProducts,
+        previousWeek: previousWeekActiveProducts,
       },
-      popularCategories: {
-        currentWeek: currentWeekPopularCategories,
-        previousWeek: previousWeekPopularCategories,
+      activeCategories: {
+        currentWeek: currentWeekActiveCategories,
+        previousWeek: previousWeekActiveCategories,
       },
       allProducts,
       totalUsers: await ctx.prisma.user.count({ where: { subscriptions: { some: { product: { vendorId: ctx.session?.user.id } } } } }),

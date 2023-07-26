@@ -1,8 +1,8 @@
-import Head from "next/head";
 import { useMemo, type ReactNode } from "react";
+import Head from "next/head";
 
-import { trimString } from "~/lib/utils";
 import { api } from "~/utils/api";
+import { trimString } from "~/lib/utils";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
@@ -38,6 +38,8 @@ export default function AdminDashboard() {
 
   if (isLoading) return <Loader />;
   if (isError) return <div>Data not found</div>;
+
+  console.log(data?.activeCategories.currentWeek.length > 0);
 
   return (
     <>
@@ -94,73 +96,73 @@ export default function AdminDashboard() {
           </div>
         </CardContent>
         <div className="grid gap-2 px-6 pb-6 md:grid-cols-2 xl:flex xl:flex-row">
-          <ChartCardCarousel title={"Popular products"}>
+          <ChartCardCarousel title={"Popular products"} hasData={data?.activeProducts.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
-              {data?.popularProducts.currentWeek.map((product, index) => (
+              {data?.activeProducts.currentWeek.map((product, index) => (
                 <LineChart
                   key={product.id}
-                  currentWeek={data.popularProducts.currentWeek[index]?._count.subscriptions ?? 0}
-                  previousWeek={data.popularProducts.previousWeek[index]?._count.subscriptions ?? 0}
-                  dataKey={trimString(product.name, 20)}
+                  currentWeek={data.activeProducts.currentWeek[index]?._count.subscriptions ?? 0}
+                  previousWeek={data.activeProducts.previousWeek[index]?._count.subscriptions ?? 0}
+                  dataKey={"Subscriptions"}
                   title={trimString(product.name, 20)}
                   width={362}
                   height={200}
                   href={`/product/${product.id}`}
-                  hasData={data?.popularProducts.currentWeek.length > 0}
+                  hasData={data?.activeProducts.currentWeek.length > 0}
                 />
               ))}
             </Carousel>
           </ChartCardCarousel>
-          <ChartCardCarousel title={"Popular categories"}>
+          <ChartCardCarousel title={"Popular categories"} hasData={data.activeCategories.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
-              {data?.popularCategories.currentWeek.map((category, index) => (
+              {data?.activeCategories.currentWeek.map((category, index) => (
                 <LineChart
                   key={category.id}
-                  currentWeek={data.popularCategories.currentWeek[index]?._count.products ?? 0}
-                  previousWeek={data.popularCategories.previousWeek[index]?._count.products ?? 0}
-                  dataKey={trimString(category.name, 32)}
+                  currentWeek={data.activeCategories.currentWeek[index]?._count.products ?? 0}
+                  previousWeek={data.activeCategories.previousWeek[index]?._count.products ?? 0}
+                  dataKey={"Products"}
                   title={trimString(category.name, 32)}
                   width={362}
                   height={200}
                   href={`/category/${category.id}`}
-                  hasData={data?.popularCategories.currentWeek.length > 0}
+                  hasData={data?.activeCategories.currentWeek.length > 0}
                 />
               ))}
             </Carousel>
           </ChartCardCarousel>
-          <ChartCardCarousel title={"Popular vendors"}>
+          <ChartCardCarousel title={"Popular vendors"} hasData={data.activeVendors.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
-              {data?.popularVendors.currentWeek.map((vendor, index) => (
+              {data?.activeVendors.currentWeek.map((vendor, index) => (
                 <LineChart
                   key={vendor.id}
-                  currentWeek={data.popularVendors.currentWeek[index]?._count.products ?? 0}
-                  previousWeek={data.popularVendors.previousWeek[index]?._count.products ?? 0}
-                  dataKey={trimString(vendor.name, 20)}
+                  currentWeek={data.activeVendors.currentWeek[index]?._count.products ?? 0}
+                  previousWeek={data.activeVendors.previousWeek[index]?._count.products ?? 0}
+                  dataKey={"Products"}
                   title={trimString(vendor.name, 20)}
                   width={362}
                   height={200}
                   href={`/vendor/${vendor.id}`}
-                  hasData={data?.popularVendors.currentWeek.length > 0}
+                  hasData={data?.activeVendors.currentWeek.length > 0}
                 />
               ))}
             </Carousel>
           </ChartCardCarousel>
         </div>
         <div className="grid h-48 grid-cols-3 gap-2 px-6 pb-6">
-          <NumberCard number={data?.totalUsers} text="Concurrent Users" />
-          <NumberCard number={data?.totalVendors} text="Concurrent Vendors" />
-          <NumberCard number={data?.totalProducts} text="Concurrent Products" />
+          <NumberCard number={data?.totalUsers} text="Active Users" />
+          <NumberCard number={data?.totalVendors} text="Active Vendors" />
+          <NumberCard number={data?.totalProducts} text="Active Products" />
         </div>
       </Card>
     </>
   );
 }
 
-export const ChartCardCarousel = ({ children, title }: { children: ReactNode; title: string }) => {
+export const ChartCardCarousel = ({ children, title, hasData }: { children: ReactNode; title: string; hasData: boolean }) => {
   return (
-    <Card className="flex flex-col items-center justify-center">
+    <Card className="flex w-full flex-col items-center justify-center">
       <h2 className="pt-8 text-2xl ">{title}</h2>
-      {children}
+      {hasData ? children : <div className="flex h-[340px] items-center justify-center">No data found</div>}
     </Card>
   );
 };

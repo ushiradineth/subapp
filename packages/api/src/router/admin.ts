@@ -35,7 +35,7 @@ export const adminRouter = createTRPCRouter({
       where: { createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() } },
     });
 
-    const currentWeekPopularProducts = await ctx.prisma.product.findMany({
+    const currentWeekActiveProducts = await ctx.prisma.product.findMany({
       where: {
         subscriptions: {
           some: {
@@ -64,15 +64,10 @@ export const adminRouter = createTRPCRouter({
       },
     });
 
-    const previousWeekPopularProducts = await ctx.prisma.product.findMany({
+    const previousWeekActiveProducts = await ctx.prisma.product.findMany({
       where: {
         id: {
-          in: [...currentWeekPopularProducts.map((product) => product.id)],
-        },
-        subscriptions: {
-          some: {
-            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
-          },
+          in: [...currentWeekActiveProducts.map((product) => product.id)],
         },
       },
       select: {
@@ -93,10 +88,10 @@ export const adminRouter = createTRPCRouter({
       },
     });
 
-    const currentWeekPopularCategories = await ctx.prisma.category.findMany({
+    const currentWeekActiveCategories = await ctx.prisma.category.findMany({
       where: {
         products: {
-          every: {
+          some: {
             createdAt: { gte: moment().subtract(7, "d").toDate() },
           },
         },
@@ -107,7 +102,11 @@ export const adminRouter = createTRPCRouter({
         name: true,
         _count: {
           select: {
-            products: true,
+            products: {
+              where: {
+                createdAt: { gte: moment().subtract(7, "d").toDate() },
+              },
+            },
           },
         },
       },
@@ -118,21 +117,18 @@ export const adminRouter = createTRPCRouter({
       },
     });
 
-    const previousWeekPopularCategories = await ctx.prisma.category.findMany({
+    const previousWeekActiveCategories = await ctx.prisma.category.findMany({
       where: {
         id: {
-          in: [...currentWeekPopularProducts.map((product) => product.id)],
-        },
-        products: {
-          every: {
-            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
-          },
+          in: [...currentWeekActiveCategories.map((category) => category.id)],
         },
       },
       select: {
         _count: {
           select: {
-            products: true,
+            products: {
+              where: { createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() } },
+            },
           },
         },
       },
@@ -143,10 +139,10 @@ export const adminRouter = createTRPCRouter({
       },
     });
 
-    const currentWeekPopularVendors = await ctx.prisma.vendor.findMany({
+    const currentWeekActiveVendors = await ctx.prisma.vendor.findMany({
       where: {
         products: {
-          every: {
+          some: {
             createdAt: { gte: moment().subtract(7, "d").toDate() },
           },
         },
@@ -157,7 +153,7 @@ export const adminRouter = createTRPCRouter({
         name: true,
         _count: {
           select: {
-            products: true,
+            products: { where: { createdAt: { gte: moment().subtract(7, "d").toDate() } } },
           },
         },
       },
@@ -168,21 +164,20 @@ export const adminRouter = createTRPCRouter({
       },
     });
 
-    const previousWeekPopularVendors = await ctx.prisma.vendor.findMany({
+    const previousWeekActiveVendors = await ctx.prisma.vendor.findMany({
       where: {
         id: {
-          in: [...currentWeekPopularProducts.map((product) => product.id)],
-        },
-        products: {
-          every: {
-            createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
-          },
+          in: [...currentWeekActiveVendors.map((vendor) => vendor.id)],
         },
       },
       select: {
         _count: {
           select: {
-            products: true,
+            products: {
+              where: {
+                createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+              },
+            },
           },
         },
       },
@@ -236,17 +231,17 @@ export const adminRouter = createTRPCRouter({
         currentWeek: currentWeekSubscriptions,
         previousWeek: previousWeekSubscriptions,
       },
-      popularProducts: {
-        currentWeek: currentWeekPopularProducts,
-        previousWeek: previousWeekPopularProducts,
+      activeProducts: {
+        currentWeek: currentWeekActiveProducts,
+        previousWeek: previousWeekActiveProducts,
       },
-      popularCategories: {
-        currentWeek: currentWeekPopularCategories,
-        previousWeek: previousWeekPopularCategories,
+      activeCategories: {
+        currentWeek: currentWeekActiveCategories,
+        previousWeek: previousWeekActiveCategories,
       },
-      popularVendors: {
-        currentWeek: currentWeekPopularVendors,
-        previousWeek: previousWeekPopularVendors,
+      activeVendors: {
+        currentWeek: currentWeekActiveVendors,
+        previousWeek: previousWeekActiveVendors,
       },
       userTurnInRate: {
         usersWithASubscription,
