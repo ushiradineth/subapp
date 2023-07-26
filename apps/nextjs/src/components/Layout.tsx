@@ -62,14 +62,19 @@ function NavItems() {
 
   const VendorNavItems = useCallback(
     () => (
-      <>
-        <Link href={"/product/new"}>
-          <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create new product</NavigationMenuItem>
-        </Link>
-        <Link href={"/product"}>
-          <NavigationMenuItem className={navigationMenuTriggerStyle()}>View your products</NavigationMenuItem>
-        </Link>
-      </>
+      <NavigationMenuItem>
+        <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+        <NavigationMenuContent>
+          <div className={`flex w-[400px] flex-col gap-3 p-4 md:grid-cols-2`}>
+            <Link href={"/product/new"}>
+              <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create new product</NavigationMenuItem>
+            </Link>
+            <Link href={"/product"}>
+              <NavigationMenuItem className={navigationMenuTriggerStyle()}>View your products</NavigationMenuItem>
+            </Link>
+          </div>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
     ),
     [],
   );
