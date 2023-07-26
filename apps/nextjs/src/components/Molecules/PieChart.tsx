@@ -25,7 +25,7 @@ export default function PieChart({ id, title, truthy, falsity, height = 230, wid
     <Card className={hideCard ? "border-none" : ""}>
       {!hideCard && (
         <CardHeader className="flex items-center justify-center">
-          <CardTitle>User Turn-in Rate</CardTitle>
+          <CardTitle>{id}</CardTitle>
         </CardHeader>
       )}
       {title && <CardDescription className="flex w-full items-center justify-center">{title}</CardDescription>}
