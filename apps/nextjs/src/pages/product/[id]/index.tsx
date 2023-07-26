@@ -1,22 +1,24 @@
-import { BadgeCheck, LinkIcon, XCircle, } from "lucide-react";
 import { type GetServerSideProps } from "next";
-import { getSession, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { BadgeCheck, LinkIcon, XCircle } from "lucide-react";
+import moment from "moment";
+import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
 import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma } from "@acme/db";
 
+import { api } from "~/utils/api";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
 import { Button } from "~/components/Atoms/Button";
+import NumberCard from "~/components/Atoms/NumberCard";
 import { Card } from "~/components/Molecules/Card";
 import Carousel from "~/components/Molecules/Carousel";
 import { type ProductWithDetails } from "~/components/Templates/Products";
 import { env } from "~/env.mjs";
 import { generalizeDate } from "~/lib/utils";
-import { api } from "~/utils/api";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -72,6 +74,31 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     images.push({ url: url?.publicUrl ?? "" });
   });
 
+  const views = (
+    await prisma.visitActivity.findMany({ where: { productId: product?.id }, select: { timestamps: true, userId: true } })
+  ).reduce((prev, activity) => {
+    return prev + activity.timestamps.length;
+  }, 0);
+
+  const uniqueVisitors = (await prisma.visitActivity.findMany({ where: { productId: product?.id } })).length;
+
+  const uniqueVisitorsThisWeek = (
+    await prisma.visitActivity.findMany({
+      where: {
+        productId: product?.id,
+        timestamps: {
+          some: {
+            createdAt: {
+              gte: moment().subtract(7, "d").toDate(),
+            },
+          },
+        },
+      },
+      distinct: "userId",
+      select: { _count: { select: { timestamps: { where: { createdAt: { gte: moment().subtract(7, "d").toDate() } } } } } },
+    })
+  ).length;
+
   return {
     props: {
       product: {
@@ -80,6 +107,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
       images,
       logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_LOGO}/${product.id}/0.jpg`,
+      views,
+      uniqueVisitors,
+      uniqueVisitorsThisWeek,
     },
   };
 };
@@ -88,9 +118,12 @@ interface pageProps {
   product: ProductWithDetails;
   images: { url: string }[];
   logo: string;
+  views: number;
+  uniqueVisitors: number;
+  uniqueVisitorsThisWeek: number;
 }
 
-export default function Product({ product, images, logo }: pageProps) {
+export default function Product({ product, images, logo, views, uniqueVisitors, uniqueVisitorsThisWeek }: pageProps) {
   const { data: session } = useSession();
 
   const { mutate: verify, isLoading } = api.product.verify.useMutation({
@@ -161,6 +194,11 @@ export default function Product({ product, images, logo }: pageProps) {
           <Link className="flex items-center justify-center rounded-2xl border p-4" href={`/product/${product.id}/tier`}>
             <div>See Tiers</div>
           </Link>
+          <div className="px-auto grid h-24 grid-cols-3 gap-2 pb-6 ">
+            <NumberCard number={views} text="Views" />
+            <NumberCard number={uniqueVisitors} text="Unique Visitors" />
+            <NumberCard number={uniqueVisitorsThisWeek} text="Unique Visitors This week" />
+          </div>
         </div>
       </Card>
     </>
