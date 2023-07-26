@@ -39,8 +39,6 @@ export default function AdminDashboard() {
   if (isLoading) return <Loader />;
   if (isError) return <div>Data not found</div>;
 
-  console.log(data?.activeCategories.currentWeek.length > 0);
-
   return (
     <>
       <Head>
