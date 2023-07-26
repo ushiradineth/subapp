@@ -6,7 +6,7 @@ import { BadgeCheck, BadgeX, Edit, Layers, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-import { type Product } from "@acme/db";
+import { type Product, type VisitActivity } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Button } from "~/components/Atoms/Button";
@@ -32,6 +32,7 @@ export interface ProductWithDetails extends Product {
     tiers: number;
     subscriptions: number;
   };
+  productActivity?: VisitActivity[];
 }
 
 interface pageProps {

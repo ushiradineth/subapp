@@ -100,42 +100,42 @@ export default function VendorDashboard() {
               )}
             </Card>
             <div className="grid h-[345px] grid-flow-row grid-rows-2 gap-2">
-              <NumberCard number={data?.totalUsers} text="Concurrent Users" />
-              <NumberCard number={data?.totalProducts} text="Concurrent Products" />
+              <NumberCard number={data?.totalUsers} text="Active Users" />
+              <NumberCard number={data?.totalProducts} text="Active Products" />
             </div>
           </div>
         </CardContent>
         <div className="grid gap-2 px-6 pb-6 md:grid-cols-2">
-          <ChartCardCarousel title={"Popular products"}>
+          <ChartCardCarousel title={"Active Products"} hasData={data.activeProducts.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
-              {data?.popularProducts.currentWeek.map((product, index) => (
+              {data?.activeProducts.currentWeek.map((product, index) => (
                 <ChartCard
                   key={product.id}
-                  currentWeek={data.popularProducts.currentWeek[index]?._count.subscriptions ?? 0}
-                  previousWeek={data.popularProducts.previousWeek[index]?._count.subscriptions ?? 0}
-                  dataKey={trimString(product.name, 20)}
+                  currentWeek={data.activeProducts.currentWeek[index]?._count.subscriptions ?? 0}
+                  previousWeek={data.activeProducts.previousWeek[index]?._count.subscriptions ?? 0}
+                  dataKey={"Subscriptions"}
                   title={trimString(product.name, 20)}
                   width={521.55}
                   height={200}
                   href={`/product/${product.id}`}
-                  hasData={Boolean(data.popularProducts.currentWeek.length > 0)}
+                  hasData={Boolean(data.activeProducts.currentWeek.length > 0)}
                 />
               ))}
             </Carousel>
           </ChartCardCarousel>
-          <ChartCardCarousel title={"Popular categories"}>
+          <ChartCardCarousel title={"Active Categories"} hasData={data.activeCategories.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
-              {data?.popularCategories.currentWeek.map((category, index) => (
+              {data?.activeCategories.currentWeek.map((category, index) => (
                 <ChartCard
                   key={category.id}
-                  currentWeek={data.popularCategories.currentWeek[index]?._count.products ?? 0}
-                  previousWeek={data.popularCategories.previousWeek[index]?._count.products ?? 0}
-                  dataKey={trimString(category.name, 32)}
+                  currentWeek={data.activeCategories.currentWeek[index]?._count.products ?? 0}
+                  previousWeek={data.activeCategories.previousWeek[index]?._count.products ?? 0}
+                  dataKey={"Products"}
                   title={trimString(category.name, 32)}
                   width={521.55}
                   height={200}
                   href={`/category/${category.id}`}
-                  hasData={Boolean(data.popularCategories.currentWeek.length > 0)}
+                  hasData={Boolean(data.activeCategories.currentWeek.length > 0)}
                 />
               ))}
             </Carousel>
