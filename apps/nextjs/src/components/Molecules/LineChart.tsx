@@ -16,6 +16,7 @@ type Props = {
   href?: string;
   mainCard?: boolean;
   hasData: boolean;
+  hint?: string;
 };
 
 export default function LineChart({
@@ -28,6 +29,7 @@ export default function LineChart({
   href,
   mainCard,
   hasData,
+  hint,
 }: Props) {
   const router = useRouter();
 
@@ -35,7 +37,9 @@ export default function LineChart({
     <Card className={!mainCard ? "border-transparent" : ""} onClick={() => (href ? router.push(href) : null)}>
       <CardHeader>
         {mainCard ? (
-          <CardTitle className="flex w-full justify-center">{title}</CardTitle>
+          <CardTitle className="flex w-full justify-center" hint={hint}>
+            {title}
+          </CardTitle>
         ) : (
           <CardDescription className="flex w-full justify-center">{title}</CardDescription>
         )}
