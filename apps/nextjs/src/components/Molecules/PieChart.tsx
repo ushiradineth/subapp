@@ -18,14 +18,15 @@ type Props = {
   width?: number;
   hasData: boolean;
   hideCard?: boolean;
+  hint?: string;
 };
 
-export default function PieChart({ id, title, truthy, falsity, height = 230, width = 300, hasData, hideCard }: Props) {
+export default function PieChart({ id, title, truthy, falsity, height = 230, width = 300, hasData, hideCard, hint }: Props) {
   return (
     <Card className={hideCard ? "border-none" : ""}>
       {!hideCard && (
         <CardHeader className="flex items-center justify-center">
-          <CardTitle>{id}</CardTitle>
+          <CardTitle hint={hint}>{id}</CardTitle>
         </CardHeader>
       )}
       {title && <CardDescription className="flex w-full items-center justify-center">{title}</CardDescription>}

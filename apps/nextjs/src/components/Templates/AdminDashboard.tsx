@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import { trimString } from "~/lib/utils";
 import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../Atoms/Tooltip";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
 import Carousel from "../Molecules/Carousel";
 import LineChart from "../Molecules/LineChart";
@@ -19,18 +20,21 @@ export default function AdminDashboard() {
         currentWeek: data?.products.currentWeek.length,
         previousWeek: data?.products.previousWeek.length,
         title: "Products",
+        hint: "Total products added this week compared to last week",
         href: "/product",
       },
       {
         currentWeek: data?.users.currentWeek.length,
         previousWeek: data?.users.previousWeek.length,
         title: "Users",
+        hint: "Total users joined this week compared to last week",
         href: "/user",
       },
       {
         currentWeek: data?.subscriptions.currentWeek.length,
         previousWeek: data?.subscriptions.previousWeek.length,
         title: "Subscriptions",
+        hint: "Total subscriptions made this week compared to last week",
       },
     ],
     [data],
@@ -58,6 +62,7 @@ export default function AdminDashboard() {
                 previousWeek={item.previousWeek ?? 0}
                 dataKey={item.title}
                 title={item.title}
+                hint={item.hint}
                 width={800}
                 height={550}
                 href={item.href ?? ""}
@@ -70,6 +75,7 @@ export default function AdminDashboard() {
             <PieChart
               key={"User Turn-in Rate"}
               id={"User Turn-in Rate"}
+              hint={"User rate based on users with and without subscriptions"}
               truthy={{ title: "Users with a subscription", value: data?.userTurnInRate.usersWithASubscription }}
               falsity={{
                 title: "Users without a subscription",
@@ -82,6 +88,7 @@ export default function AdminDashboard() {
             <PieChart
               key={"Vendor Turn-in Rate"}
               id={"Vendor Turn-in Rate"}
+              hint={"Vendor rate based on vendors with and without products"}
               truthy={{ title: "Vendors with a product", value: data?.vendorTurnInRate.vendorsWithAProduct }}
               falsity={{
                 title: "Vendors without a product",
@@ -94,7 +101,10 @@ export default function AdminDashboard() {
           </div>
         </CardContent>
         <div className="grid gap-2 px-6 pb-6 md:grid-cols-2 xl:flex xl:flex-row">
-          <ChartCardCarousel title={"Popular products"} hasData={data?.activeProducts.currentWeek.length > 0}>
+          <ChartCardCarousel
+            title={"Trending products"}
+            hint="Top Products based on Subscriptions made"
+            hasData={data?.activeProducts.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
               {data?.activeProducts.currentWeek.map((product, index) => (
                 <LineChart
@@ -111,7 +121,10 @@ export default function AdminDashboard() {
               ))}
             </Carousel>
           </ChartCardCarousel>
-          <ChartCardCarousel title={"Popular categories"} hasData={data.activeCategories.currentWeek.length > 0}>
+          <ChartCardCarousel
+            title={"Trending categories"}
+            hint="Top Categories based on Products Added"
+            hasData={data.activeCategories.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
               {data?.activeCategories.currentWeek.map((category, index) => (
                 <LineChart
@@ -128,7 +141,10 @@ export default function AdminDashboard() {
               ))}
             </Carousel>
           </ChartCardCarousel>
-          <ChartCardCarousel title={"Popular vendors"} hasData={data.activeVendors.currentWeek.length > 0}>
+          <ChartCardCarousel
+            title={"Trending vendors"}
+            hint="Top Vendors based on Products Created"
+            hasData={data.activeVendors.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
               {data?.activeVendors.currentWeek.map((vendor, index) => (
                 <LineChart
@@ -156,10 +172,27 @@ export default function AdminDashboard() {
   );
 }
 
-export const ChartCardCarousel = ({ children, title, hasData }: { children: ReactNode; title: string; hasData: boolean }) => {
+export const ChartCardCarousel = ({
+  children,
+  title,
+  hasData,
+  hint,
+}: {
+  children: ReactNode;
+  title: string;
+  hasData: boolean;
+  hint: string;
+}) => {
   return (
     <Card className="flex w-full flex-col items-center justify-center">
-      <h2 className="pt-8 text-2xl ">{title}</h2>
+      <h2 className="pt-8 text-2xl">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>{title}</TooltipTrigger>
+            <TooltipContent>{hint}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </h2>
       {hasData ? children : <div className="flex h-[340px] items-center justify-center">No data found</div>}
     </Card>
   );

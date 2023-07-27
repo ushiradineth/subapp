@@ -7,7 +7,7 @@ import Loader from "../Atoms/Loader";
 import NumberCard from "../Atoms/NumberCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../Molecules/Card";
 import Carousel from "../Molecules/Carousel";
-import ChartCard from "../Molecules/LineChart";
+import LineChart from "../Molecules/LineChart";
 import PieChart from "../Molecules/PieChart";
 import { ChartCardCarousel } from "./AdminDashboard";
 
@@ -21,18 +21,21 @@ export default function VendorDashboard() {
       {
         currentWeek: data?.products.currentWeek.length,
         previousWeek: data?.products.previousWeek.length,
-        title: "Products",
+        title: "New Products",
+        hint: "Total products added by you this week compared to last week",
         href: "/product",
       },
       {
         currentWeek: data?.users.currentWeek.length,
         previousWeek: data?.users.previousWeek.length,
-        title: "Users",
+        title: "New Users",
+        hint: "Total users joined to products you own this week compared to last week",
       },
       {
         currentWeek: data?.subscriptions.currentWeek.length,
         previousWeek: data?.subscriptions.previousWeek.length,
-        title: "Subscriptions",
+        title: "New Subscriptions",
+        hint: "Total subscriptions made to products you own this week compared to last week",
       },
     ],
     [data],
@@ -54,12 +57,13 @@ export default function VendorDashboard() {
         <CardContent className="flex flex-col items-center justify-center gap-2 xl:flex-row">
           <Carousel indicators navButtons autoScroll>
             {mainCarouselData.map((item) => (
-              <ChartCard
+              <LineChart
                 key={item.title}
                 currentWeek={item.currentWeek ?? 0}
                 previousWeek={item.previousWeek ?? 0}
                 dataKey={item.title}
                 title={item.title}
+                hint={item.hint}
                 width={800}
                 height={550}
                 href={item.href ?? ""}
@@ -71,7 +75,7 @@ export default function VendorDashboard() {
           <div className="flex flex-row gap-2 xl:flex-col">
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle>User Active Rate</CardTitle>
+                <CardTitle hint={"User base of the products, Active or terminated subscriptions"}>User Active Rate</CardTitle>
               </CardHeader>
               {data?.allProducts.length > 0 ? (
                 <Carousel indicators navButtons autoScroll>
@@ -106,10 +110,13 @@ export default function VendorDashboard() {
           </div>
         </CardContent>
         <div className="grid gap-2 px-6 pb-6 md:grid-cols-2">
-          <ChartCardCarousel title={"Active Products"} hasData={data.activeProducts.currentWeek.length > 0}>
+          <ChartCardCarousel
+            title={"Active Products"}
+            hint="Performance of your products"
+            hasData={data.activeProducts.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
               {data?.activeProducts.currentWeek.map((product, index) => (
-                <ChartCard
+                <LineChart
                   key={product.id}
                   currentWeek={data.activeProducts.currentWeek[index]?._count.subscriptions ?? 0}
                   previousWeek={data.activeProducts.previousWeek[index]?._count.subscriptions ?? 0}
@@ -123,10 +130,13 @@ export default function VendorDashboard() {
               ))}
             </Carousel>
           </ChartCardCarousel>
-          <ChartCardCarousel title={"Active Categories"} hasData={data.activeCategories.currentWeek.length > 0}>
+          <ChartCardCarousel
+            title={"Active Categories"}
+            hint="Performance of your products in the categories you own products of"
+            hasData={data.activeCategories.currentWeek.length > 0}>
             <Carousel indicators navButtons autoScroll>
               {data?.activeCategories.currentWeek.map((category, index) => (
-                <ChartCard
+                <LineChart
                   key={category.id}
                   currentWeek={data.activeCategories.currentWeek[index]?._count.products ?? 0}
                   previousWeek={data.activeCategories.previousWeek[index]?._count.products ?? 0}
