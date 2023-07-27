@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...category,
         createdAt: generalizeDate(category?.createdAt),
       },
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${category.id}/0.jpg`,
+      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_CATEGORY_ICON}/${category.id}/0.jpg`,
     },
   };
 };
