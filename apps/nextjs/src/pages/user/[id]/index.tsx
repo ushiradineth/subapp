@@ -7,7 +7,7 @@ import { prisma, type User } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
 import { env } from "~/env.mjs";
-import { generalizeDate } from "~/lib/utils";
+import { generalizeDate, getBucketUrl } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...user,
         createdAt: generalizeDate(user?.createdAt),
       },
-      avatar: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${user.id}/0.jpg`,
+      avatar: `${getBucketUrl(env.NEXT_PUBLIC_USER_ICON)}/${user.id}.jpg`,
     },
   };
 };

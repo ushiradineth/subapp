@@ -95,7 +95,7 @@ const CommentItem = ({ comment, onDelete }: Props) => {
         <Image
           className="bg-foreground flex h-10 w-10 items-center justify-center rounded-full"
           source={{
-            uri: `${Constants.expoConfig?.extra?.USER_ICON}/${comment.user.id}/0.jpg`,
+            uri: `${Constants.expoConfig?.extra?.USER_ICON}/${comment.user.id}.jpg`,
             width: 40,
             height: 40,
           }}

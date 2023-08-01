@@ -49,7 +49,7 @@ const Category: React.FC = () => {
             }}
             title={trimString(product.name, 16)}
             text1={trimString(`${product._count.subscriptions} subscriptions`, 18)}
-            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}.jpg`}
           />
         ))}
       </YStack>

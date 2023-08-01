@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -111,6 +111,7 @@ export default function EditUser({ user }: pageProps) {
                           setLoading={(value: boolean) => setLoading(value)}
                           setValue={(value: string) => form.setValue("Image", value)}
                           bucket={env.NEXT_PUBLIC_USER_ICON}
+                          previewImages={[user.id]}
                         />
                       </FormControl>
                       <FormMessage />

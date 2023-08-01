@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: {
         ...user,
-        createdAt: formalizeDate(user?.createdAt),
+        createdAt: formalizeDate(user?.createdAt ?? new Date()),
       },
       session,
     },
@@ -123,6 +123,7 @@ export default function Settings({ user }: pageProps) {
                           setValue={(value: string) => form.setValue("Image", value)}
                           onUpload={() => toast.success("Image has been uploaded")}
                           bucket={env.NEXT_PUBLIC_USER_ICON}
+                          previewImages={[user.id]}
                         />
                       </FormControl>
                       <FormMessage />

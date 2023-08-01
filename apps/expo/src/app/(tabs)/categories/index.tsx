@@ -28,7 +28,7 @@ export default function Categories() {
             onPress={() => router.push(`/categories/${category.id}`)}
             title={trimString(category.name, 16)}
             text1={trimString(`${category._count.products} products`, 18)}
-            image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}/0.jpg`}
+            image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}.jpg`}
           />
         ))}
       </YStack>

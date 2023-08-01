@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -123,6 +123,7 @@ export default function EditCategory({ category }: pageProps) {
                           }
                           setValue={(value: string) => form.setValue("Icon", value)}
                           bucket={env.NEXT_PUBLIC_CATEGORY_ICON}
+                          previewImages={[category.id]}
                         />
                       </FormControl>
                       <FormMessage />

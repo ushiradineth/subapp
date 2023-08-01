@@ -9,7 +9,7 @@ import { prisma, type Category } from "@acme/db";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
 import { Card } from "~/components/Molecules/Card";
 import { env } from "~/env.mjs";
-import { generalizeDate } from "~/lib/utils";
+import { generalizeDate, getBucketUrl } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...category,
         createdAt: generalizeDate(category?.createdAt),
       },
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_CATEGORY_ICON}/${category.id}/0.jpg`,
+      logo: `${getBucketUrl(env.NEXT_PUBLIC_CATEGORY_ICON)}/${category.id}.jpg`,
     },
   };
 };

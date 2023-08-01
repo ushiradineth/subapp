@@ -46,7 +46,7 @@ export default function Search() {
         text1={trimString(product.vendor.name, 16)}
         text2={trimString(product.category.name, 16)}
         text3={product.subscriptions.length > 0 && "Subscribed"}
-        image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+        image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}.jpg`}
       />
     ));
   }, [data, isLoading, queried, router, search]);
