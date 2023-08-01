@@ -53,7 +53,7 @@ export const subscriptionRouter = createTRPCRouter({
             price: true,
             period: true,
             product: { select: { name: true, vendor: { select: { name: true } }, category: { select: { name: true } } } },
-            template: { select: { name: true } },
+            template: { select: { name: true, link: true } },
           },
         },
       },

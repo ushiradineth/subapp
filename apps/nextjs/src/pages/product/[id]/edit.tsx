@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -45,6 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           id: true,
         },
       },
+      images: true,
     },
   });
 
@@ -71,6 +73,7 @@ interface Product {
     name: string;
     id: string;
   };
+  images: string[];
 }
 
 interface pageProps {
@@ -84,7 +87,9 @@ type ImageState = {
 };
 
 export default function EditProduct({ product, categories }: pageProps) {
+  const router = useRouter();
   const [upload, setUpload] = useState(false);
+  const [images, setImages] = useState<string[]>(product.images);
   const [logoState, setLogoState] = useState<ImageState>({ completed: false, loading: false });
   const [imagesState, setImagesState] = useState<ImageState>({ completed: false, loading: false });
 
@@ -92,7 +97,7 @@ export default function EditProduct({ product, categories }: pageProps) {
     resolver: yupResolver(ProductSchema),
   });
 
-  const { mutate, isLoading } = api.product.update.useMutation({
+  const { mutate, isLoading, data } = api.product.update.useMutation({
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       setUpload(true);
@@ -100,6 +105,15 @@ export default function EditProduct({ product, categories }: pageProps) {
       setImagesState({ completed: false, loading: true });
     },
   });
+
+  const { mutate: UpdateImages, isLoading: isUpdatingImages } = api.product.updateImages.useMutation({
+    onSuccess: () => {
+      toast.success("Product has been updated");
+      router.push(`/product/${product.id}`);
+    },
+  });
+
+  const { mutate: deleteImage } = api.product.deleteImage.useMutation({});
 
   const onSubmit = (data: ProductFormData) => {
     mutate({ id: product.id, name: data.Name, description: data.Description, link: data.Link, category: data.Category });
@@ -115,9 +129,10 @@ export default function EditProduct({ product, categories }: pageProps) {
   }, [product]);
 
   useEffect(() => {
-    if (logoState.completed && imagesState.completed) {
-      toast.success("Product has been updated");
-    }
+    if (logoState.completed && imagesState.completed)
+      JSON.stringify(images) !== JSON.stringify(product.images)
+        ? UpdateImages({ id: data?.id ?? "", images })
+        : toast.success("Product has been updated");
   }, [logoState.completed, imagesState.completed]);
 
   if (!product) return <div>Product not found</div>;
@@ -139,7 +154,7 @@ export default function EditProduct({ product, categories }: pageProps) {
                 <FormField
                   control={form.control}
                   name="Logo"
-                  render={({ field }) => (
+                  render={({}) => (
                     <FormItem>
                       <FormLabel>Product Logo</FormLabel>
                       <FormControl>
@@ -155,6 +170,7 @@ export default function EditProduct({ product, categories }: pageProps) {
                           }
                           setValue={(value: string) => form.setValue("Logo", value)}
                           bucket={env.NEXT_PUBLIC_PRODUCT_LOGO}
+                          previewImages={[product.id]}
                         />
                       </FormControl>
                       <FormMessage />
@@ -229,14 +245,17 @@ export default function EditProduct({ product, categories }: pageProps) {
                 <FormField
                   control={form.control}
                   name="Images"
-                  render={({ field }) => (
+                  render={({}) => (
                     <FormItem>
                       <FormLabel>Product Images</FormLabel>
                       <FormControl>
                         <ImageUpload
                           itemId={product.id}
                           upload={upload}
-                          onUpload={() => setImagesState({ completed: true, loading: false })}
+                          onUpload={(images) => {
+                            setImagesState({ completed: true, loading: false });
+                            setImages(images);
+                          }}
                           setUpload={(value: boolean) => setUpload(value)}
                           setLoading={(value: boolean) =>
                             setImagesState((prev) => {
@@ -246,13 +265,15 @@ export default function EditProduct({ product, categories }: pageProps) {
                           setValue={(value: string) => form.setValue("Images", value)}
                           multiple
                           bucket={env.NEXT_PUBLIC_PRODUCT_IMAGE}
+                          previewImages={[...product.images]}
+                          onDelete={(image) => deleteImage({ id: product.id, image })}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" loading={isLoading || logoState.loading || imagesState.loading}>
+                <Button type="submit" loading={isLoading || logoState.loading || imagesState.loading || isUpdatingImages}>
                   Submit
                 </Button>
               </form>

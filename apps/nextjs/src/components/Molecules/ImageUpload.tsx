@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
+import axios from "axios";
 import { X } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import ImageUploading, { type ImageListType } from "react-images-uploading";
 import { toast } from "react-toastify";
 
-import { supabase } from "@acme/api/src/lib/supabase";
-
+import { getPayload } from "~/lib/utils";
+import { api } from "~/utils/api";
 import Loader from "../Atoms/Loader";
 import { Card } from "./Card";
 
@@ -18,12 +18,32 @@ type props = {
   setLoading: (value: boolean) => void;
   setValue: (value: string) => void;
   setUpload: (value: boolean) => void;
-  onUpload?: () => void;
+  onUpload?: (images: string[]) => void;
+  onDelete?: (image: string) => void;
+  previewImages?: string[];
 };
 
 const FILE_TYPE = "jpg";
 
-export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setValue, setUpload, onUpload: onUploadProp }: props) {
+export function ImageUpload({
+  multiple,
+  itemId,
+  upload,
+  bucket,
+  setLoading,
+  setValue,
+  setUpload,
+  onUpload: onUploadProp,
+  onDelete: onDeleteProp,
+  previewImages,
+}: props) {
+  const { mutateAsync: getUploadUrl } = api.s3.createUploadUrl.useMutation();
+  const { mutate: deleteObject } = api.s3.deleteObject.useMutation({
+    onError: (error) => toast.error(error.message),
+    onMutate: () => setLoading(true),
+    onSettled: () => setLoading(false),
+  });
+
   const [images, setImages] = useState<ImageListType>([]);
   const [isLoading, setIsLoading] = useState(false);
   const maxNumber = 10;
@@ -35,72 +55,78 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
     else setValue("");
   };
 
-  const onUpload = useCallback(async () => {
+  const onUpload = useCallback(() => {
     if (images.length === 0) return;
     setIsLoading(true);
 
+    const uploadedImages: string[] = [...(previewImages ?? [])];
     images.forEach(async (image, index) => {
-      if (image.file) {
-        await supabase.storage.from(bucket).upload(`/${itemId}/${index}.${FILE_TYPE}`, image.file, { upsert: true });
+      const fileName = multiple ? `${itemId}/${itemId}-${new Date().getTime()}-${index}` : `${itemId}`;
+
+      if (image.file && !uploadedImages?.includes(`${image.file.name}`)) {
+        const UploadPayload = await getUploadUrl({
+          bucket,
+          fileName: `${fileName}.${FILE_TYPE}`,
+          sizeLimit: 25 * 1024 * 1024, // default limit of 25 MB
+        });
+        try {
+          await axios.post(UploadPayload.url, getPayload(image.file, UploadPayload.fields));
+          uploadedImages.push(fileName);
+        } catch (error) {
+          const err = error as any;
+          String(err?.response?.data).includes("EntityTooLarge")
+            ? toast.error("Profile image exceeds the maximum upload size")
+            : toast.error("Error uploading image");
+        }
       }
 
       if (images.length - 1 === index) {
-        onUploadProp?.();
+        onUploadProp?.(uploadedImages);
         setIsLoading(false);
         setUpload(false);
       }
     });
-  }, [images, bucket, itemId, onUploadProp, setUpload]);
+  }, [images, multiple, itemId, previewImages, getUploadUrl, bucket, onUploadProp, setUpload]);
 
-  const getImage = useCallback(async () => {
+  const getImage = useCallback(() => {
     if (itemId) {
       setIsLoading(true);
 
-      const { data } = await supabase.storage.from(bucket).list(`${itemId}`);
-
-      data?.forEach(async (image) => {
-        const { data } = supabase.storage.from(bucket).getPublicUrl(`${itemId}/${image.name}`);
-
-        if (data.publicUrl) {
-          try {
-            const result = await fetch(data.publicUrl, { method: "HEAD" });
-            if (result) {
-              if (result.status === 200) {
-                const file = await convertURLtoFileFormat(data.publicUrl);
-                setImages((prev) => {
-                  setValue("Image set");
-                  if (prev.find((item) => item.dataURL === data.publicUrl)) return prev;
-                  return [...prev, { dataURL: data.publicUrl, file }];
-                });
-              }
+      previewImages?.forEach(async (image) => {
+        const url = `https://${bucket}.s3.ap-southeast-1.amazonaws.com/${image}.${FILE_TYPE}?${new Date().getTime()}`;
+        const file = await convertURLtoFileFormat(url);
+        try {
+          const result = await fetch(url, { method: "HEAD" });
+          if (result) {
+            if (result.status === 200) {
+              setImages((prev) => {
+                setValue("Image set");
+                if (prev.find((item) => item.dataURL?.split("?")[0] === url.split("?")[0])) return prev;
+                return [...prev, { dataURL: url, file }];
+              });
             }
-          } catch (error) {}
-        }
+          }
+        } catch (error) { }
       });
 
       setIsLoading(false);
     }
-  }, [bucket, itemId, setValue, setImages]);
+  }, [itemId, previewImages, bucket, setValue]);
 
   const deleteImage = useCallback(
-    async ({ index, onDelete }: { index: number; onDelete: (index: number) => void }) => {
-      setIsLoading(true);
-
-      const { data: list } = await supabase.storage.from(bucket).list(`${itemId}`);
-
-      if (list) {
-        const { error } = await supabase.storage.from(bucket).remove([`${itemId}/${list[index]?.name}`]);
-
-        if (!error) {
-          toast.success("Image has been deleted");
-          onDelete(index);
-          if (images.length === 0) setValue("");
+    ({ index, onDelete }: { index: number; onDelete: (index: number) => void }) => {
+      if (previewImages?.includes(`${images[index]?.file?.name}`)) {
+        if (multiple) {
+          deleteObject({ bucket, fileName: `${images[index]?.file?.name}.${FILE_TYPE}` });
+        } else {
+          deleteObject({ bucket, fileName: `${itemId}.${FILE_TYPE}` });
         }
+        onDeleteProp?.(`${images[index]?.file?.name}`);
       }
-
-      setIsLoading(false);
+      onDelete(index);
+      if (images.length === 0) setValue("");
     },
-    [bucket, images.length, itemId, setValue],
+    [bucket, deleteObject, images, itemId, multiple, onDeleteProp, previewImages, setValue],
   );
 
   useEffect(() => {
@@ -114,6 +140,10 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
   useEffect(() => {
     setLoading(isLoading);
   }, [isLoading]);
+
+  useEffect(() => {
+    onChange(images);
+  }, [itemId]);
 
   return (
     <ImageUploading multiple={multiple} value={images} onChange={onChange} maxNumber={maxNumber}>
@@ -138,8 +168,8 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
                   <div className="flex gap-8">
                     <button
                       type="button"
-                      onClick={async () => {
-                        await deleteImage({ index, onDelete: onImageRemove });
+                      onClick={() => {
+                        deleteImage({ index, onDelete: onImageRemove });
                       }}>
                       <X />
                     </button>
@@ -172,10 +202,11 @@ export function ImageUpload({ multiple, itemId, upload, bucket, setLoading, setV
 }
 
 const convertURLtoFileFormat = async (url: string) => {
-  const response = await fetch(url);
-
-  const data = await response.blob();
-  return new File([data], `userImage.${FILE_TYPE}`, {
-    type: data.type || "image/jpeg",
-  });
+  try {
+    const response = await fetch(url);
+    const data = await response.blob();
+    return new File([data], `${url.split(".s3.ap-southeast-1.amazonaws.com/")[1]?.split(".jpg")[0]}`, {
+      type: data.type || "image/jpeg",
+    });
+  } catch (error) { }
 };

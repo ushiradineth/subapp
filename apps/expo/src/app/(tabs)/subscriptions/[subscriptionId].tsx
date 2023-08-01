@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Pressable, RefreshControl } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { ExternalLink } from "lucide-react-native";
 import moment from "moment";
 import { Button, H2, Image, ScrollView, Text, XStack, YStack } from "tamagui";
@@ -58,9 +58,9 @@ export default function SubscriptionPage() {
             source={{
               width: 144,
               height: 144,
-              uri: `${data?.tier.product?.name ? Constants.expoConfig?.extra?.PRODUCT_LOGO : Constants.expoConfig?.extra?.TEMPLATE_ICON}/${
-                data?.productId
-              }/0.jpg`,
+              uri: data.productId
+                ? `${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${data.productId}.jpg`
+                : `${Constants.expoConfig?.extra?.TEMPLATE_ICON}/${data.templateId}.jpg`,
             }}
             alt={data?.tier.product?.name}
             className="bg-foreground h-36 w-36 rounded-3xl"
@@ -83,6 +83,14 @@ export default function SubscriptionPage() {
                   <Text className="text-accent mt-1 text-xs font-bold"> Product</Text>
                 </XStack>
               </Pressable>
+            )}
+            {data.templateId && (
+              <Link className="mt-2" href={data?.tier.template?.link ?? ""}>
+                <XStack className="text-accent flex items-center text-xs font-bold">
+                  <ExternalLink size={20} color={theme.colors.accent} />
+                  <Text className="text-accent mt-1 text-xs font-bold"> Official Website</Text>
+                </XStack>
+              </Link>
             )}
           </YStack>
         </XStack>

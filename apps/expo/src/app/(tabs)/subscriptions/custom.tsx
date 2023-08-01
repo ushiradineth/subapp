@@ -1,116 +1,128 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Pressable } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import Constants from "expo-constants";
-import { type ImagePickerAsset } from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
 import { XIcon } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 import { Button, H6, Image, Input, ScrollView, Spinner, Text, TextArea, ToggleGroup, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { theme } from "~/utils/consts";
-import { PERIODS } from "~/utils/utils";
+import { PERIODS, getPayload } from "~/utils/utils";
 import { TemplateSchema, type TemplateFormData } from "~/utils/validators";
 import { AuthContext } from "~/app/_layout";
 
 const Custom = () => {
   const router = useRouter();
   const { mutate, isLoading, data } = api.template.create.useMutation({
-    onError: () => Toast.show({ type: "error", text1: "Failed to create custom subscription" }),
-    onSuccess: () => {
-      Toast.show({ type: "success", text1: "Subscription Created" });
-      router.back();
+    onError: () => Toast.show({ type: "error", text1: "Failed to create subscription" }),
+    onSuccess: (data) => {
+      UploadImage(data.template.id);
     },
   });
 
   const auth = useContext(AuthContext);
-  const [image, setImage] = useState<ImagePickerAsset | null>(null);
+  const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [imageRemoved, setImageRemoved] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  const { mutateAsync: getUploadUrl } = api.s3.createUploadUrl.useMutation();
+
+  useEffect(() => {
+    ImagePicker.requestMediaLibraryPermissionsAsync();
+  }, []);
 
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<TemplateFormData>({
     resolver: yupResolver(TemplateSchema),
   });
 
-  const onSubmit = (data: TemplateFormData) => {
-    console.log(data);
+  const onSubmit = useCallback(
+    (data: TemplateFormData) => {
+      mutate({ name: data.Name, description: data.Description, price: data.Price, period: data.Period, link: data.Link });
+    },
+    [mutate],
+  );
 
-    mutate({ name: data.Name, description: data.Description, price: data.Price, period: data.Period, link: data.Link });
-    // if (image) {
-    //   setUploading(true);
-    //   const response = await fetch(image.uri);
-    //   const blob = await response.blob();
+  const UploadImage = useCallback(
+    async (id: string) => {
+      if (image) {
+        setUploading(true);
 
-    //   const body = new FormData();
-    //   // @ts-expect-error
-    //   body.append("file", {
-    //     uri: image.uri,
-    //     name: blob.name,
-    //     type: blob.type,
-    //   });
+        const UploadPayload = await getUploadUrl({
+          bucket: String(Constants.expoConfig?.extra?.TEMPLATE_ICON).split("https://")[1]?.split(".s3")[0] ?? "",
+          fileName: `${id}.jpg`,
+          sizeLimit: 25 * 1024 * 1024, // default limit of 25 MB
+        });
 
-    //   const { data, error } = await supabase.storage
-    //     .from(Constants.expoConfig?.extra?.USER_ICON_BUCKET)
-    //     .upload(`${auth.session.id}/0.jpg`, body);
+        try {
+          await axios.post(UploadPayload.url, getPayload(image, UploadPayload.fields));
+          router.back();
+          Toast.show({ type: "success", text1: "Subscription has been created" });
+        } catch (error) {
+          router.back();
+          const err = error as any;
+          String(err?.response?.data).includes("EntityTooLarge")
+            ? Toast.show({ type: "error", text2: "Maximum image size is 25MB" })
+            : Toast.show({ type: "error", text2: "Error uploading subscription image" });
+        }
+        setUploading(false);
+      }
+    },
+    [getUploadUrl, image, router],
+  );
 
-    //   setUploading(false);
+  const pickImage = useCallback(async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.5,
+      base64: true,
+    });
 
-    //   console.log(data, error);
-
-    //   if (error) Toast.show({ type: "error", text1: "Failed to update profile" });
-    // }
-  };
-
-  const onDelete = async () => {
-    // const { data, error } = await supabase.storage
-    //   .from(Constants.expoConfig?.extra?.TEMPLATE_ICON_BUCKET)
-    //   .remove([`${auth.session.id}/0.jpg`]);
-
-    // if (error) Toast.show({ type: "error", text1: "Failed to update profile" });
-
-    setImageRemoved(true);
-  };
-
-  // const pickImage = useCallback(async () => {
-  //   const result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-
-  //   if (!result.canceled) {
-  //     setImage(result.assets[0] ?? null);
-  //   }
-  // }, []);
+    if (!result.canceled) {
+      setImage(result.assets[0] ?? null);
+      setValue("Logo", "Image set");
+      setImageRemoved(false);
+    }
+  }, []);
 
   return (
     <ScrollView backgroundColor="$background" padding="$4" borderRadius="$4">
       <YStack className="flex items-center justify-center p-8" space>
         <XStack className="flex items-center justify-center" space={"$4"}>
-          <Pressable onPress={() => onDelete()}>
+          <Pressable
+            onPress={() => {
+              setImageRemoved(true);
+              setValue("Logo", "");
+            }}>
             <XIcon color={theme.colors.accent} />
           </Pressable>
           <Image
             source={{
               width: 144,
               height: 144,
-              uri: imageRemoved ? "" : image ? image.uri : `${Constants.expoConfig?.extra?.TEMPLATE_ICON}/${data?.template.id}/0.jpg`,
+              uri: imageRemoved ? "" : image ? image.uri : `${Constants.expoConfig?.extra?.TEMPLATE_ICON}/${data?.template.id}.jpg`,
             }}
             alt={auth.session.name}
             className="bg-foreground h-16 w-16 rounded-full"
           />
 
-          {/* {errors.Logo && <Text color={"red"}>{errors.Logo.message}</Text>} */}
-          {/* <Pressable onPress={pickImage}>
-            <Text className="text-accent text-sm font-bold">Change Profile Image</Text>
-          </Pressable> */}
+          <YStack>
+            <Pressable onPress={pickImage}>
+              <Text className="text-accent text-sm font-bold">Add Subscription Image</Text>
+            </Pressable>
+            {errors.Logo && <Text color={"red"}>{errors.Logo.message}</Text>}
+          </YStack>
         </XStack>
 
         <Controller
@@ -247,7 +259,7 @@ const Custom = () => {
         />
 
         <Button backgroundColor={"$accent"} fontWeight={"600"} color={"white"} onPress={handleSubmit(onSubmit)} className={"w-full"}>
-          {isLoading ? <Spinner color="white" /> : "Subscribe"}
+          {isLoading || uploading ? <Spinner color="white" /> : "Subscribe"}
         </Button>
       </YStack>
     </ScrollView>
