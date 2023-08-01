@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formalizeDate(input: any) {
+export function formalizeDate(input: Date) {
   const options = {
     hour: "numeric",
     minute: "numeric",
@@ -19,7 +19,7 @@ export function formalizeDate(input: any) {
 
   const date = new Date(input);
 
-  // @ts-ignore
+  // @ts-expect-error Type not available
   const formattedDate = date.toLocaleString("en-US", options);
 
   const parts = formattedDate.split(", ");
@@ -29,7 +29,7 @@ export function formalizeDate(input: any) {
   return `${parts[1]}, ${datePart?.[1]}/${datePart?.[0]}/${datePart?.[2]}`;
 }
 
-export function generalizeDate(input: any) {
+export function generalizeDate(input: Date) {
   return moment(input).fromNow();
 }
 
@@ -46,3 +46,20 @@ export function getPercentage(current: number, previous: number) {
 export function trimString(input: string, length: number) {
   return input.length > length ? input.substring(0, length).trim() + "..." : input;
 }
+
+export const getPayload = (file: File, fields: { [key: string]: string }) => {
+  const payload = new FormData();
+
+  Object.entries(fields).forEach(([key, val]) => {
+    payload.append(key, val);
+  });
+
+  payload.append("file", file);
+  payload.append("Content-Type", "application-octet-stream");
+
+  return payload;
+};
+
+export const getBucketUrl = (bucket: string) => {
+  return `https://${bucket}.s3.ap-southeast-1.amazonaws.com`;
+};

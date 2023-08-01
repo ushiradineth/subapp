@@ -105,7 +105,7 @@ export const TemplateSchema = yup
     Link: urlValidator,
     Description: textValidator,
     Name: nameValidator,
-    // Logo: fileValidator,
+    Logo: fileValidator,
   })
   .required();
 

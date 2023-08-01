@@ -1,3 +1,4 @@
+import { type ImagePickerAsset } from "expo-image-picker";
 import moment from "moment";
 
 export function formalizeDate(input: string | number | Date) {
@@ -37,3 +38,17 @@ export const PERIODS = [
   { period: 28, label: "Month", standard: "months" },
   { period: 365, label: "Year", standard: "years" },
 ];
+
+export const getPayload = (file: ImagePickerAsset, fields: { [key: string]: string }) => {
+  const payload = new FormData();
+
+  Object.entries(fields).forEach(([key, val]) => {
+    payload.append(key, val);
+  });
+
+  // @ts-expect-error Works as intended
+  payload.append("file", file);
+  payload.append("contentType", "image/jpeg");
+
+  return payload;
+};
