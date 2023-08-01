@@ -4,8 +4,8 @@ import { z } from "zod";
 import { type Product } from "@acme/db";
 
 import { env } from "../../env.mjs";
-import { deleteFiles, supabase } from "../lib/supabase";
 import { adminProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
+import { s3Router } from "./s3";
 
 const productCreateValidation = z.object({
   name: z.string(),
@@ -63,6 +63,29 @@ export const productRouter = createTRPCRouter({
     return product;
   }),
 
+  updateImages: protectedProcedure.input(z.object({ id: z.string(), images: z.array(z.string()) })).mutation(async ({ ctx, input }) => {
+    return await ctx.prisma.product.update({
+      where: { id: input.id },
+      data: {
+        images: {
+          set: [...input.images],
+        },
+      },
+    });
+  }),
+
+  deleteImage: protectedProcedure.input(z.object({ id: z.string(), image: z.string() })).mutation(async ({ ctx, input }) => {
+    const product = await ctx.prisma.product.findUnique({ where: { id: input.id } });
+    return await ctx.prisma.product.update({
+      where: { id: input.id },
+      data: {
+        images: {
+          set: product?.images.filter((image) => image !== input.image) || [],
+        },
+      },
+    });
+  }),
+
   verify: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     const product = await ctx.prisma.product.update({ where: { id: input.id }, data: { verified: true } });
 
@@ -72,8 +95,9 @@ export const productRouter = createTRPCRouter({
   delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     const product = await ctx.prisma.product.delete({ where: { id: input.id } });
 
-    await deleteFiles(env.PRODUCT_IMAGE, input.id);
-    await deleteFiles(env.PRODUCT_LOGO, input.id);
+    const s3 = s3Router.createCaller({ ...ctx });
+    await s3.deleteObject({ bucket: env.PRODUCT_LOGO, fileName: `${input.id}.jpg` });
+    await s3.deleteFolder({ bucket: env.PRODUCT_IMAGE, folderName: input.id });
 
     return product;
   }),
@@ -399,14 +423,9 @@ export const productRouter = createTRPCRouter({
       },
     });
 
-    const { data: imageList } = await supabase.storage.from(env.PRODUCT_IMAGE).list(product?.id);
-
     const images: { url: string }[] = [];
 
-    imageList?.forEach((image) => {
-      const { data: url } = supabase.storage.from(env.PRODUCT_IMAGE).getPublicUrl(`${product?.id}/${image.name}`);
-      images.push({ url: url?.publicUrl ?? "" });
-    });
+    product.images?.forEach((image) => images.push({ url: `https://${env.PRODUCT_IMAGE}.s3.ap-southeast-1.amazonaws.com/${image}.jpg` }));
 
     return {
       product,
@@ -415,7 +434,7 @@ export const productRouter = createTRPCRouter({
       wishlisted: (user?.wishlist?.length || 0) > 0,
       review: user?.reviews,
       subscribed: (user?.subscriptions?.length || 0) > 0,
-      logo: `${env.SUPABASE_URL}/${env.PRODUCT_LOGO}/${product?.id}/0.jpg`,
+      logo: `https://${env.PRODUCT_LOGO}.s3.ap-southeast-1.amazonaws.com/${product?.id}.jpg`,
       images,
     };
   }),

@@ -1,8 +1,8 @@
 // Importing env files here to validate on build
-import "./src/env.mjs";
 import "@acme/auth/env.mjs";
+import "./src/env.mjs";
 // @ts-ignore
-import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin'
+import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -13,10 +13,23 @@ const config = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   images: {
+
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "pwnatkddgcrwrcdpxdxu.supabase.co",
+        hostname: "subm-ushiradineth-user-icons.s3.ap-southeast-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "subm-ushiradineth-product-logos.s3.ap-southeast-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "subm-ushiradineth-product-images.s3.ap-southeast-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "subm-ushiradineth-category-icons.s3.ap-southeast-1.amazonaws.com",
       }
     ]
   },
