@@ -5,8 +5,8 @@ import nodemailer from "nodemailer";
 import { z } from "zod";
 
 import { env } from "../../env.mjs";
-import { deleteFiles } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { s3Router } from "./s3";
 
 export const userRouter = createTRPCRouter({
   authorize: publicProcedure.input(z.object({ email: z.string(), password: z.string() })).mutation(async ({ ctx, input }) => {
@@ -82,8 +82,8 @@ export const userRouter = createTRPCRouter({
 
   delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     const user = await ctx.prisma.user.delete({ where: { id: input.id } });
-
-    await deleteFiles(env.USER_ICON, input.id);
+    const s3 = s3Router.createCaller({ ...ctx });
+    await s3.deleteObject({ bucket: env.USER_ICON, fileName: `${input.id}.jpg` });
 
     return user;
   }),

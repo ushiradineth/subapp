@@ -146,6 +146,7 @@ model Product {
   verified    Boolean
   link        String?
   createdAt   DateTime @default(now())
+  images      String[]
 
   tiers         Tier[]
   vendor        Vendor         @relation("vendorProducts", fields: [vendorId], references: [id], onDelete: Cascade)

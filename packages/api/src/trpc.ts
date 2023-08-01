@@ -8,7 +8,6 @@ import { getServerSession, type Session } from "@acme/auth";
 import { prisma } from "@acme/db";
 
 import { env } from "../env.mjs";
-import { supabase } from "./lib/supabase";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -21,7 +20,6 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
-    supabase,
     auth: opts.auth,
   };
 };

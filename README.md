@@ -20,4 +20,5 @@
 ## Hosting
 
 - Hosted on Vercel
-- Database and storage on Supabase
+- Database Supabase
+- Storage on AWS S3
