@@ -29,7 +29,7 @@ export default function Profile() {
             source={{
               width: 144,
               height: 144,
-              uri: `${Constants.expoConfig?.extra?.USER_ICON}/${auth.session.id}/0.jpg`,
+              uri: `${Constants.expoConfig?.extra?.USER_ICON}/${auth.session.id}.jpg`,
             }}
             alt={auth.session.name}
             className="bg-foreground h-24 w-24 rounded-full"

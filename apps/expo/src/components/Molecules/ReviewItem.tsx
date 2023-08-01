@@ -91,7 +91,7 @@ const ReviewItem = ({ review, clampText }: Props) => {
           <Image
             className="bg-foreground flex h-10 w-10 items-center justify-center rounded-full"
             source={{
-              uri: `${Constants.expoConfig?.extra?.USER_ICON}/${review.user.id}/0.jpg`,
+              uri: `${Constants.expoConfig?.extra?.USER_ICON}/${review.user.id}.jpg`,
               width: 40,
               height: 40,
             }}

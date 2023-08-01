@@ -33,7 +33,7 @@ export default function Wishlist() {
             }}
             title={trimString(product.name, 20)}
             text1={trimString(product.category.name, 20)}
-            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}.jpg`}
           />
         ))}
       </YStack>

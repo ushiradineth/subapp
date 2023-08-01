@@ -29,7 +29,7 @@ export default function History() {
             title={trimString(subscription.product?.name ?? subscription.template?.name ?? "", 16)}
             text1={trimString(subscription.tier?.name ?? "", 16)}
             text2={trimString(`Canceled ${generalizeDate(subscription.deletedAt)}`, 24)}
-            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${subscription.productId}/0.jpg`}
+            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${subscription.productId}.jpg`}
           />
         ))}
       </YStack>

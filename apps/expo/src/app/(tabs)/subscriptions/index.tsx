@@ -65,7 +65,11 @@ export default function Bills() {
                     PERIODS.find((p) => p.period == subscription?.tier.period)?.label
                   }`}</Text>
                 }
-                image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${subscription.productId}/0.jpg`}
+                image={
+                  subscription.productId
+                    ? `${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${subscription.productId}.jpg`
+                    : `${Constants.expoConfig?.extra?.TEMPLATE_ICON}/${subscription.templateId}.jpg`
+                }
               />
             ))}
           </YStack>

@@ -8,7 +8,7 @@ import { prisma, type Vendor } from "@acme/db";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
 import { env } from "~/env.mjs";
-import { generalizeDate } from "~/lib/utils";
+import { generalizeDate, getBucketUrl } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...vendor,
         createdAt: generalizeDate(vendor?.createdAt),
       },
-      avatar: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${vendor.id}/0.jpg`,
+      avatar: `${getBucketUrl(env.NEXT_PUBLIC_USER_ICON)}/${vendor.id}.jpg`,
     },
   };
 };
@@ -85,7 +85,9 @@ export default function Vendor({ vendor, avatar }: pageProps) {
               <div className="grid grid-flow-row md:h-fit md:gap-3">
                 <div className="max-w-[200px] overflow-hidden truncate text-ellipsis text-xl font-semibold">{vendor.name}</div>
                 <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">Joined {String(vendor.createdAt)}</div>
-                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">{vendor._count.products} products on SubM</div>
+                <div className="max-w-[200px] overflow-hidden truncate text-ellipsis font-semibold">
+                  {vendor._count.products} products on SubM
+                </div>
                 <Link
                   className="flex items-center gap-2 text-sm font-light text-gray-400"
                   href={`/product?search=${vendor.id}&showall=true`}>

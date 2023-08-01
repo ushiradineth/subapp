@@ -15,6 +15,7 @@ import {
   navigationMenuTriggerStyle,
 } from "~/components/Molecules/NavigationMenu";
 import { env } from "~/env.mjs";
+import { getBucketUrl } from "~/lib/utils";
 import icon from "../../public/logo.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "./Atoms/Avatar";
 import { Button } from "./Atoms/Button";
@@ -146,7 +147,7 @@ function AuthButton() {
         <MenubarItem className="flex flex-col items-center justify-center p-4">
           <Avatar>
             <AvatarImage
-              src={`${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_USER_ICON}/${session?.user.id}/0.jpg`}
+              src={`${getBucketUrl(env.NEXT_PUBLIC_USER_ICON)}/${session?.user.id}.jpg`}
               alt="User Avatar"
               width={100}
               height={100}

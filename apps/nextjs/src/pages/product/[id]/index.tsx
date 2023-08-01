@@ -7,7 +7,6 @@ import moment from "moment";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
@@ -18,7 +17,7 @@ import { Card } from "~/components/Molecules/Card";
 import Carousel from "~/components/Molecules/Carousel";
 import { type ProductWithDetails } from "~/components/Templates/Products";
 import { env } from "~/env.mjs";
-import { generalizeDate } from "~/lib/utils";
+import { generalizeDate, getBucketUrl } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -65,14 +64,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: imageList } = await supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).list(product?.id);
-
   const images: { url: string }[] = [];
 
-  imageList?.forEach((image) => {
-    const { data: url } = supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).getPublicUrl(`${product?.id}/${image.name}`);
-    images.push({ url: url?.publicUrl ?? "" });
-  });
+  product.images?.forEach((image) => images.push({ url: `${getBucketUrl(env.NEXT_PUBLIC_PRODUCT_IMAGE)}/${image}.jpg` }));
 
   const views = (
     await prisma.visitActivity.findMany({ where: { productId: product?.id }, select: { timestamps: true, userId: true } })
@@ -106,7 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: generalizeDate(product?.createdAt),
       },
       images,
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_LOGO}/${product.id}/0.jpg`,
+      logo: `${getBucketUrl(env.NEXT_PUBLIC_PRODUCT_LOGO)}/${product.id}.jpg`,
       views,
       uniqueVisitors,
       uniqueVisitorsThisWeek,

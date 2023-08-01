@@ -31,7 +31,7 @@ export default function Home() {
         {data?.forYouCategories[0] && (
           <Slider items={data?.forYouCategories[0].products} title={data.forYouCategories[0].products[0]?.category.name ?? ""} />
         )}
-        {data?.productSuggestion[0] && (
+        {data?.productSuggestion[0] && data.productSuggestion[0].products.length > 0 && (
           <Slider
             items={data?.productSuggestion[0]?.products}
             title={`Because you are subscribed to ${data?.productSuggestion[0]?.name}`}
@@ -41,7 +41,7 @@ export default function Home() {
         {data?.forYouCategories[1] && (
           <Slider items={data?.forYouCategories[1].products} title={data.forYouCategories[1].products[0]?.category.name ?? ""} />
         )}
-        {data?.productSuggestion[1] && (
+        {data?.productSuggestion[1] && data.productSuggestion[1].products.length > 0 && (
           <Slider
             items={data?.productSuggestion[1]?.products}
             title={`Because you are subscribed to ${data?.productSuggestion[1]?.name}`}
@@ -80,7 +80,7 @@ const Slider = ({ items, title }: { items: Items[]; title: string }) => {
               onPress={() => router.push(`product/${product.id}`)}
               title={trimString(product.name, 14)}
               text1={trimString(product.category.name, 18)}
-              image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+              image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}.jpg`}
             />
           ))}
         </XStack>
