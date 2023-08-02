@@ -1,0 +1,14 @@
+name: "Run Cypress tests"
+on: [deployment_status]
+jobs:
+  e2e:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run Cypress
+        uses: cypress-io/github-action@v5
+        env:
+          BASE_URL: ${{ github.event.deployment_status.target_url }}
