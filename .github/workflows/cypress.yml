@@ -5,6 +5,9 @@ jobs:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
+      - name: Install PNPM
+        run: npm i -g pnpm
+
       - name: Checkout
         uses: actions/checkout@v3
 
