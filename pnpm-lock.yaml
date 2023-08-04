@@ -397,7 +397,7 @@ importers:
         specifier: ^10.4.14
         version: 10.4.14(postcss@8.4.23)
       cypress:
-        specifier: ^12.17.3
+        specifier: ^12.5.1
         version: 12.17.3
       dotenv-cli:
         specifier: ^7.2.1
