@@ -3,7 +3,6 @@ on: [deployment_status]
 jobs:
   e2e:
     if: github.event.deployment_status.state == 'success'
-    container: cypress/browsers:node18.12.0-chrome106-ff106
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,7 +22,7 @@ jobs:
           cache: "pnpm"
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v3
         with:
           command: pnpm --filter nextjs cypress
           install: false
