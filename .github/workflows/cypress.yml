@@ -21,7 +21,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --filter nextjs
+        run: pnpm install --filter nextjs...
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v5
