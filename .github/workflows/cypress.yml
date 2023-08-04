@@ -3,7 +3,7 @@ on: [deployment_status]
 jobs:
   e2e:
     if: github.event.deployment_status.state == 'success'
-    container: cypress/base:18.16.1
+    container: cypress/included:latest
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
