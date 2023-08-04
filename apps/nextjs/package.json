@@ -10,7 +10,8 @@
     "lint:fix": "pnpm lint --fix",
     "start": "pnpm with-env next start",
     "type-check": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --"
+    "with-env": "dotenv -e ../../.env --",
+    "cypress": "NODE_ENV=test pnpm with-env cypress open"
   },
   "dependencies": {
     "@acme/api": "^0.1.0",
@@ -74,6 +75,7 @@
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "autoprefixer": "^10.4.14",
+    "cypress": "^12.17.3",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.40.0",
     "postcss": "^8.4.23",
