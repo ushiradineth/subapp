@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ButtonWide 1`] = `
+<View
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "center",
+        "backgroundColor": "rgba(243,243,243,1.00)",
+        "borderBottomColor": "rgba(0,0,0,0.00)",
+        "borderBottomLeftRadius": 9,
+        "borderBottomRightRadius": 9,
+        "borderBottomWidth": 1,
+        "borderLeftColor": "rgba(0,0,0,0.00)",
+        "borderLeftWidth": 1,
+        "borderRightColor": "rgba(0,0,0,0.00)",
+        "borderRightWidth": 1,
+        "borderStyle": "solid",
+        "borderTopColor": "rgba(0,0,0,0.00)",
+        "borderTopLeftRadius": 9,
+        "borderTopRightRadius": 9,
+        "borderTopWidth": 1,
+        "display": "flex",
+        "flexBasis": "auto",
+        "flexDirection": "row",
+        "flexShrink": 0,
+        "flexWrap": "nowrap",
+        "height": 44,
+        "justifyContent": "center",
+        "minHeight": 0,
+        "minWidth": 0,
+        "paddingLeft": 18,
+        "paddingRight": 18,
+        "position": "relative",
+      },
+    ]
+  }
+>
+  <Text
+    className="text-[16px] font-semibold"
+  >
+    Testing
+  </Text>
+</View>
+`;
