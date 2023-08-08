@@ -102,7 +102,7 @@ importers:
         version: 4.0.1(expo@48.0.17)
       expo-router:
         specifier: ^1.5.3
-        version: 1.5.3(expo-constants@14.2.1)(expo-linking@4.0.1)(expo-modules-autolinking@1.5.0)(expo-status-bar@1.4.4)(expo@48.0.17)(metro@0.76.7)(react-dom@18.2.0)(react-native-gesture-handler@2.12.0)(react-native-reanimated@2.14.4)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0)
+        version: 1.7.7(expo-constants@14.2.1)(expo-linking@4.0.1)(expo-modules-autolinking@1.5.0)(expo-status-bar@1.4.4)(expo@48.0.17)(metro@0.76.7)(react-dom@18.2.0)(react-native-gesture-handler@2.12.0)(react-native-reanimated@2.14.4)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0)
       expo-secure-store:
         specifier: ~12.1.1
         version: 12.1.1(expo@48.0.17)
@@ -179,15 +179,9 @@ importers:
       '@babel/core':
         specifier: ^7.21.8
         version: 7.21.8
-      '@babel/plugin-syntax-jsx':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.21.8)
       '@babel/preset-env':
         specifier: ^7.21.5
         version: 7.21.5(@babel/core@7.21.8)
-      '@babel/preset-react':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.21.8)
       '@babel/preset-typescript':
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.21.8)
@@ -2538,16 +2532,7 @@ packages:
     dependencies:
       '@babel/core': 7.21.8
       '@babel/helper-plugin-utils': 7.22.5
-
-  /@babel/plugin-transform-react-jsx-development@7.22.5(@babel/core@7.21.8):
-    resolution: {integrity: sha512-bDhuzwWMuInwCYeDeMzyi7TaBgRQei6DqxhbyniL7/VG4RSS7HtSL2QbY4eESy1KJqlWt8g3xeEBGPuo+XqC8A==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-    dependencies:
-      '@babel/core': 7.21.8
-      '@babel/plugin-transform-react-jsx': 7.22.5(@babel/core@7.21.8)
-    dev: true
+    dev: false
 
   /@babel/plugin-transform-react-jsx-self@7.21.0(@babel/core@7.21.8):
     resolution: {integrity: sha512-f/Eq+79JEu+KUANFks9UZCcvydOOGMgF7jBrcwjHa5jTZD8JivnhCJYvmlhR/WTXBWonDExPoW0eO/CR4QJirA==}
@@ -2612,17 +2597,7 @@ packages:
       '@babel/helper-plugin-utils': 7.22.5
       '@babel/plugin-syntax-jsx': 7.22.5(@babel/core@7.21.8)
       '@babel/types': 7.22.5
-
-  /@babel/plugin-transform-react-pure-annotations@7.22.5(@babel/core@7.21.8):
-    resolution: {integrity: sha512-gP4k85wx09q+brArVinTXhWiyzLl9UpmGva0+mWyKxk6JZequ05x3eUcIUE+FyttPKJFRRVtAvQaJ6YF9h1ZpA==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-    dependencies:
-      '@babel/core': 7.21.8
-      '@babel/helper-annotate-as-pure': 7.22.5
-      '@babel/helper-plugin-utils': 7.22.5
-    dev: true
+    dev: false
 
   /@babel/plugin-transform-regenerator@7.21.5(@babel/core@7.21.8):
     resolution: {integrity: sha512-ZoYBKDb6LyMi5yCsByQ5jmXsHAQDDYeexT1Szvlmui+lADvfSecr5Dxd/PkrTC3pAD182Fcju1VQkB4oCp9M+w==}
@@ -2917,21 +2892,6 @@ packages:
       '@babel/plugin-transform-dotall-regex': 7.18.6(@babel/core@7.21.8)
       '@babel/types': 7.21.5
       esutils: 2.0.3
-
-  /@babel/preset-react@7.22.5(@babel/core@7.21.8):
-    resolution: {integrity: sha512-M+Is3WikOpEJHgR385HbuCITPTaPRaNkibTEa9oiofmJvIsrceb4yp9RL9Kb+TE8LznmeyZqpP+Lopwcx59xPQ==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-    dependencies:
-      '@babel/core': 7.21.8
-      '@babel/helper-plugin-utils': 7.22.5
-      '@babel/helper-validator-option': 7.22.5
-      '@babel/plugin-transform-react-display-name': 7.22.5(@babel/core@7.21.8)
-      '@babel/plugin-transform-react-jsx': 7.22.5(@babel/core@7.21.8)
-      '@babel/plugin-transform-react-jsx-development': 7.22.5(@babel/core@7.21.8)
-      '@babel/plugin-transform-react-pure-annotations': 7.22.5(@babel/core@7.21.8)
-    dev: true
 
   /@babel/preset-typescript@7.22.5(@babel/core@7.21.8):
     resolution: {integrity: sha512-YbPaal9LxztSGhmndR46FmAbkJ/1fAsw293tSU+I5E5h+cnJ3d4GTwyUgGYmOXJYdGA+uNePle4qbaRzj2NISQ==}
@@ -3604,8 +3564,8 @@ packages:
       - supports-color
     dev: false
 
-  /@expo/metro-runtime@2.0.6(react-native@0.71.8):
-    resolution: {integrity: sha512-QoJVkeEOw0islK4sajQiiC3/XeNJLhivivl4CSUPtYZrb52v+w+7tX9kTABKbYXNgEJEK5KE8FyU+cOeFbWHhA==}
+  /@expo/metro-runtime@2.1.6(react-native@0.71.8):
+    resolution: {integrity: sha512-RY+wM4B28La6kjulJ+Zgr6cWyxfCvqlgGBKgt3aqgWVMSJf+mlCjc7qzjJBBCx9ih422qDKYD/ivzpHL8JsTdg==}
     peerDependencies:
       react-native: '*'
     dependencies:
@@ -7956,6 +7916,26 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
+  /ajv-formats@2.1.1(ajv@8.12.0):
+    resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
+    dependencies:
+      ajv: 8.12.0
+    dev: false
+
+  /ajv-keywords@5.1.0(ajv@8.12.0):
+    resolution: {integrity: sha512-YCS/JNFAUyr5vAuhk1DWm1CBxRHW9LbJ2ozWeemrIqpbsqKjHVxYPyi5GC0rjZIT5JxJ3virVTS8wk4i/Z+krw==}
+    peerDependencies:
+      ajv: ^8.8.2
+    dependencies:
+      ajv: 8.12.0
+      fast-deep-equal: 3.1.3
+    dev: false
+
   /ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
     dependencies:
@@ -7963,6 +7943,15 @@ packages:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
+
+  /ajv@8.12.0:
+    resolution: {integrity: sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==}
+    dependencies:
+      fast-deep-equal: 3.1.3
+      json-schema-traverse: 1.0.0
+      require-from-string: 2.0.2
+      uri-js: 4.4.1
+    dev: false
 
   /anser@1.4.10:
     resolution: {integrity: sha512-hCv9AqTQ8ycjpSd3upOJd7vFwW1JaoYQ7tpham03GJ1ca8/65rqn0RpaWpItOAd6ylW9wAw6luXYPJIyPFVOww==}
@@ -10676,6 +10665,25 @@ packages:
       fontfaceobserver: 2.3.0
     dev: false
 
+  /expo-head@0.0.8(expo-constants@14.2.1)(expo-router@1.7.7)(expo@48.0.17)(react-dom@18.2.0)(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-/DJD7nk/n/VRKl1wlgKxGhIOIsZbrpi7y8Ou5OBIGOhWblWk90CbXX4jhLMtCTkEEXa4aopwAtrY/Q6E/Aol5g==}
+    peerDependencies:
+      expo: '*'
+      expo-constants: '*'
+      expo-router: '*'
+      react: '*'
+      react-native: '*'
+    dependencies:
+      expo: 48.0.17(@babel/core@7.21.8)
+      expo-constants: 14.2.1(expo@48.0.17)
+      expo-router: 1.7.7(expo-constants@14.2.1)(expo-linking@4.0.1)(expo-modules-autolinking@1.5.0)(expo-status-bar@1.4.4)(expo@48.0.17)(metro@0.76.7)(react-dom@18.2.0)(react-native-gesture-handler@2.12.0)(react-native-reanimated@2.14.4)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0)
+      react: 18.2.0
+      react-helmet-async: 1.3.0(react-dom@18.2.0)(react@18.2.0)
+      react-native: 0.71.8(@babel/core@7.21.8)(@babel/preset-env@7.21.5)(react@18.2.0)
+    transitivePeerDependencies:
+      - react-dom
+    dev: false
+
   /expo-image-loader@4.1.1(expo@48.0.17):
     resolution: {integrity: sha512-ciEHVokU0f6w0eTxdRxLCio6tskMsjxWIoV92+/ZD37qePUJYMfEphPhu1sruyvMBNR8/j5iyOvPFVGTfO8oxA==}
     peerDependencies:
@@ -10763,10 +10771,12 @@ packages:
       invariant: 2.2.4
     dev: false
 
-  /expo-router@1.5.3(expo-constants@14.2.1)(expo-linking@4.0.1)(expo-modules-autolinking@1.5.0)(expo-status-bar@1.4.4)(expo@48.0.17)(metro@0.76.7)(react-dom@18.2.0)(react-native-gesture-handler@2.12.0)(react-native-reanimated@2.14.4)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0):
-    resolution: {integrity: sha512-rZEoRpXjXpfcx549/MI7YRitaBGFOHpIGLO+cb18ecsShl3PzGPIDaBGMnTo0m1h7ip0sAIQg1EFrSAtM4LXLA==}
+  /expo-router@1.7.7(expo-constants@14.2.1)(expo-linking@4.0.1)(expo-modules-autolinking@1.5.0)(expo-status-bar@1.4.4)(expo@48.0.17)(metro@0.76.7)(react-dom@18.2.0)(react-native-gesture-handler@2.12.0)(react-native-reanimated@2.14.4)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-GPOaSKoeuQyKbO580q2QTDF/roe0F2au8MrdVYP47vu9YkcLnrMh1iaddlcuONESPWqwXUQYQy6jMeecnse9uQ==}
+    deprecated: Downgrade to the last stable v1 (1.5.3) or upgrade to v2.
     peerDependencies:
       '@react-navigation/drawer': ^6.5.8
+      '@testing-library/jest-native': '*'
       expo: ^48.0.0
       expo-constants: '*'
       expo-linking: '*'
@@ -10779,17 +10789,20 @@ packages:
     peerDependenciesMeta:
       '@react-navigation/drawer':
         optional: true
+      '@testing-library/jest-native':
+        optional: true
       react-native-reanimated:
         optional: true
     dependencies:
       '@bacons/react-views': 1.1.3(react-native@0.71.8)
-      '@expo/metro-runtime': 2.0.6(react-native@0.71.8)
+      '@expo/metro-runtime': 2.1.6(react-native@0.71.8)
       '@radix-ui/react-slot': 1.0.1(react@18.2.0)
       '@react-navigation/bottom-tabs': 6.5.7(@react-navigation/native@6.1.6)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0)
       '@react-navigation/native': 6.1.6(react-native@0.71.8)(react@18.2.0)
       '@react-navigation/native-stack': 6.9.12(@react-navigation/native@6.1.6)(react-native-safe-area-context@4.5.2)(react-native-screens@3.20.0)(react-native@0.71.8)(react@18.2.0)
       expo: 48.0.17(@babel/core@7.21.8)
       expo-constants: 14.2.1(expo@48.0.17)
+      expo-head: 0.0.8(expo-constants@14.2.1)(expo-router@1.7.7)(expo@48.0.17)(react-dom@18.2.0)(react-native@0.71.8)(react@18.2.0)
       expo-linking: 4.0.1(expo@48.0.17)
       expo-splash-screen: 0.18.2(expo-modules-autolinking@1.5.0)(expo@48.0.17)
       expo-status-bar: 1.4.4
@@ -10800,6 +10813,7 @@ packages:
       react-native-reanimated: 2.14.4(@babel/core@7.21.8)(react-native@0.71.8)(react@18.2.0)
       react-native-safe-area-context: 4.5.2(react-native@0.71.8)(react@18.2.0)
       react-native-screens: 3.20.0(react-native@0.71.8)(react@18.2.0)
+      schema-utils: 4.2.0
       url: 0.11.0
     transitivePeerDependencies:
       - encoding
@@ -13011,6 +13025,10 @@ packages:
 
   /json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
+
+  /json-schema-traverse@1.0.0:
+    resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
+    dev: false
 
   /json-schema@0.4.0:
     resolution: {integrity: sha512-es94M3nTIfsEPisRafak+HDLfHXnKBhV3vU5eqPcS3flIWqcxJWgXHXiey3YrpaNsanY5ei1VoYEbOzijuq9BA==}
@@ -15262,6 +15280,7 @@ packages:
   /querystring@0.2.0:
     resolution: {integrity: sha512-X/xY82scca2tau62i9mDyU9K+I+djTMUsvwf7xnUX5GLvVzgJybOJf4Y6o9Zx3oJK/LSXg5tTZBjwzqVPaPO2g==}
     engines: {node: '>=0.4.x'}
+    deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
     dev: false
 
   /querystringify@2.2.0:
@@ -16184,6 +16203,16 @@ packages:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
+
+  /schema-utils@4.2.0:
+    resolution: {integrity: sha512-L0jRsrPpjdckP3oPug3/VxNKt2trR8TcabrM6FOAAlvC/9Phcmm+cuAgTlxBqdBR1WJx7Naj9WHw+aOmheSVbw==}
+    engines: {node: '>= 12.13.0'}
+    dependencies:
+      '@types/json-schema': 7.0.11
+      ajv: 8.12.0
+      ajv-formats: 2.1.1(ajv@8.12.0)
+      ajv-keywords: 5.1.0(ajv@8.12.0)
+    dev: false
 
   /sembear@0.5.2:
     resolution: {integrity: sha512-Ij1vCAdFgWABd7zTg50Xw1/p0JgESNxuLlneEAsmBrKishA06ulTTL/SHGmNy2Zud7+rKrHTKNI6moJsn1ppAQ==}
