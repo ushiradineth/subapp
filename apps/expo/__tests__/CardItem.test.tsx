@@ -2,8 +2,8 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { TamaguiProvider } from "tamagui";
 
-import CardItem from "../../src/components/Atoms/CardItem";
-import config from "../../tamagui.config";
+import CardItem from "../src/components/Atoms/CardItem";
+import config from "../tamagui.config";
 
 describe("CardItem", () => {
   it("can handle onPress", () => {

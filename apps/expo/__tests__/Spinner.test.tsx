@@ -2,18 +2,18 @@ import React from "react";
 import { render, screen } from "@testing-library/react-native";
 import { TamaguiProvider } from "tamagui";
 
-import NoData from "../../src/components/Atoms/NoData";
-import config from "../../tamagui.config";
+import { Spinner } from "../src/components/Atoms/Spinner";
+import config from "../tamagui.config";
 
-describe("NoData", () => {
+describe("Spinner", () => {
   it("renders correct children", () => {
     const { getByTestId } = render(
       <TamaguiProvider config={config}>
-        <NoData>Testing Children</NoData>
+        <Spinner />
       </TamaguiProvider>,
     );
 
-    expect(getByTestId("nodata")).toBeTruthy();
+    expect(getByTestId("spinner")).toBeTruthy();
 
     expect(screen.toJSON()).toMatchSnapshot();
   });
@@ -21,11 +21,11 @@ describe("NoData", () => {
   it("renders correct children with backgroup prop", () => {
     const { getByTestId } = render(
       <TamaguiProvider config={config}>
-        <NoData background>Testing Children</NoData>
+        <Spinner background />
       </TamaguiProvider>,
     );
 
-    expect(getByTestId("nodata-background")).toBeTruthy();
+    expect(getByTestId("spinner-background")).toBeTruthy();
 
     expect(screen.toJSON()).toMatchSnapshot();
   });

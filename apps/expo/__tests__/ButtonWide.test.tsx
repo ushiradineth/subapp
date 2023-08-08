@@ -2,8 +2,8 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { TamaguiProvider } from "tamagui";
 
-import ButtonWide from "../../src/components/Atoms/ButtonWide";
-import config from "../../tamagui.config";
+import ButtonWide from "../src/components/Atoms/ButtonWide";
+import config from "../tamagui.config";
 
 describe("ButtonWide", () => {
   it("can handle onPress", () => {

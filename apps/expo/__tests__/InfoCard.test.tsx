@@ -2,8 +2,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react-native";
 import { TamaguiProvider } from "tamagui";
 
-import InfoCard from "../../src/components/Atoms/InfoCard";
-import config from "../../tamagui.config";
+import InfoCard from "../src/components/Atoms/InfoCard";
+import config from "../tamagui.config";
 
 describe("InfoCard", () => {
   it("renders children", () => {
