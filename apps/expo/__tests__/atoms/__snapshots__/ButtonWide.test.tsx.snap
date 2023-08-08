@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ButtonWide 1`] = `
+exports[`ButtonWide can handle onPress 1`] = `
 <View
   focusable={true}
   onBlur={[Function]}

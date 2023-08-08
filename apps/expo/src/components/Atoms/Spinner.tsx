@@ -10,10 +10,10 @@ export const Spinner = ({ background, color = "$accent" }: Props) => {
   if (background) {
     return (
       <YStack flex={1} alignItems="center" justifyContent="center" space={4}>
-        <Loader color={color} />
+        <Loader testID="spinner-background" color={color} />
       </YStack>
     );
   }
 
-  return <Loader color={color} />;
+  return <Loader testID="spinner" color={color} />;
 };
