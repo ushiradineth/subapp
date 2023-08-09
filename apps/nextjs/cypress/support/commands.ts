@@ -1,37 +1,16 @@
-/// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+Cypress.Commands.add("deleteTestUser", (email) => {
+  cy.visit(`${Cypress.env("BASE_URL")}/auth`);
+
+  cy.get("#email").type(Cypress.env("ADMIN_EMAIL"));
+  cy.get("#password").type(Cypress.env("ADMIN_PASSWORD"));
+
+  cy.intercept("/api/auth/session").as("login");
+  cy.get(".bg-card > .flex.items-center > .inline-flex").click();
+  cy.wait("@login").then(() => {
+    cy.visit(`${Cypress.env("BASE_URL")}/vendor?search=${email}`);
+
+    cy.get(":nth-child(5) > .flex").children().first().click();
+
+    cy.get(".bg-primary > button").click();
+  });
+});
