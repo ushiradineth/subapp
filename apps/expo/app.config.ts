@@ -1,9 +1,11 @@
 import type { ExpoConfig } from "@expo/config";
 
 const defineConfig = (): ExpoConfig => ({
-  name: "subapp",
-  slug: "subapp",
-  scheme: "subapp",
+  name: "SubM",
+  slug: "subm",
+  scheme: "subm",
+  description:
+    "SubM: Subscription management platform for small businesses. Connect subscriptions, consumers & providers. Manage all in one place.",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -14,36 +16,42 @@ const defineConfig = (): ExpoConfig => ({
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/c04f12c2-1b92-4789-99f7-9374fffca094",
+  },
+  runtimeVersion: {
+    policy: "sdkVersion",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "your.bundle.identifier",
+    bundleIdentifier: "com.ushiradineth.subm",
+    buildNumber: "1.0.0",
   },
   android: {
-    adaptiveIcon: {
-      backgroundImage: "./assets/icon.png",
-      backgroundColor: "#ffffff",
-    },
+    package: "com.ushiradineth.subm",
+    versionCode: 1,
   },
+  plugins: [
+    [
+      "expo-image-picker",
+      {
+        photosPermission: "The app accesses your photos to use them as assets on SubM.",
+      },
+    ],
+    "./expo-plugins/with-modify-gradle.js",
+  ],
   extra: {
     eas: {
-      projectId: "0dc6749a-cb3d-4fe0-80aa-f2a7ba811017",
+      projectId: "c04f12c2-1b92-4789-99f7-9374fffca094",
     },
-    WEB_URL: "https://subapp.vercel.app",
-    PRODUCT_LOGO: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/PRODUCT_LOGO",
-    PRODUCT_IMAGE: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/PRODUCT_IMAGE",
-    USER_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/USER_ICON",
-    TEMPLATE_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/TEMPLATE_ICON",
-    CATEGORY_ICON: "https://pwnatkddgcrwrcdpxdxu.supabase.co/storage/v1/object/public/CATEGORY_ICON",
-    USER_ICON_BUCKET: "USER_ICON",
-    TEMPLATE_ICON_BUCKET: "TEMPLATE_ICON",
-    SUPABASE_PROJECT: "pwnatkddgcrwrcdpxdxu",
-    SUPABASE_ANON_KEY:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bmF0a2RkZ2Nyd3JjZHB4ZHh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3NjM3MDQsImV4cCI6MjAwMjMzOTcwNH0.O0GqjwMa76r8bwpv5uByhUkUOnAcz6M4vtHogPd6eQg",
+    WEB_URL: process.env.EXPO_PUBLIC_API_URL ?? "https://subapp.vercel.app",
+    PRODUCT_LOGO: "https://subm-ushiradineth-product-logos.s3.ap-southeast-1.amazonaws.com",
+    PRODUCT_IMAGE: "https://subm-ushiradineth-product-images.s3.ap-southeast-1.amazonaws.com",
+    USER_ICON: "https://subm-ushiradineth-user-icons.s3.ap-southeast-1.amazonaws.com",
+    TEMPLATE_ICON: "https://subm-ushiradineth-template-icons.s3.ap-southeast-1.amazonaws.com",
+    CATEGORY_ICON: "https://subm-ushiradineth-category-icons.s3.ap-southeast-1.amazonaws.com",
   },
   owner: "ushiradineth",
-  plugins: ["./expo-plugins/with-modify-gradle.js"],
 });
 
 export default defineConfig;

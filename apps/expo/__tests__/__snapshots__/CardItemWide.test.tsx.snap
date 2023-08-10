@@ -1,0 +1,295 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CardItemWide can handle onPress 1`] = `
+<View
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "stretch",
+        "display": "flex",
+        "flexBasis": "auto",
+        "flexDirection": "row",
+        "flexShrink": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+>
+  <Image
+    alt="Testing Title"
+    source={
+      {
+        "height": 144,
+        "uri": "",
+        "width": 144,
+      }
+    }
+    style={
+      [
+        {
+          "position": "relative",
+          "zIndex": 1,
+        },
+      ]
+    }
+  />
+  <View
+    style={
+      [
+        {
+          "alignItems": "stretch",
+          "display": "flex",
+          "flexBasis": "auto",
+          "flexDirection": "column",
+          "flexShrink": 0,
+          "minHeight": 0,
+          "minWidth": 0,
+          "position": "relative",
+        },
+      ]
+    }
+  >
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing Title
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`CardItemWide has text elements 1`] = `
+<View
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "stretch",
+        "display": "flex",
+        "flexBasis": "auto",
+        "flexDirection": "row",
+        "flexShrink": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+>
+  <Image
+    alt="Testing Title"
+    source={
+      {
+        "height": 144,
+        "uri": "",
+        "width": 144,
+      }
+    }
+    style={
+      [
+        {
+          "position": "relative",
+          "zIndex": 1,
+        },
+      ]
+    }
+  />
+  <View
+    style={
+      [
+        {
+          "alignItems": "stretch",
+          "display": "flex",
+          "flexBasis": "auto",
+          "flexDirection": "column",
+          "flexShrink": 0,
+          "minHeight": 0,
+          "minWidth": 0,
+          "position": "relative",
+        },
+      ]
+    }
+  >
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing Title
+    </Text>
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing text 1
+    </Text>
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing text 2
+    </Text>
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing text 3
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`CardItemWide has title 1`] = `
+<View
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    [
+      {
+        "alignItems": "stretch",
+        "display": "flex",
+        "flexBasis": "auto",
+        "flexDirection": "row",
+        "flexShrink": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+>
+  <Image
+    alt="Testing Title"
+    source={
+      {
+        "height": 144,
+        "uri": "",
+        "width": 144,
+      }
+    }
+    style={
+      [
+        {
+          "position": "relative",
+          "zIndex": 1,
+        },
+      ]
+    }
+  />
+  <View
+    style={
+      [
+        {
+          "alignItems": "stretch",
+          "display": "flex",
+          "flexBasis": "auto",
+          "flexDirection": "column",
+          "flexShrink": 0,
+          "minHeight": 0,
+          "minWidth": 0,
+          "position": "relative",
+        },
+      ]
+    }
+  >
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing Title
+    </Text>
+  </View>
+</View>
+`;

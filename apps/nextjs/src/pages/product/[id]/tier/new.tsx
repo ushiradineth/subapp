@@ -12,12 +12,12 @@ import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { TierSchema, type TierFormData } from "~/utils/validators";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { Textarea } from "~/components/ui/textarea";
+import { Button } from "~/components/Atoms/Button";
+import { Input } from "~/components/Atoms/Input";
+import { Textarea } from "~/components/Atoms/Textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/Molecules/Form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/Molecules/Select";
 
 export const PERIODS = [
   { period: "1", label: "Daily" },
@@ -70,8 +70,6 @@ export default function NewTier() {
   });
 
   const onSubmit = async (data: TierFormData) => {
-    console.log("ad");
-
     mutate({
       name: data.Name,
       description: data.Description,

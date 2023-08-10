@@ -1,8 +1,15 @@
+import { useMemo } from "react";
 import { Stack } from "expo-router";
 
-import BackButton from "~/components/BackButton";
+import BackButton from "~/components/Atoms/BackButton";
 
 const StackLayout = () => {
+  const memoizedValues = useMemo(() => {
+    return {
+      backbutton: <BackButton />,
+    };
+  }, []);
+
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerTitle: "Categories", headerTitleAlign: "center" }} />
@@ -10,7 +17,7 @@ const StackLayout = () => {
         name="[categoryId]"
         options={{
           title: "Category",
-          headerLeft: () => <BackButton />,
+          headerLeft: () => memoizedValues.backbutton,
           presentation: "modal",
           headerTitleAlign: "center",
         }}

@@ -1,27 +1,42 @@
-import { View } from "react-native";
+import { RefreshControl } from "react-native";
 import Constants from "expo-constants";
 import { Stack, useRouter, useSearchParams } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import NoData from "~/components/NoData";
-import { Spinner } from "~/components/Spinner";
-import CardItemWide from "~/components/ui/card-item-wide/CardItemWide";
+import { trimString } from "~/utils/utils";
+import CardItemWide from "~/components/Atoms/CardItemWide";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Category: React.FC = () => {
   const { categoryId } = useSearchParams();
   const router = useRouter();
 
-  const { data: category } = api.category.getById.useQuery({ id: typeof categoryId !== "undefined" ? (categoryId as string) : "" });
+  const { mutate } = api.category.categoryVisit.useMutation();
+  const {
+    data: category,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = api.category.getById.useQuery(
+    {
+      id: typeof categoryId !== "undefined" ? (categoryId as string) : "",
+    },
+    { onSuccess: (data) => mutate({ id: data?.id ?? "" }) },
+  );
 
-  if (!category) return <Spinner background />;
-  if (category.products.length === 0) return <NoData>No products yet</NoData>;
+  if (isLoading) return <Spinner background />;
+  if (!category) return <NoData background>No category found</NoData>;
+  if (category.products.length === 0) return <NoData background>No products yet</NoData>;
 
   return (
-    <ScrollView backgroundColor="$background">
+    <ScrollView
+      backgroundColor="$background"
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <Stack.Screen
         options={{
-          headerTitle: category.name,
+          headerTitle: trimString(category.name ?? "", 18),
         }}
       />
       <YStack space className="p-4">
@@ -32,9 +47,9 @@ const Category: React.FC = () => {
               router.back();
               router.replace(`product/${product.id}`);
             }}
-            title={product.name}
-            text1={`${product._count.subscriptions} subscriptions`}
-            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}/0.jpg`}
+            title={trimString(product.name, 16)}
+            text1={trimString(`${product._count.subscriptions} subscriptions`, 18)}
+            image={`${Constants.expoConfig?.extra?.PRODUCT_LOGO}/${product.id}.jpg`}
           />
         ))}
       </YStack>

@@ -1,11 +1,15 @@
+import { render } from "@react-email/render";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
+import moment from "moment";
 import { z } from "zod";
 
+import OneTimePassword from "@acme/email/emails/OneTimePassword";
+
 import { env } from "../../env.mjs";
-import { deleteFiles } from "../lib/supabase";
 import { adminProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { emailRouter } from "./email";
+import { s3Router } from "./s3";
 
 export const vendorRouter = createTRPCRouter({
   register: publicProcedure
@@ -23,7 +27,10 @@ export const vendorRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return ctx.prisma.vendor.create({ data: { name: input.name, email: input.email, password: hashedPassword, accountVerified: false } });
+      return ctx.prisma.vendor.create({
+        data: { name: input.name, email: input.email, password: hashedPassword, accountVerified: false },
+        select: { id: true, name: true },
+      });
     }),
 
   update: protectedProcedure
@@ -37,7 +44,7 @@ export const vendorRouter = createTRPCRouter({
         data.password = hashedPassword;
       }
 
-      const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data });
+      const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data, select: { id: true, name: true } });
 
       if (!vendor) {
         throw new TRPCError({
@@ -50,15 +57,15 @@ export const vendorRouter = createTRPCRouter({
     }),
 
   delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    const vendor = await ctx.prisma.vendor.delete({ where: { id: input.id } });
-
-    await deleteFiles(env.USER_ICON, input.id);
+    const vendor = await ctx.prisma.vendor.delete({ where: { id: input.id }, select: { id: true, name: true } });
+    const s3 = s3Router.createCaller({ ...ctx });
+    await s3.deleteObject({ bucket: env.USER_ICON, fileName: `${input.id}.jpg` });
 
     return vendor;
   }),
 
   forgotPassword: publicProcedure.input(z.object({ email: z.string() })).mutation(async ({ ctx, input }) => {
-    const vendor = await ctx.prisma.vendor.findUnique({ where: { email: input.email } });
+    const vendor = await ctx.prisma.vendor.findUnique({ where: { email: input.email }, select: { id: true, name: true } });
 
     if (!vendor) {
       throw new TRPCError({
@@ -73,45 +80,18 @@ export const vendorRouter = createTRPCRouter({
       OTP += digits[Math.floor(Math.random() * 10)];
     }
 
-    async function SendEmail() {
-      return new Promise((resolve) => {
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: env.GMAIL_ADDRESS,
-            pass: env.GMAIL_PASSWORD,
-          },
-        });
+    const email = emailRouter.createCaller({ ...ctx });
+    await email.sendEmail({
+      receiver: input.email,
+      subject: "One Time Password by SubM",
+      html: render(OneTimePassword({ validationCode: OTP })),
+    });
 
-        const mailOptions = {
-          from: env.GMAIL_ADDRESS,
-          to: input.email,
-          subject: "One Time Password by SubM",
-          text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
-        };
+    const salt = bcrypt.genSaltSync(10);
+    const hashedOtp = bcrypt.hashSync(OTP, salt);
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        transporter.sendMail(mailOptions, async function (error) {
-          if (error) {
-            resolve(false);
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to send email",
-            });
-          } else {
-            const salt = bcrypt.genSaltSync(10);
-            const hashedOtp = bcrypt.hashSync(OTP, salt);
-
-            await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor?.id } });
-            await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id || "", otp: hashedOtp } });
-
-            resolve(true);
-          }
-        });
-      });
-    }
-
-    await SendEmail();
+    await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor?.id } });
+    await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id ?? "", otp: hashedOtp } });
 
     return vendor;
   }),
@@ -129,7 +109,7 @@ export const vendorRouter = createTRPCRouter({
       }
 
       const request = await ctx.prisma.passwordResetRequest.findFirst({ where: { userId: vendor.id } });
-      
+
       if (!request) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -159,6 +139,196 @@ export const vendorRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return await ctx.prisma.vendor.update({ where: { id: vendor.id }, data: { password: hashedPassword } });
+      return await ctx.prisma.vendor.update({
+        where: { id: vendor.id },
+        data: { password: hashedPassword },
+        select: { id: true, name: true },
+      });
     }),
+
+  dashboard: protectedProcedure.query(async ({ ctx }) => {
+    const currentWeekUsers = await ctx.prisma.user.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(7, "d").toDate() },
+      },
+      select: {
+        subscriptions: {
+          where: {
+            product: { vendorId: ctx.session?.user.id },
+          },
+        },
+      },
+    });
+    const previousWeekUsers = await ctx.prisma.user.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+      },
+      select: {
+        subscriptions: {
+          where: {
+            product: { vendorId: ctx.session?.user.id },
+          },
+        },
+      },
+    });
+
+    const currentWeekProducts = await ctx.prisma.product.findMany({
+      where: { createdAt: { gte: moment().subtract(7, "d").toDate() }, vendorId: ctx.session?.user.id },
+    });
+    const previousWeekProducts = await ctx.prisma.product.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+        vendorId: ctx.session?.user.id,
+      },
+    });
+
+    const currentWeekSubscriptions = await ctx.prisma.subscription.findMany({
+      where: { createdAt: { gte: moment().subtract(7, "d").toDate() }, product: { vendorId: ctx.session?.user.id } },
+    });
+    const previousWeekSubscriptions = await ctx.prisma.subscription.findMany({
+      where: {
+        createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+        product: { vendorId: ctx.session?.user.id },
+      },
+    });
+
+    const currentWeekActiveProducts = await ctx.prisma.product.findMany({
+      where: {
+        vendorId: ctx.session?.user.id,
+      },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            subscriptions: {
+              where: {
+                createdAt: { gte: moment().subtract(7, "d").toDate() },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        subscriptions: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const previousWeekActiveProducts = await ctx.prisma.product.findMany({
+      where: {
+        id: {
+          in: [...currentWeekActiveProducts.map((product) => product.id)],
+        },
+      },
+      select: {
+        _count: {
+          select: {
+            subscriptions: {
+              where: {
+                createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        subscriptions: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const currentWeekActiveCategories = await ctx.prisma.category.findMany({
+      where: {
+        products: {
+          some: {
+            vendorId: ctx.session?.user.id,
+          },
+        },
+      },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            products: {
+              where: {
+                createdAt: { gte: moment().subtract(7, "d").toDate() },
+                vendorId: ctx.session?.user.id,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        products: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const previousWeekActiveCategories = await ctx.prisma.category.findMany({
+      where: {
+        id: {
+          in: [...currentWeekActiveCategories.map((category) => category.id)],
+        },
+      },
+      select: {
+        _count: {
+          select: {
+            products: {
+              where: {
+                createdAt: { gte: moment().subtract(14, "d").toDate(), lte: moment().subtract(7, "d").toDate() },
+                vendorId: ctx.session?.user.id,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        products: {
+          _count: "desc",
+        },
+      },
+    });
+
+    const allProducts = await ctx.prisma.product.findMany({
+      where: {
+        vendorId: ctx.session?.user.id,
+      },
+      include: {
+        subscriptions: true,
+      },
+    });
+
+    return {
+      users: {
+        currentWeek: currentWeekUsers,
+        previousWeek: previousWeekUsers,
+      },
+      products: {
+        currentWeek: currentWeekProducts,
+        previousWeek: previousWeekProducts,
+      },
+      subscriptions: {
+        currentWeek: currentWeekSubscriptions,
+        previousWeek: previousWeekSubscriptions,
+      },
+      activeProducts: {
+        currentWeek: currentWeekActiveProducts,
+        previousWeek: previousWeekActiveProducts,
+      },
+      activeCategories: {
+        currentWeek: currentWeekActiveCategories,
+        previousWeek: previousWeekActiveCategories,
+      },
+      allProducts,
+      totalUsers: await ctx.prisma.user.count({ where: { subscriptions: { some: { product: { vendorId: ctx.session?.user.id } } } } }),
+      totalProducts: await ctx.prisma.product.count({ where: { vendorId: ctx.session?.user.id } }),
+    };
+  }),
 });

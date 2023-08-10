@@ -8,8 +8,9 @@ import { Calendar } from "lucide-react-native";
 import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import BackButton from "~/components/BackButton";
-import { Spinner } from "~/components/Spinner";
+import { trimString } from "~/utils/utils";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Subscribe: React.FC = () => {
   const { tierId } = useSearchParams();
@@ -17,9 +18,9 @@ const Subscribe: React.FC = () => {
   const [show, setShow] = useState(false);
   if (!tierId || typeof tierId !== "string") throw new Error("Tier id not found");
 
-  const { data: tier } = api.tier.getById.useQuery({ id: tierId });
+  const { data: tier, isLoading } = api.tier.getById.useQuery({ id: tierId });
   const [startedAt, setStartedAt] = useState(new Date());
-  const { mutate, isLoading } = api.subscription.create.useMutation({
+  const { mutate, isLoading: isCreating } = api.subscription.create.useMutation({
     onSuccess: () => {
       router.push(`/product/${tier?.productId}`);
       Toast.show({ type: "success", text1: "Your subscription was successful" });
@@ -27,19 +28,19 @@ const Subscribe: React.FC = () => {
     onError: () => Toast.show({ type: "error", text1: "Failed to subscribe" }),
   });
 
-  const onChange = (event: any, selectedDate: Date | undefined) => {
+  const onChange = (event: unknown, selectedDate: Date | undefined) => {
     setShow(false);
     setStartedAt(selectedDate ?? new Date());
   };
 
-  if (!tier) return <Spinner background />;
+  if (isLoading) return <Spinner background />;
+  if (!tier) return <NoData background>No tier found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">
       <Stack.Screen
         options={{
-          headerTitle: tier.product?.name,
-          headerLeft: () => <BackButton />,
+          headerTitle: trimString(tier.product?.name ?? "", 18),
         }}
       />
       <YStack className="p-4" space="$4">
@@ -55,7 +56,7 @@ const Subscribe: React.FC = () => {
           )}
         </XStack>
         <Button onPress={() => mutate({ tierId: tierId, productId: tier.productId ?? "", startedAt })} theme="alt2">
-          {isLoading ? <Spinner /> : "Subscribe"}
+          {isCreating ? <Spinner /> : "Subscribe"}
         </Button>
       </YStack>
       {Platform.OS === "ios" && <StatusBar style="light" />}

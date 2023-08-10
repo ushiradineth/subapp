@@ -1,5 +1,5 @@
 {
-  "name": "create-t3-turbo",
+  "name": "subapp",
   "private": true,
   "engines": {
     "node": ">=v18.16.0"

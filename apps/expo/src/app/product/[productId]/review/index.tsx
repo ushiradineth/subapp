@@ -1,11 +1,11 @@
 import React from "react";
 import { useSearchParams } from "expo-router";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { Spinner } from "~/components/Spinner";
-import ReviewItem from "~/components/ui/review-item/ReviewItem";
-import NoData from "~/components/NoData";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
+import ReviewItem from "~/components/Molecules/ReviewItem";
 
 const Reviews = () => {
   const { productId } = useSearchParams();
@@ -14,7 +14,7 @@ const Reviews = () => {
   const { data: reviews, isLoading } = api.review.getByProductId.useQuery({ id: productId });
 
   if (isLoading) return <Spinner background />;
-  if (reviews?.length === 0) return <NoData>No reviews found</NoData>;
+  if (!reviews || reviews?.length === 0) return <NoData background>No reviews found</NoData>;
 
   return (
     <ScrollView className="h-fit" backgroundColor="$background">

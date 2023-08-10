@@ -1,22 +1,23 @@
-import { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, ChevronLeft, ChevronRight, Circle, ImageOff, LinkIcon, UserCircle2 } from "lucide-react";
+import { BadgeCheck, LinkIcon, XCircle } from "lucide-react";
+import moment from "moment";
 import { getSession, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-import { supabase } from "@acme/api/src/lib/supabase";
 import { prisma } from "@acme/db";
 
 import { api } from "~/utils/api";
-import Caption from "~/components/Caption";
-import { type ProductWithDetails } from "~/components/Products";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
+import { Button } from "~/components/Atoms/Button";
+import NumberCard from "~/components/Atoms/NumberCard";
+import { Card } from "~/components/Molecules/Card";
+import Carousel from "~/components/Molecules/Carousel";
+import { type ProductWithDetails } from "~/components/Templates/Products";
 import { env } from "~/env.mjs";
-import { generalizeDate } from "~/lib/utils";
+import { generalizeDate, getBucketUrl } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -63,14 +64,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const { data: imageList } = await supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).list(product?.id);
-
   const images: { url: string }[] = [];
 
-  imageList?.forEach((image) => {
-    const { data: url } = supabase.storage.from(env.NEXT_PUBLIC_PRODUCT_IMAGE).getPublicUrl(`${product?.id}/${image.name}`);
-    images.push({ url: url?.publicUrl ?? "" });
-  });
+  product.images?.forEach((image) => images.push({ url: `${getBucketUrl(env.NEXT_PUBLIC_PRODUCT_IMAGE)}/${image}.jpg` }));
+
+  const views = (
+    await prisma.visitActivity.findMany({ where: { productId: product?.id }, select: { timestamps: true, userId: true } })
+  ).reduce((prev, activity) => {
+    return prev + activity.timestamps.length;
+  }, 0);
+
+  const uniqueVisitors = (await prisma.visitActivity.findMany({ where: { productId: product?.id } })).length;
+
+  const uniqueVisitorsThisWeek = (
+    await prisma.visitActivity.findMany({
+      where: {
+        productId: product?.id,
+        timestamps: {
+          some: {
+            createdAt: {
+              gte: moment().subtract(7, "d").toDate(),
+            },
+          },
+        },
+      },
+      distinct: "userId",
+      select: { _count: { select: { timestamps: { where: { createdAt: { gte: moment().subtract(7, "d").toDate() } } } } } },
+    })
+  ).length;
 
   return {
     props: {
@@ -79,71 +100,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: generalizeDate(product?.createdAt),
       },
       images,
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${product.id}/0.jpg`,
+      logo: `${getBucketUrl(env.NEXT_PUBLIC_PRODUCT_LOGO)}/${product.id}.jpg`,
+      views,
+      uniqueVisitors,
+      uniqueVisitorsThisWeek,
     },
   };
-};
-
-const ImageView = ({ images }: { images: { url: string }[] }) => {
-  const [index, setIndex] = useState(0);
-
-  return (
-    <div className={"grid h-full w-[400px] transform select-none place-items-center rounded-2xl border p-8 text-gray-300"}>
-      {images.length === 0 ? (
-        <>
-          <ImageOff width={200} height={200} />
-          <Caption>No product images</Caption>
-        </>
-      ) : (
-        <div className="flex h-[300px] w-full items-center justify-center transition-all duration-300">
-          <ChevronLeft
-            onClick={() => index > 0 && setIndex(index - 1)}
-            className={
-              "fixed left-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " +
-              (index > 0 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")
-            }
-          />
-          <Image
-            src={images[index]?.url || ""}
-            key="image"
-            className="h-full w-full object-contain"
-            height={1000}
-            width={1000}
-            alt={"images"}
-          />
-          <ChevronRight
-            onClick={() => index < (images.length || 0) - 1 && setIndex(index + 1)}
-            className={
-              "fixed right-4 top-[50%] h-4 w-4 scale-150 rounded-full bg-zinc-600 object-contain " +
-              (index < (images.length || 0) - 1 ? " cursor-pointer hover:bg-white hover:text-zinc-600 " : " opacity-0 ")
-            }
-          />
-          <Bullets count={images.length} index={index} setIndex={setIndex} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Bullets = ({ count, index, setIndex }: { count: number; index: number; setIndex: (index: number) => void }) => {
-  return (
-    <div className="fixed bottom-1 flex">
-      {[...Array(count || 0)].map((e, i) => (
-        <button key={i} onClick={() => setIndex(i)}>
-          <Circle fill={i === index ? "white" : "black"} className={"w-4"} />
-        </button>
-      ))}
-    </div>
-  );
 };
 
 interface pageProps {
   product: ProductWithDetails;
   images: { url: string }[];
   logo: string;
+  views: number;
+  uniqueVisitors: number;
+  uniqueVisitorsThisWeek: number;
 }
 
-export default function Product({ product, images, logo }: pageProps) {
+export default function Product({ product, images, logo, views, uniqueVisitors, uniqueVisitorsThisWeek }: pageProps) {
   const { data: session } = useSession();
 
   const { mutate: verify, isLoading } = api.product.verify.useMutation({
@@ -161,14 +135,14 @@ export default function Product({ product, images, logo }: pageProps) {
       <Head>
         <title>Product - {product.name}</title>
       </Head>
-      <main className="flex flex-col items-center justify-center">
-        <div className="mb-12 flex items-center gap-8">
-          <div className="flex flex-col items-center justify-center gap-4">
-            <div className="flex h-fit items-center justify-center gap-8 rounded-2xl border p-8 ">
+      <Card className="flex flex-col justify-center gap-4 p-4">
+        <div className="flex justify-center gap-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex h-fit items-center justify-center gap-8 rounded-2xl border p-12">
               <Avatar>
-                <AvatarImage src={logo} alt="Product Avatar" width={200} height={200} />
+                <AvatarImage src={logo} alt="Logo Avatar" width={200} height={200} />
                 <AvatarFallback>
-                  <UserCircle2 width={200} height={200} />
+                  <XCircle width={200} height={200} />
                 </AvatarFallback>
               </Avatar>
               <div className="grid grid-flow-row md:h-fit md:gap-3">
@@ -192,19 +166,35 @@ export default function Product({ product, images, logo }: pageProps) {
               <div className={"mr-2 grid max-w-[800px] grid-flow-col break-all"}>{product.description}</div>
             </div>
           </div>
-          <ImageView images={images} />
+          <Card className="h-fit rounded-2xl p-4">
+            <Carousel indicators navButtons autoScroll>
+              {images.map((image, index) => (
+                <div key={index} className="flex h-[400px] w-[400px] items-center justify-center">
+                  <Image alt={image.url} width={400} height={400} src={image?.url} key={image?.url} priority />
+                </div>
+              ))}
+            </Carousel>
+          </Card>
         </div>
-        {session?.user.role === "Admin" && !product.verified && (
-          <div className="flex items-center justify-center rounded-2xl border p-8">
-            <Button loading={isLoading} className="flex items-center gap-1" onClick={() => verify({ id: product.id })}>
-              Verify
+        <div className={`grid gap-4 ${session?.user.role === "Admin" && !product.verified ? "grid-cols-2" : "grid-cols-1"}`}>
+          {session?.user.role === "Admin" && !product.verified && (
+            <Button
+              loading={isLoading}
+              className="bg-bgc hover:bg-bgc active:bg-bgc flex items-center justify-center rounded-2xl border p-8 text-white "
+              onClick={() => verify({ id: product.id })}>
+              Verify Product
             </Button>
+          )}
+          <Link className="flex items-center justify-center rounded-2xl border p-4" href={`/product/${product.id}/tier`}>
+            <div>See Tiers</div>
+          </Link>
+          <div className="px-auto grid h-24 grid-cols-3 gap-2 pb-6 ">
+            <NumberCard number={views} text="Views" />
+            <NumberCard number={uniqueVisitors} text="Unique Visitors" />
+            <NumberCard number={uniqueVisitorsThisWeek} text="Unique Visitors This week" />
           </div>
-        )}
-        <div className="flex items-center justify-center rounded-2xl border p-8">
-          <Link href={`/product/${product.id}/tier`}>See Tiers</Link>
         </div>
-      </main>
+      </Card>
     </>
   );
 }

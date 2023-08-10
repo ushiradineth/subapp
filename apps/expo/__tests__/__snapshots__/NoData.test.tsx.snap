@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NoData renders correct children 1`] = `
+<View
+  className="flex h-full items-center justify-center"
+  testID="nodata"
+>
+  <Text
+    className="text-lg font-semibold text-gray-500"
+  >
+    Testing Children
+  </Text>
+</View>
+`;
+
+exports[`NoData renders correct children with backgroup prop 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "display": "flex",
+        "flex": 1,
+        "flexBasis": "auto",
+        "flexDirection": "column",
+        "flexShrink": 0,
+        "justifyContent": "center",
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+  testID="nodata-background"
+>
+  <View
+    className="flex h-full items-center justify-center"
+  >
+    <Text
+      className="text-lg font-semibold text-gray-500"
+    >
+      Testing Children
+    </Text>
+  </View>
+</View>
+`;

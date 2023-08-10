@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react";
 
 import { prisma } from "@acme/db";
 
-import Products, { type ProductWithDetails } from "~/components/Products";
+import Products, { type ProductWithDetails } from "~/components/Templates/Products";
 import { formalizeDate } from "~/lib/utils";
 
 const ITEMS_PER_PAGE = 10;
@@ -95,7 +95,7 @@ export default function Requests({ products, count, total }: pageProps) {
       total={total}
       itemsPerPage={ITEMS_PER_PAGE}
       requests={true}
-      title="Products"
+      title="Product requests"
       description={"A list of all products that are awaiting approval."}
     />
   );

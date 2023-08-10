@@ -7,9 +7,10 @@ import { Input, ScrollView, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { CommentSchema, type CommentFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
-import CommentItem from "~/components/ui/comment-item/CommentItem";
-import ReviewItem from "~/components/ui/review-item/ReviewItem";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
+import CommentItem from "~/components/Molecules/CommentItem";
+import ReviewItem from "~/components/Molecules/ReviewItem";
 
 const Review: React.FC = () => {
   const { reviewId } = useSearchParams();
@@ -19,7 +20,7 @@ const Review: React.FC = () => {
     resolver: yupResolver(CommentSchema),
   });
 
-  const { data: review, refetch } = api.review.getById.useQuery({ id: reviewId });
+  const { data: review, refetch, isLoading } = api.review.getById.useQuery({ id: reviewId });
   const { mutate } = api.comment.create.useMutation({
     onSuccess: (data) => {
       Toast.show({ type: "success", text1: "Comment has been posted" });
@@ -31,7 +32,8 @@ const Review: React.FC = () => {
 
   const onSubmit = (data: CommentFormData) => mutate({ reviewId, comment: data.Comment });
 
-  if (!review) return <Spinner background />;
+  if (isLoading) return <Spinner background />;
+  if (!review) return <NoData background>No review found</NoData>;
 
   return (
     <View className="flex-1">

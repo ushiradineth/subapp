@@ -1,30 +1,34 @@
 import React from "react";
+import { RefreshControl } from "react-native";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { ScrollView, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
-import { Spinner } from "~/components/Spinner";
-import CardItemWide from "~/components/ui/card-item-wide/CardItemWide";
-import NoData from "~/components/NoData";
+import { trimString } from "~/utils/utils";
+import CardItemWide from "~/components/Atoms/CardItemWide";
+import NoData from "~/components/Atoms/NoData";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 export default function Categories() {
   const router = useRouter();
-  const { data: categories, isLoading } = api.category.getAll.useQuery();
+  const { data: categories, isLoading, refetch, isRefetching } = api.category.getAll.useQuery();
 
   if (isLoading) return <Spinner background />;
-  if (categories?.length === 0) return <NoData>No Categories found</NoData>;
+  if (!categories) return <NoData background>No categories found</NoData>;
 
   return (
-    <ScrollView backgroundColor={"$background"}>
+    <ScrollView
+      backgroundColor={"$background"}
+      refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space className="p-4">
         {categories?.map((category) => (
           <CardItemWide
             key={category.id}
             onPress={() => router.push(`/categories/${category.id}`)}
-            title={category.name}
-            text1={`${category._count.products} products`}
-            image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}/0.jpg`}
+            title={trimString(category.name, 16)}
+            text1={trimString(`${category._count.products} products`, 18)}
+            image={`${Constants.expoConfig?.extra?.CATEGORY_ICON}/${category.id}.jpg`}
           />
         ))}
       </YStack>

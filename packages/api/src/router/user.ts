@@ -1,11 +1,15 @@
+import { render } from "@react-email/render";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
-import nodemailer from "nodemailer";
+import * as jwt from "jsonwebtoken";
 import { z } from "zod";
 
+import { OneTimePassword } from "@acme/email";
+
 import { env } from "../../env.mjs";
-import { deleteFiles, supabase } from "../lib/supabase";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { emailRouter } from "./email";
+import { s3Router } from "./s3";
 
 export const userRouter = createTRPCRouter({
   authorize: publicProcedure.input(z.object({ email: z.string(), password: z.string() })).mutation(async ({ ctx, input }) => {
@@ -19,14 +23,20 @@ export const userRouter = createTRPCRouter({
     }
     const userVerified = bcrypt.compareSync(input.password, user.password);
 
+    const userData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
+
     if (userVerified) {
       return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: "User",
+        ...userData,
+        token: jwt.sign(userData, env.JWT_SECRET),
+        expiration: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).getTime(), // 24 Hours
       };
     }
+
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Invalid Credentials",
@@ -48,7 +58,10 @@ export const userRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return await ctx.prisma.user.create({ data: { name: input.name, email: input.email, password: hashedPassword } });
+      return await ctx.prisma.user.create({
+        data: { name: input.name, email: input.email, password: hashedPassword },
+        select: { id: true, name: true },
+      });
     }),
 
   update: protectedProcedure
@@ -62,7 +75,7 @@ export const userRouter = createTRPCRouter({
         data.password = hashedPassword;
       }
 
-      const user = await ctx.prisma.user.update({ where: { id: input.id }, data });
+      const user = await ctx.prisma.user.update({ where: { id: input.id }, data, select: { id: true, name: true } });
 
       if (!user) {
         throw new TRPCError({
@@ -75,15 +88,15 @@ export const userRouter = createTRPCRouter({
     }),
 
   delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    const user = await ctx.prisma.user.delete({ where: { id: input.id } });
-
-    await deleteFiles(env.USER_ICON, input.id);
+    const user = await ctx.prisma.user.delete({ where: { id: input.id }, select: { id: true, name: true } });
+    const s3 = s3Router.createCaller({ ...ctx });
+    await s3.deleteObject({ bucket: env.USER_ICON, fileName: `${input.id}.jpg` });
 
     return user;
   }),
 
   forgotPassword: publicProcedure.input(z.object({ email: z.string() })).mutation(async ({ ctx, input }) => {
-    const user = await ctx.prisma.user.findUnique({ where: { email: input.email } });
+    const user = await ctx.prisma.user.findUnique({ where: { email: input.email }, select: { id: true, name: true, email: true } });
 
     if (!user) {
       throw new TRPCError({
@@ -98,45 +111,18 @@ export const userRouter = createTRPCRouter({
       OTP += digits[Math.floor(Math.random() * 10)];
     }
 
-    async function SendEmail() {
-      return new Promise((resolve) => {
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: env.GMAIL_ADDRESS,
-            pass: env.GMAIL_PASSWORD,
-          },
-        });
+    const email = emailRouter.createCaller({ ...ctx });
+    await email.sendEmail({
+      receiver: input.email,
+      subject: "One Time Password by SubM",
+      html: render(OneTimePassword({ validationCode: OTP })),
+    });
 
-        const mailOptions = {
-          from: env.GMAIL_ADDRESS,
-          to: input.email,
-          subject: "One Time Password by SubM",
-          text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
-        };
+    const salt = bcrypt.genSaltSync(10);
+    const hashedOtp = bcrypt.hashSync(OTP, salt);
 
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        transporter.sendMail(mailOptions, async function (error) {
-          if (error) {
-            resolve(false);
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to send email",
-            });
-          } else {
-            const salt = bcrypt.genSaltSync(10);
-            const hashedOtp = bcrypt.hashSync(OTP, salt);
-
-            await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: user?.id } });
-            await ctx.prisma.passwordResetRequest.create({ data: { userId: user?.id ?? "", otp: hashedOtp } });
-
-            resolve(true);
-          }
-        });
-      });
-    }
-
-    await SendEmail();
+    await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: user?.id } });
+    await ctx.prisma.passwordResetRequest.create({ data: { userId: user?.id ?? "", otp: hashedOtp } });
 
     return user;
   }),
@@ -184,13 +170,23 @@ export const userRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return await ctx.prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword } });
+      return await ctx.prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword }, select: { id: true, name: true } });
     }),
 
-  profile: protectedProcedure.query(async ({ ctx }) => {
+  getSubscriptionsPage: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.auth.id },
-      include: { subscriptions: { select: { tier: { select: { price: true, period: true } } } } },
+      select: {
+        subscriptions: {
+          orderBy: { createdAt: "desc" },
+          where: { active: true },
+          include: {
+            tier: { select: { price: true, period: true, name: true } },
+            template: { select: { name: true } },
+            product: { select: { name: true } },
+          },
+        },
+      },
     });
 
     const getMultiplicator = (period: number) => {
@@ -213,16 +209,16 @@ export const userRouter = createTRPCRouter({
     }, 0);
 
     return {
-      joined: user?.createdAt,
       cost,
       count: user?.subscriptions.length,
+      subscriptions: user?.subscriptions,
     };
   }),
 
   wishlist: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.auth.id },
-      include: {
+      select: {
         wishlist: {
           include: { category: { select: { name: true } } },
         },
@@ -234,13 +230,18 @@ export const userRouter = createTRPCRouter({
     };
   }),
 
+  profile: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.user.findUnique({ where: { id: ctx.auth.id }, select: { createdAt: true } });
+  }),
+
   subscriptions: protectedProcedure
     .input(z.object({ showTerminatedSubscripitions: z.boolean().optional().default(false) }))
     .query(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findUnique({
+      return await ctx.prisma.user.findUnique({
         where: { id: ctx.auth.id },
-        include: {
+        select: {
           subscriptions: {
+            orderBy: input.showTerminatedSubscripitions ? { deletedAt: "desc" } : { createdAt: "desc" },
             where: {
               active: !input.showTerminatedSubscripitions,
             },
@@ -266,9 +267,5 @@ export const userRouter = createTRPCRouter({
           },
         },
       });
-
-      return {
-        subscriptions: user?.subscriptions,
-      };
     }),
 });

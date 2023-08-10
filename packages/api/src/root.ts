@@ -1,8 +1,10 @@
 import { adminRouter } from "./router/admin";
 import { categoryRouter } from "./router/category";
 import { commentRouter } from "./router/comment";
+import { emailRouter } from "./router/email";
 import { productRouter } from "./router/product";
 import { reviewRouter } from "./router/review";
+import { s3Router } from "./router/s3";
 import { subscriptionRouter } from "./router/subscription";
 import { templateRouter } from "./router/template";
 import { tierRouter } from "./router/tier";
@@ -21,6 +23,8 @@ export const appRouter = createTRPCRouter({
   comment: commentRouter,
   subscription: subscriptionRouter,
   template: templateRouter,
+  s3: s3Router,
+  email: emailRouter,
 });
 
 // export type definition of API

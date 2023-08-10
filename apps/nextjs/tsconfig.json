@@ -7,13 +7,7 @@
     },
     "plugins": [{ "name": "next" }]
   },
+  "types": ["cypress", "node"],
   "exclude": [],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", ".next/types/**/*.ts", "cypress/support/index.d.ts"]
 }

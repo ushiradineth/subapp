@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,11 +10,11 @@ import { prisma, type Vendor } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { UserEditFormSchema, type UserEditFormData } from "~/utils/validators";
-import { ImageUpload } from "~/components/ImageUpload";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
+import { Button } from "~/components/Atoms/Button";
+import { Input } from "~/components/Atoms/Input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/Molecules/Form";
+import { ImageUpload } from "~/components/Molecules/ImageUpload";
 import { env } from "~/env.mjs";
 import { formalizeDate } from "~/lib/utils";
 
@@ -104,7 +104,15 @@ export default function EditVendor({ vendor }: pageProps) {
                     <FormItem>
                       <FormLabel>User Image</FormLabel>
                       <FormControl>
-                        <ImageUpload upload={upload} setUpload={(value: boolean) => setUpload(value)} itemId={vendor.id} setLoading={(value: boolean) => setLoading(value)} setValue={(value: string) => form.setValue("Image", value)} bucket={env.NEXT_PUBLIC_USER_ICON} />
+                        <ImageUpload
+                          upload={upload}
+                          setUpload={(value: boolean) => setUpload(value)}
+                          itemId={vendor.id}
+                          setLoading={(value: boolean) => setLoading(value)}
+                          setValue={(value: string) => form.setValue("Image", value)}
+                          bucket={env.NEXT_PUBLIC_USER_ICON}
+                          previewImages={[vendor.id]}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -149,7 +157,14 @@ export default function EditVendor({ vendor }: pageProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" loading={isLoading || loading} disabled={form.watch("Name") === vendor.name && (typeof form.watch("Image") === "undefined" || form.watch("Image") === "") && form.watch("Password") === ""}>
+                <Button
+                  type="submit"
+                  loading={isLoading || loading}
+                  disabled={
+                    form.watch("Name") === vendor.name &&
+                    (typeof form.watch("Image") === "undefined" || form.watch("Image") === "") &&
+                    form.watch("Password") === ""
+                  }>
                   Submit
                 </Button>
               </form>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -6,7 +6,7 @@ import { Button, H2, H6, Input, Text, XStack, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { LoginSchema, type LoginFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 import { AuthContext } from "../_layout";
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const { mutate, isLoading } = api.user.authorize.useMutation({
     onSuccess(data) {
-      auth.setSession({ id: data.id, email: data.email, name: data.name });
+      auth.setSession({ id: data.id, email: data.email, name: data.name, token: data.token, expiration: data.expiration });
       router.push("/home");
     },
     onError(error) {
@@ -23,11 +23,8 @@ export default function Login() {
     },
   });
 
-  console.log(auth.session);
-
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
@@ -36,9 +33,13 @@ export default function Login() {
 
   const onSubmit = (data: LoginFormData) => mutate({ email: data.Email, password: data.Password });
 
-  useEffect(() => {
-    error !== "" && setError("");
-  }, [watch("Email"), watch("Password")]);
+  const onInputChange = useCallback(
+    (input: string, onChange: (input: string) => void) => {
+      error !== "" && setError("");
+      onChange(input);
+    },
+    [error],
+  );
 
   return (
     <YStack className="flex-1 items-center justify-center p-8" space backgroundColor="$background">
@@ -52,7 +53,14 @@ export default function Login() {
         render={({ field: { onChange, onBlur, value } }) => (
           <YStack className="w-full">
             <H6 className="font-bold">Email</H6>
-            <Input className="my-1" placeholder="Email" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+            <Input
+              className="my-1"
+              placeholder="Email"
+              autoCapitalize={"none"}
+              onBlur={onBlur}
+              onChangeText={(input) => onInputChange(input, onChange)}
+              value={value}
+            />
             <YStack className="flex items-center justify-center">
               {errors.Email && <Text color={"red"}>{errors.Email.message}</Text>}
             </YStack>
@@ -75,7 +83,7 @@ export default function Login() {
               autoCapitalize={"none"}
               secureTextEntry={true}
               onBlur={onBlur}
-              onChangeText={onChange}
+              onChangeText={(input) => onInputChange(input, onChange)}
               value={value}
             />
             <YStack className="flex items-center justify-center">

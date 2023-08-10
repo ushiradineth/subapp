@@ -6,9 +6,17 @@ import { getSession } from "next-auth/react";
 
 import { prisma, type Tier } from "@acme/db";
 
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
+import { Card } from "~/components/Molecules/Card";
 import { env } from "~/env.mjs";
-import { generalizeDate } from "~/lib/utils";
+import { generalizeDate, getBucketUrl } from "~/lib/utils";
+
+const PERIODS = [
+  { period: 1, label: "Day" },
+  { period: 7, label: "Week" },
+  { period: 28, label: "Month" },
+  { period: 365, label: "Year" },
+];
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -39,12 +47,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         },
       },
+      _count: {
+        select: {
+          subscriptions: {
+            where: {
+              active: true,
+            },
+          },
+        },
+      },
     },
   });
 
   if (!tier || tier.productId !== context.query.id) return { props: {} };
 
-  if (session.user.id !== tier?.product.vendor?.id && session.user.role !== "Admin") {
+  if (session.user.id !== tier?.product?.vendor?.id && session.user.role !== "Admin") {
     return {
       redirect: {
         destination: "/",
@@ -60,7 +77,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...tier,
         createdAt: generalizeDate(tier?.createdAt),
       },
-      logo: `${env.NEXT_PUBLIC_SUPABASE_URL}/${env.NEXT_PUBLIC_PRODUCT_IMAGE}/${tier.productId}/0.jpg`,
+      logo: `${getBucketUrl(env.NEXT_PUBLIC_PRODUCT_LOGO)}/${tier.productId}.jpg`,
     },
   };
 };
@@ -73,11 +90,14 @@ interface pageProps {
         name: string;
       };
     };
+    _count: {
+      subscriptions: number;
+    };
   };
   logo: string;
 }
 
-export default function Tier({ tier, logo }: pageProps) {
+export default function TierPage({ tier, logo }: pageProps) {
   if (!tier) return <div>Tier not found</div>;
 
   return (
@@ -86,9 +106,9 @@ export default function Tier({ tier, logo }: pageProps) {
         <title>Tier - {tier.name}</title>
       </Head>
       <main className="flex flex-col items-center justify-center">
-        <div className="mb-12 flex items-center gap-8">
-          <div className="flex flex-col items-center justify-center gap-4">
-            <div className="flex h-fit items-center justify-center gap-8 rounded-2xl border p-8 ">
+        <Card className="flex flex-col justify-center gap-4 p-4">
+          <div className="grid grid-flow-row grid-cols-3 gap-4">
+            <div className="col-span-2 flex h-fit items-center justify-center gap-8 rounded-2xl border p-8">
               <Avatar>
                 <AvatarImage src={logo} alt="Vendor Avatar" width={100} height={100} />
                 <AvatarFallback>
@@ -101,13 +121,28 @@ export default function Tier({ tier, logo }: pageProps) {
                   {tier.product.name} by {tier.product.vendor.name}
                 </div>
                 <div className="overflow-hidden truncate text-ellipsis font-semibold">Created {String(tier.createdAt)}</div>
-                <Link className="flex items-center gap-2 text-sm font-light text-gray-400" href={"/product/" + tier.productId}>
+                <Link className="flex items-center gap-2 text-sm font-light text-gray-400" href={`/product/${tier.productId}`}>
                   <LinkIcon className="h-4 w-4" /> View product
                 </Link>
               </div>
             </div>
+            <div className="col-span-1 flex w-full flex-col items-center justify-center rounded-2xl border p-8 text-xl">
+              <p>
+                ${tier.price} per {PERIODS.find((p) => p.period === tier.period)?.label}
+              </p>
+              <p>{tier._count.subscriptions} Concurrent subscriptions</p>
+            </div>
           </div>
-        </div>
+          <div className="rounded-2xl border p-8">
+            <div className="text-lg font-semibold">About {tier.name}</div>
+            <div className={"mr-2 grid max-w-[800px] grid-flow-col break-all"}>{tier.description}</div>
+            <ul className="mx-8 mt-2 list-disc">
+              {tier.points.map((point, index) => (
+                <li key={index}>{point}</li>
+              ))}
+            </ul>
+          </div>
+        </Card>
       </main>
     </>
   );

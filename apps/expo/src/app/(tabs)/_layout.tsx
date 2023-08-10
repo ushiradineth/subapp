@@ -1,8 +1,22 @@
+import { useMemo } from "react";
 import { Tabs, usePathname } from "expo-router";
-import { Coins, Home, LayoutDashboard, List, User } from "lucide-react-native";
+import { Coins, Home, LayoutDashboard, User } from "lucide-react-native";
 
 export default function NavigationBar() {
   const pathname = usePathname();
+
+  const memoizedValues = useMemo(() => {
+    return {
+      home: pathname.startsWith("/home") ? <Home color="black" strokeWidth={2.5} /> : <Home color="black" />,
+      subscriptions: pathname.startsWith("/subscriptions") ? <Coins color="black" strokeWidth={2.5} /> : <Coins color="black" />,
+      categories: pathname.startsWith("/categories") ? (
+        <LayoutDashboard color="black" strokeWidth={2.5} />
+      ) : (
+        <LayoutDashboard color="black" />
+      ),
+      profile: pathname.startsWith("/profile") ? <User color="black" strokeWidth={2.5} /> : <User color="black" />,
+    };
+  }, [pathname]);
 
   return (
     <Tabs>
@@ -12,26 +26,16 @@ export default function NavigationBar() {
           headerShown: false,
           tabBarLabel: "Home",
           tabBarShowLabel: false,
-          tabBarIcon: () => (pathname.startsWith("/home") ? <Home color="black" strokeWidth={2.5} /> : <Home color="black" />),
+          tabBarIcon: () => memoizedValues.home,
         }}
       />
       <Tabs.Screen
-        name="lists"
+        name="subscriptions"
         options={{
           headerShown: false,
-          tabBarLabel: "Lists",
+          tabBarLabel: "Subscriptions",
           tabBarShowLabel: false,
-          tabBarIcon: () =>
-            pathname.startsWith("/lists") ? <List color="black" strokeWidth={2.5} /> : <List color="black" strokeWidth={2.2} />,
-        }}
-      />
-      <Tabs.Screen
-        name="bills"
-        options={{
-          headerShown: false,
-          tabBarLabel: "Bills",
-          tabBarShowLabel: false,
-          tabBarIcon: () => (pathname.startsWith("/bills") ? <Coins color="black" strokeWidth={2.5} /> : <Coins color="black" />),
+          tabBarIcon: () => memoizedValues.subscriptions,
         }}
       />
       <Tabs.Screen
@@ -40,8 +44,7 @@ export default function NavigationBar() {
           headerShown: false,
           tabBarLabel: "Categories",
           tabBarShowLabel: false,
-          tabBarIcon: () =>
-            pathname.startsWith("/categories") ? <LayoutDashboard color="black" strokeWidth={2.5} /> : <LayoutDashboard color="black" />,
+          tabBarIcon: () => memoizedValues.categories,
         }}
       />
       <Tabs.Screen
@@ -50,7 +53,7 @@ export default function NavigationBar() {
           headerShown: false,
           tabBarLabel: "Profile",
           tabBarShowLabel: false,
-          tabBarIcon: () => (pathname.startsWith("/profile") ? <User color="black" strokeWidth={2.5} /> : <User color="black" />),
+          tabBarIcon: () => memoizedValues.profile,
         }}
       />
     </Tabs>

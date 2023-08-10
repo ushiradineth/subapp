@@ -1,25 +1,23 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ExternalLink } from "lucide-react";
 import { getSession, signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { api } from "~/utils/api";
 import { LoginSchema, RegisterSchema, type LoginFormData, type RegisterFormData } from "~/utils/validators";
-import FormFieldError from "~/components/FormFieldError";
-import Loader from "~/components/Loader";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import icon from "../../../public/logo.svg";
-import { ExternalLink } from "lucide-react";
+import { Button } from "~/components/Atoms/Button";
+import FormFieldError from "~/components/Atoms/FormFieldError";
+import { Input } from "~/components/Atoms/Input";
+import { Label } from "~/components/Atoms/Label";
+import Loader from "~/components/Atoms/Loader";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/Molecules/Tabs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
@@ -51,9 +49,6 @@ export default function Auth() {
         <title>Authentication - SubM</title>
       </Head>
       <main className="flex h-screen flex-col items-center justify-center">
-        <Link href="/" className="absolute left-12 top-12 rounded-full border p-4 hover:bg-gray-800">
-          <Image src={icon} alt="SubM Logo" width={50} />
-        </Link>
         <Tabs defaultValue={router.query.register ? "register" : "login"} className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>

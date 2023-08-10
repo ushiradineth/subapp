@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,11 +11,11 @@ import { prisma, type Admin, type Vendor } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { UserSchema, type UserFormData } from "~/utils/validators";
-import { ImageUpload } from "~/components/ImageUpload";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
+import { Button } from "~/components/Atoms/Button";
+import { Input } from "~/components/Atoms/Input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/Molecules/Form";
+import { ImageUpload } from "~/components/Molecules/ImageUpload";
 import { env } from "~/env.mjs";
 import { formalizeDate } from "~/lib/utils";
 
@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: {
         ...user,
-        createdAt: formalizeDate(user?.createdAt),
+        createdAt: formalizeDate(user?.createdAt ?? new Date()),
       },
       session,
     },
@@ -123,6 +123,7 @@ export default function Settings({ user }: pageProps) {
                           setValue={(value: string) => form.setValue("Image", value)}
                           onUpload={() => toast.success("Image has been uploaded")}
                           bucket={env.NEXT_PUBLIC_USER_ICON}
+                          previewImages={[user.id]}
                         />
                       </FormControl>
                       <FormMessage />

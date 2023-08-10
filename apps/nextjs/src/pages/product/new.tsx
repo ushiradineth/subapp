@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,13 +10,13 @@ import { prisma, type Category } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { ProductSchema, type ProductFormData } from "~/utils/validators";
-import { ImageUpload } from "~/components/ImageUpload";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { Textarea } from "~/components/ui/textarea";
+import { Button } from "~/components/Atoms/Button";
+import { Input } from "~/components/Atoms/Input";
+import { Textarea } from "~/components/Atoms/Textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/Molecules/Card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/Molecules/Form";
+import { ImageUpload } from "~/components/Molecules/ImageUpload";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/Molecules/Select";
 import { env } from "~/env.mjs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -55,6 +55,7 @@ type ImageState = {
 export default function NewProduct({ categories }: pageProps) {
   const { data: session } = useSession();
   const [upload, setUpload] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
   const [logoState, setLogoState] = useState<ImageState>({ completed: false, loading: false });
   const [imagesState, setImagesState] = useState<ImageState>({ completed: false, loading: false });
 
@@ -71,15 +72,20 @@ export default function NewProduct({ categories }: pageProps) {
     },
   });
 
+  const { mutate: UpdateImages, isLoading: isUpdatingImages } = api.product.updateImages.useMutation({
+    onSuccess: () =>
+      session?.user.role === "Admin" ? toast.success("Product has been created") : toast.success("Product has been requested"),
+  });
+
   const onSubmit = (data: ProductFormData) => {
     mutate({ name: data.Name, description: data.Description, link: data.Link, category: data.Category });
   };
 
   useEffect(() => {
     if (logoState.completed && imagesState.completed) {
-      session?.user.role === "Admin" ? toast.success("Product has been created") : toast.success("Product has been requested");
+      UpdateImages({ id: data?.id ?? "", images });
     }
-  }, [logoState.completed, imagesState.completed]);
+  }, [logoState.completed, imagesState.completed, UpdateImages, data?.id, images]);
 
   return (
     <>
@@ -98,7 +104,7 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormField
                   control={form.control}
                   name="Logo"
-                  render={({ field }) => (
+                  render={({}) => (
                     <FormItem>
                       <FormLabel>Product Logo</FormLabel>
                       <FormControl>
@@ -188,14 +194,17 @@ export default function NewProduct({ categories }: pageProps) {
                 <FormField
                   control={form.control}
                   name="Images"
-                  render={({ field }) => (
+                  render={({}) => (
                     <FormItem>
                       <FormLabel>Product Images</FormLabel>
                       <FormControl>
                         <ImageUpload
                           itemId={data?.id || ""}
                           upload={upload}
-                          onUpload={() => setImagesState({ completed: true, loading: false })}
+                          onUpload={(images) => {
+                            setImagesState({ completed: true, loading: false });
+                            setImages(images);
+                          }}
                           setUpload={(value: boolean) => setUpload(value)}
                           setLoading={(value: boolean) =>
                             setImagesState((prev) => {
@@ -211,7 +220,7 @@ export default function NewProduct({ categories }: pageProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" loading={isLoading || logoState.loading || imagesState.loading}>
+                <Button type="submit" loading={isLoading || logoState.loading || imagesState.loading || isUpdatingImages}>
                   Submit
                 </Button>
               </form>

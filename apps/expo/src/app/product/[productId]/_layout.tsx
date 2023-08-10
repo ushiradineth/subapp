@@ -1,9 +1,16 @@
 import { Stack, usePathname } from "expo-router";
+import { useMemo } from "react";
 
-import BackButton from "~/components/BackButton";
+import BackButton from "~/components/Atoms/BackButton";
 
 export default function Layout() {
   const pathname = usePathname();
+
+  const memoizedValues = useMemo(() => {
+    return {
+      backbutton: <BackButton />,
+    };
+  }, []);
 
   return (
     <Stack>
@@ -12,7 +19,7 @@ export default function Layout() {
         options={{
           title: "Product",
           headerTitleAlign: "center",
-          headerLeft: () => <BackButton />,
+          headerLeft: () => memoizedValues.backbutton,
         }}
       />
       <Stack.Screen
@@ -32,8 +39,7 @@ export default function Layout() {
       <Stack.Screen
         name="review-product"
         options={{
-          title: "Add a review",
-          headerLeft: () => <BackButton />,
+          title: "Add review",
           presentation: "modal",
           headerTitleAlign: "center",
         }}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
@@ -6,11 +6,10 @@ import { Button, H2, H6, Input, ScrollView, Text, XStack, YStack } from "tamagui
 
 import { api } from "~/utils/api";
 import { RegisterSchema, type RegisterFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 export default function Register() {
   const router = useRouter();
-  const [emailSent, setEmailSent] = useState(false);
 
   const [error, setError] = useState("");
   const { mutate, isLoading } = api.user.register.useMutation({
@@ -24,7 +23,6 @@ export default function Register() {
 
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
@@ -33,29 +31,17 @@ export default function Register() {
 
   const onSubmit = (data: RegisterFormData) => mutate({ email: data.Email, password: data.Password, name: data.Name });
 
-  useEffect(() => {
-    error !== "" && setError("");
-  }, [watch("Email"), watch("Password"), watch("Email"), watch("Password")]);
-
-  // const confirmOTP = (code: string) => {
-  //   if (!isLoaded) {
-  //     return false;
-  //   }
-
-  //   try {
-  //     signUp.attemptEmailAddressVerification({
-  //       code,
-  //     });
-  //     return true;
-  //   } catch (error) {
-  //     return false;
-  //   }
-  // };
+  const onInputChange = useCallback(
+    (input: string, onChange: (input: string) => void) => {
+      error !== "" && setError("");
+      onChange(input);
+    },
+    [error],
+  );
 
   return (
     <ScrollView backgroundColor="$background" padding="$4" borderRadius="$4">
       <YStack className="flex items-center justify-center p-8" space>
-        {/* {emailSent && <EmailSentPopup onConfirm={confirmOTP} open={true} />} */}
         <H2 className="text-center text-2xl font-bold">Register</H2>
 
         <Controller
@@ -66,7 +52,14 @@ export default function Register() {
           render={({ field: { onChange, onBlur, value } }) => (
             <YStack className="w-full">
               <H6 className="font-bold">Name</H6>
-              <Input className="my-1" placeholder="Name" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+              <Input
+                className="my-1"
+                placeholder="Name"
+                autoCapitalize={"none"}
+                onBlur={onBlur}
+                onChangeText={(input) => onInputChange(input, onChange)}
+                value={value}
+              />
               <YStack className="flex items-center justify-center">
                 {errors.Name && <Text color={"red"}>{errors.Name.message}</Text>}
               </YStack>
@@ -83,7 +76,14 @@ export default function Register() {
           render={({ field: { onChange, onBlur, value } }) => (
             <YStack className="w-full">
               <H6 className="font-bold">Email</H6>
-              <Input className="my-1" placeholder="Email" autoCapitalize={"none"} onBlur={onBlur} onChangeText={onChange} value={value} />
+              <Input
+                className="my-1"
+                placeholder="Email"
+                autoCapitalize={"none"}
+                onBlur={onBlur}
+                onChangeText={(input) => onInputChange(input, onChange)}
+                value={value}
+              />
               <YStack className="flex items-center justify-center">
                 {errors.Email && <Text color={"red"}>{errors.Email.message}</Text>}
               </YStack>
@@ -106,7 +106,7 @@ export default function Register() {
                 autoCapitalize={"none"}
                 secureTextEntry={true}
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(input) => onInputChange(input, onChange)}
                 value={value}
               />
               <YStack className="flex items-center justify-center">
@@ -131,7 +131,7 @@ export default function Register() {
                 autoCapitalize={"none"}
                 secureTextEntry={true}
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(input) => onInputChange(input, onChange)}
                 value={value}
               />
               <YStack className="flex items-center justify-center">
@@ -160,75 +160,3 @@ export default function Register() {
     </ScrollView>
   );
 }
-
-// const EmailSentPopup = (props: { onConfirm: (code: string) => boolean; open: boolean }) => {
-//   const [code, setCode] = useState("");
-//   const [error, setError] = useState("");
-
-//   useEffect(() => {
-//     error !== "" && setError("");
-//   }, [code]);
-
-//   async function handleConfirm() {
-//     const result = props.onConfirm(code);
-
-//     if (!result) {
-//       setError("Invalid Verification Code");
-//     }
-//   }
-
-//   return (
-//     <Dialog modal open={props.open}>
-//       <Adapt when="sm" platform="touch">
-//         <Sheet zIndex={200000} modal dismissOnSnapToBottom>
-//           <Sheet.Frame padding="$4" space>
-//             <Adapt.Contents />
-//           </Sheet.Frame>
-//           <Sheet.Overlay />
-//         </Sheet>
-//       </Adapt>
-
-//       <Dialog.Portal>
-//         <Dialog.Overlay key="overlay" animation="quick" opacity={0.5} enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-
-//         <Dialog.Content
-//           bordered
-//           elevate
-//           key="content"
-//           animation={[
-//             "quick",
-//             {
-//               opacity: {
-//                 overshootClamping: true,
-//               },
-//             },
-//           ]}
-//           enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-//           exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-//           space>
-//           <Dialog.Title>Confirm your Identity</Dialog.Title>
-//           <Dialog.Description>Check your email for the verification code.</Dialog.Description>
-//           <Fieldset space="$4" horizontal>
-//             <Input flex={1} defaultValue="******" value={code} onChangeText={(code) => setCode(code)} placeholder="Verification Code" />
-//           </Fieldset>
-//           <YStack alignItems="center" marginTop="$2">
-//             {error && <Text color={"red"}>{error}</Text>}
-//           </YStack>
-//           <YStack alignItems="flex-end" marginTop="$2">
-//             <Dialog.Close displayWhenAdapted asChild>
-//               <Button theme="alt1" aria-label="Close" onPress={() => handleConfirm()}>
-//                 Confirm
-//               </Button>
-//             </Dialog.Close>
-//           </YStack>
-
-//           <Unspaced>
-//             <Dialog.Close asChild>
-//               <Button position="absolute" top="$3" right="$3" size="$2" circular />
-//             </Dialog.Close>
-//           </Unspaced>
-//         </Dialog.Content>
-//       </Dialog.Portal>
-//     </Dialog>
-//   );
-// };

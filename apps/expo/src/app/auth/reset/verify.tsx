@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Platform } from "react-native";
 import { Link, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -8,7 +8,7 @@ import { Button, H6, Input, Text, YStack } from "tamagui";
 
 import { api } from "~/utils/api";
 import { ResetPasswordSchema, type ResetPasswordFormData } from "~/utils/validators";
-import { Spinner } from "~/components/Spinner";
+import { Spinner } from "~/components/Atoms/Spinner";
 
 const Verify = () => {
   const { email } = useLocalSearchParams();
@@ -22,16 +22,19 @@ const Verify = () => {
 
   const {
     control,
-    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
     resolver: yupResolver(ResetPasswordSchema),
   });
 
-  useEffect(() => {
-    error !== "" && setError("");
-  }, [watch("OTP"), watch("Password")]);
+  const onInputChange = useCallback(
+    (input: string, onChange: (input: string) => void) => {
+      error !== "" && setError("");
+      onChange(input);
+    },
+    [error],
+  );
 
   const onSubmit = (data: ResetPasswordFormData) => mutate({ otp: data.OTP, password: data.Password, email: (email as string) ?? "" });
 
@@ -56,7 +59,7 @@ const Verify = () => {
               placeholder="Verification Code"
               autoCapitalize={"none"}
               onBlur={onBlur}
-              onChangeText={onChange}
+              onChangeText={(input) => onInputChange(input, onChange)}
               value={value}
             />
             <YStack className="flex items-center justify-center">{errors.OTP && <Text color={"red"}>{errors.OTP.message}</Text>}</YStack>
@@ -79,7 +82,7 @@ const Verify = () => {
               autoCapitalize={"none"}
               secureTextEntry={true}
               onBlur={onBlur}
-              onChangeText={onChange}
+              onChangeText={(input) => onInputChange(input, onChange)}
               value={value}
             />
             <YStack className="flex items-center justify-center">
@@ -91,7 +94,7 @@ const Verify = () => {
       />
 
       <YStack alignItems="center" marginTop="$2">
-        {error && <Text color={"red"}>{error}</Text>}
+        {Boolean(error) && <Text color={"red"}>{error}</Text>}
         {success && <Text color={"green"}>{"Your password has been updated"}</Text>}
       </YStack>
 
