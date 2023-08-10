@@ -44,13 +44,23 @@ function Layout(props: { children: React.ReactNode }) {
         <Link href={"/"}>
           <Image src={icon} alt="SubM Logo" width={120} className="ml-4" />
         </Link>
+
         <NavItems />
         <AuthButton />
       </div>
       <div
         style={{ zIndex: 50, position: "relative" }}
-        className={`flex flex-grow flex-col items-center justify-center text-white ${router.pathname !== "/auth" && "my-10"}`}>
-        {props.children}
+        className={`flex flex-grow flex-col items-center justify-center text-white ${
+          !NAVBAR_HIDDEN_PATHS.includes(router.pathname) && "my-10"
+        }`}>
+        <>
+          {NAVBAR_HIDDEN_PATHS.includes(router.pathname) && (
+            <Link href="/" className="absolute left-12 top-12 rounded-full border p-4 hover:bg-gray-800">
+              <Image src={icon} alt="SubM Logo" width={50} />
+            </Link>
+          )}
+          {props.children}
+        </>
       </div>
     </main>
   );

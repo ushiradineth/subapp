@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InfoCard renders children 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "stretch",
+        "display": "flex",
+        "flexBasis": "auto",
+        "flexDirection": "row",
+        "flexShrink": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+>
+  <View
+    className="bg-background border-accent flex h-full w-full items-center justify-center rounded-3xl border"
+  >
+    <Text
+      fontFamily="$heading"
+      style={
+        [
+          {
+            "color": "rgba(23,23,23,1.00)",
+            "display": "flex",
+            "fontFamily": "Montserrat",
+            "fontStyle": undefined,
+            "fontWeight": undefined,
+          },
+        ]
+      }
+      suppressHighlighting={true}
+    >
+      Testing Children
+    </Text>
+  </View>
+</View>
+`;

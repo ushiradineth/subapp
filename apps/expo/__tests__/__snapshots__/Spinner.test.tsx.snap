@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Spinner renders correct children 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "stretch",
+        "display": "flex",
+        "flexBasis": "auto",
+        "flexDirection": "column",
+        "flexShrink": 0,
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+  testID="spinner"
+>
+  <ActivityIndicator
+    color="#5D76CC"
+  />
+</View>
+`;
+
+exports[`Spinner renders correct children with backgroup prop 1`] = `
+<View
+  style={
+    [
+      {
+        "alignItems": "center",
+        "display": "flex",
+        "flex": 1,
+        "flexBasis": "auto",
+        "flexDirection": "column",
+        "flexShrink": 0,
+        "justifyContent": "center",
+        "minHeight": 0,
+        "minWidth": 0,
+        "position": "relative",
+      },
+    ]
+  }
+>
+  <View
+    style={
+      [
+        {
+          "alignItems": "stretch",
+          "display": "flex",
+          "flexBasis": "auto",
+          "flexDirection": "column",
+          "flexShrink": 0,
+          "minHeight": 0,
+          "minWidth": 0,
+          "position": "relative",
+        },
+      ]
+    }
+    testID="spinner-background"
+  >
+    <ActivityIndicator
+      color="#5D76CC"
+    />
+  </View>
+</View>
+`;
