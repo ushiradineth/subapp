@@ -16,6 +16,7 @@
 - Shadcn UI
 - Turborepo
 - Tamagui
+- React Email
 
 ## Hosting
 
