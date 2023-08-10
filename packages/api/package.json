@@ -13,6 +13,8 @@
   "dependencies": {
     "@acme/auth": "^0.1.0",
     "@acme/db": "^0.1.0",
+    "@acme/email": "^0.1.0",
+    "@react-email/render": "0.0.7",
     "@trpc/client": "^10.25.0",
     "@trpc/server": "^10.25.0",
     "jsonwebtoken": "^9.0.1",

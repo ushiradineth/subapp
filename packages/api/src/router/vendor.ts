@@ -1,11 +1,14 @@
+import { render } from "@react-email/render";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
 import moment from "moment";
-import nodemailer from "nodemailer";
 import { z } from "zod";
+
+import OneTimePassword from "@acme/email/emails/OneTimePassword";
 
 import { env } from "../../env.mjs";
 import { adminProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { emailRouter } from "./email";
 import { s3Router } from "./s3";
 
 export const vendorRouter = createTRPCRouter({
@@ -77,44 +80,18 @@ export const vendorRouter = createTRPCRouter({
       OTP += digits[Math.floor(Math.random() * 10)];
     }
 
-    async function SendEmail() {
-      return new Promise((resolve) => {
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: env.GMAIL_ADDRESS,
-            pass: env.GMAIL_PASSWORD,
-          },
-        });
+    const email = emailRouter.createCaller({ ...ctx });
+    await email.sendEmail({
+      receiver: input.email,
+      subject: "One Time Password by SubM",
+      html: render(OneTimePassword({ validationCode: OTP })),
+    });
 
-        const mailOptions = {
-          from: env.GMAIL_ADDRESS,
-          to: input.email,
-          subject: "One Time Password by SubM",
-          text: `You have requested for a One Time Password. Your OTP is ${OTP}, if this was not requested by you, contact us through this mail. Thank you!`,
-        };
+    const salt = bcrypt.genSaltSync(10);
+    const hashedOtp = bcrypt.hashSync(OTP, salt);
 
-        transporter.sendMail(mailOptions, async function (error) {
-          if (error) {
-            resolve(false);
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to send email",
-            });
-          } else {
-            const salt = bcrypt.genSaltSync(10);
-            const hashedOtp = bcrypt.hashSync(OTP, salt);
-
-            await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor?.id } });
-            await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id ?? "", otp: hashedOtp } });
-
-            resolve(true);
-          }
-        });
-      });
-    }
-
-    await SendEmail();
+    await ctx.prisma.passwordResetRequest.deleteMany({ where: { userId: vendor?.id } });
+    await ctx.prisma.passwordResetRequest.create({ data: { userId: vendor?.id ?? "", otp: hashedOtp } });
 
     return vendor;
   }),
