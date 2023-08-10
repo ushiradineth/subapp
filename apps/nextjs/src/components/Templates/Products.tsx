@@ -121,7 +121,11 @@ export default function Products({
                             {product._count.tiers}
                           </Link>
                         </TableCell>
-                        {products[0]?.verified && <TableCell className="text-center">{product._count.subscriptions}</TableCell>}
+                        {products[0]?.verified && (
+                          <TableCell className="text-center">
+                            <Link href={`/subscription?search=${product.id}`}>{product._count.subscriptions}</Link>
+                          </TableCell>
+                        )}
                         {session?.user.role === "Admin" && (
                           <TableCell>
                             <div className="flex gap-4">

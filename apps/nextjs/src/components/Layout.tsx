@@ -73,19 +73,24 @@ function NavItems() {
 
   const VendorNavItems = useCallback(
     () => (
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <div className={`flex w-[400px] flex-col gap-3 p-4 md:grid-cols-2`}>
-            <Link href={"/product/new"}>
-              <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create new product</NavigationMenuItem>
-            </Link>
-            <Link href={"/product"}>
-              <NavigationMenuItem className={navigationMenuTriggerStyle()}>View your products</NavigationMenuItem>
-            </Link>
-          </div>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
+      <>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className={`flex w-[400px] flex-col gap-3 p-4 md:grid-cols-2`}>
+              <Link href={"/product/new"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>Create new product</NavigationMenuItem>
+              </Link>
+              <Link href={"/product"}>
+                <NavigationMenuItem className={navigationMenuTriggerStyle()}>View your products</NavigationMenuItem>
+              </Link>
+            </div>
+          </NavigationMenuContent>
+        </NavigationMenuItem>{" "}
+        <Link href={"/subscription"}>
+          <NavigationMenuItem className={navigationMenuTriggerStyle()}>Subscriptions</NavigationMenuItem>
+        </Link>
+      </>
     ),
     [],
   );
@@ -98,6 +103,9 @@ function NavItems() {
         </Link>
         <Link href={"/user"}>
           <NavigationMenuItem className={navigationMenuTriggerStyle()}>Users</NavigationMenuItem>
+        </Link>
+        <Link href={"/subscription"}>
+          <NavigationMenuItem className={navigationMenuTriggerStyle()}>Subscriptions</NavigationMenuItem>
         </Link>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Products</NavigationMenuTrigger>

@@ -180,7 +180,9 @@ export default function Index({ users: serverUsers, count, total }: pageProps) {
                         </TableCell>
                         <TableCell className="text-center">{user.name}</TableCell>
                         <TableCell className="text-center">{user.createdAt.toString()}</TableCell>
-                        <TableCell className="text-center">{user._count.subscriptions}</TableCell>
+                        <TableCell className="text-center">
+                          <Link href={`/subscription?search=${user.id}`}>{user._count.subscriptions}</Link>
+                        </TableCell>
                         {session?.user.role === "Admin" && (
                           <TableCell>
                             <div className="flex gap-4">
