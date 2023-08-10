@@ -7,7 +7,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const emailRouter = createTRPCRouter({
   sendEmail: publicProcedure
-    .input(z.object({ reciever: z.string().email(), subject: z.string(), html: z.any() }))
+    .input(z.object({ receiver: z.string().email(), subject: z.string(), html: z.any() }))
     .mutation(async ({ input }) => {
       async function SendEmail() {
         return new Promise((resolve) => {
@@ -21,7 +21,7 @@ export const emailRouter = createTRPCRouter({
 
           const mailOptions = {
             from: env.GMAIL_ADDRESS,
-            to: input.reciever,
+            to: input.receiver,
             subject: input.subject,
             html: input.html,
           };

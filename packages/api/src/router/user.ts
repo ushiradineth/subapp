@@ -113,7 +113,7 @@ export const userRouter = createTRPCRouter({
 
     const email = emailRouter.createCaller({ ...ctx });
     await email.sendEmail({
-      reciever: input.email,
+      receiver: input.email,
       subject: "One Time Password by SubM",
       html: render(OneTimePassword({ validationCode: OTP })),
     });
