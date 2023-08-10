@@ -6,7 +6,7 @@ import { adminProcedure, createTRPCRouter } from "../trpc";
 
 export const adminRouter = createTRPCRouter({
   update: adminProcedure.input(z.object({ id: z.string(), name: z.string() })).mutation(async ({ ctx, input }) => {
-    const admin = await ctx.prisma.admin.update({ where: { id: input.id }, data: { name: input.name } });
+    const admin = await ctx.prisma.admin.update({ where: { id: input.id }, data: { name: input.name }, select: { id: true, name: true } });
     if (!admin) {
       throw new TRPCError({
         code: "BAD_REQUEST",

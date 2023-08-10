@@ -24,7 +24,10 @@ export const vendorRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return ctx.prisma.vendor.create({ data: { name: input.name, email: input.email, password: hashedPassword, accountVerified: false } });
+      return ctx.prisma.vendor.create({
+        data: { name: input.name, email: input.email, password: hashedPassword, accountVerified: false },
+        select: { id: true, name: true },
+      });
     }),
 
   update: protectedProcedure
@@ -38,7 +41,7 @@ export const vendorRouter = createTRPCRouter({
         data.password = hashedPassword;
       }
 
-      const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data });
+      const vendor = await ctx.prisma.vendor.update({ where: { id: input.id }, data, select: { id: true, name: true } });
 
       if (!vendor) {
         throw new TRPCError({
@@ -51,7 +54,7 @@ export const vendorRouter = createTRPCRouter({
     }),
 
   delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    const vendor = await ctx.prisma.vendor.delete({ where: { id: input.id } });
+    const vendor = await ctx.prisma.vendor.delete({ where: { id: input.id }, select: { id: true, name: true } });
     const s3 = s3Router.createCaller({ ...ctx });
     await s3.deleteObject({ bucket: env.USER_ICON, fileName: `${input.id}.jpg` });
 
@@ -59,7 +62,7 @@ export const vendorRouter = createTRPCRouter({
   }),
 
   forgotPassword: publicProcedure.input(z.object({ email: z.string() })).mutation(async ({ ctx, input }) => {
-    const vendor = await ctx.prisma.vendor.findUnique({ where: { email: input.email } });
+    const vendor = await ctx.prisma.vendor.findUnique({ where: { email: input.email }, select: { id: true, name: true } });
 
     if (!vendor) {
       throw new TRPCError({
@@ -159,7 +162,11 @@ export const vendorRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return await ctx.prisma.vendor.update({ where: { id: vendor.id }, data: { password: hashedPassword } });
+      return await ctx.prisma.vendor.update({
+        where: { id: vendor.id },
+        data: { password: hashedPassword },
+        select: { id: true, name: true },
+      });
     }),
 
   dashboard: protectedProcedure.query(async ({ ctx }) => {

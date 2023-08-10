@@ -33,6 +33,7 @@ export const userRouter = createTRPCRouter({
         expiration: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).getTime(), // 24 Hours
       };
     }
+
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "Invalid Credentials",
@@ -54,7 +55,10 @@ export const userRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return await ctx.prisma.user.create({ data: { name: input.name, email: input.email, password: hashedPassword } });
+      return await ctx.prisma.user.create({
+        data: { name: input.name, email: input.email, password: hashedPassword },
+        select: { id: true, name: true },
+      });
     }),
 
   update: protectedProcedure
@@ -68,7 +72,7 @@ export const userRouter = createTRPCRouter({
         data.password = hashedPassword;
       }
 
-      const user = await ctx.prisma.user.update({ where: { id: input.id }, data });
+      const user = await ctx.prisma.user.update({ where: { id: input.id }, data, select: { id: true, name: true } });
 
       if (!user) {
         throw new TRPCError({
@@ -81,7 +85,7 @@ export const userRouter = createTRPCRouter({
     }),
 
   delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-    const user = await ctx.prisma.user.delete({ where: { id: input.id } });
+    const user = await ctx.prisma.user.delete({ where: { id: input.id }, select: { id: true, name: true } });
     const s3 = s3Router.createCaller({ ...ctx });
     await s3.deleteObject({ bucket: env.USER_ICON, fileName: `${input.id}.jpg` });
 
@@ -89,7 +93,7 @@ export const userRouter = createTRPCRouter({
   }),
 
   forgotPassword: publicProcedure.input(z.object({ email: z.string() })).mutation(async ({ ctx, input }) => {
-    const user = await ctx.prisma.user.findUnique({ where: { email: input.email } });
+    const user = await ctx.prisma.user.findUnique({ where: { email: input.email }, select: { id: true, name: true, email: true } });
 
     if (!user) {
       throw new TRPCError({
@@ -189,13 +193,13 @@ export const userRouter = createTRPCRouter({
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(input.password, salt);
 
-      return await ctx.prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword } });
+      return await ctx.prisma.user.update({ where: { id: user.id }, data: { password: hashedPassword }, select: { id: true, name: true } });
     }),
 
   getSubscriptionsPage: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.auth.id },
-      include: {
+      select: {
         subscriptions: {
           orderBy: { createdAt: "desc" },
           where: { active: true },
@@ -237,7 +241,7 @@ export const userRouter = createTRPCRouter({
   wishlist: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.auth.id },
-      include: {
+      select: {
         wishlist: {
           include: { category: { select: { name: true } } },
         },
@@ -258,7 +262,7 @@ export const userRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.user.findUnique({
         where: { id: ctx.auth.id },
-        include: {
+        select: {
           subscriptions: {
             orderBy: input.showTerminatedSubscripitions ? { deletedAt: "desc" } : { createdAt: "desc" },
             where: {
