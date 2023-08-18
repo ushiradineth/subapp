@@ -9,14 +9,7 @@ import { prisma, type Tier } from "@acme/db";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/Atoms/Avatar";
 import { Card } from "~/components/Molecules/Card";
 import { env } from "~/env.mjs";
-import { generalizeDate, getBucketUrl } from "~/lib/utils";
-
-const PERIODS = [
-  { period: 1, label: "Day" },
-  { period: 7, label: "Week" },
-  { period: 28, label: "Month" },
-  { period: 365, label: "Year" },
-];
+import { generalizeDate, getBucketUrl, PERIODS } from "~/lib/utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ ctx: context });
