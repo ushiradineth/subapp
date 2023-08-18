@@ -28,13 +28,7 @@ export default function SubscriptionPage() {
   });
 
   const totalCycles = useMemo(
-    () =>
-      moment(data?.active ? moment.now() : data?.deletedAt).diff(
-        data?.startedAt,
-        // @ts-expect-error The diff type is not exported by moment
-        PERIODS.find((p) => p.period == data?.tier.period)?.standard ?? "days",
-        false,
-      ),
+    () => Math.floor(moment(data?.active ? moment.now() : data?.deletedAt).diff(data?.startedAt, "days", false) / (data?.tier.period ?? 1)),
     [data?.active, data?.deletedAt, data?.startedAt, data?.tier.period],
   );
 

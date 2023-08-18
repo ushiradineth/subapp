@@ -2,6 +2,7 @@ import { type GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import moment from "moment";
 import { getSession } from "next-auth/react";
 
 import { prisma, type Subscription } from "@acme/db";
@@ -60,6 +61,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     skip: context.query.page ? (Number(context.query.page) - 1) * ITEMS_PER_PAGE : 0,
     where,
     include: {
+      tier: {
+        select: {
+          name: true,
+
+          price: true,
+          period: true,
+        },
+      },
       product: {
         select: {
           name: true,
@@ -87,6 +96,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         createdAt: formalizeDate(subscription.createdAt),
         startedAt: formalizeDate(subscription.startedAt),
         deletedAt: subscription.deletedAt ? formalizeDate(subscription.deletedAt) : null,
+        total:
+          Math.floor(
+            moment(subscription?.active ? moment.now() : subscription?.deletedAt).diff(subscription?.startedAt, "days", false) /
+              (subscription?.tier.period ?? 1),
+          ) * subscription.tier.price,
       })),
       count,
       total,
@@ -95,12 +109,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 interface SubscriptionType extends Subscription {
+  tier: {
+    name: string;
+    price: number;
+  };
   product: {
     name: string;
   };
   user: {
     name: string;
   };
+  total: number;
 }
 
 interface pageProps {
@@ -135,10 +154,12 @@ export default function Subscriptions({ subscriptions, count, total }: pageProps
             <Table className="border">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">Product</TableHead>
                   <TableHead className="text-center">User</TableHead>
-                  <TableHead className="text-center">Created At</TableHead>
+                  <TableHead className="text-center">Product</TableHead>
+                  <TableHead className="text-center">Tier</TableHead>
+                  <TableHead className="text-center">Subscribed At</TableHead>
                   <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Total Paid</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -147,19 +168,23 @@ export default function Subscriptions({ subscriptions, count, total }: pageProps
                     return (
                       <TableRow key={index}>
                         <TableCell className="text-center">
+                          <Link href={`/user/${subscription.userId}`}>{subscription.user.name}</Link>
+                        </TableCell>
+                        <TableCell className="text-center">
                           <Link href={`/product/${subscription.productId}`}>{subscription.product.name}</Link>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Link href={`/user/${subscription.userId}`}>{subscription.user.name}</Link>
+                          <Link href={`/product/${subscription.productId}/tier/${subscription.tierId}`}>{subscription.tier.name}</Link>
                         </TableCell>
-                        <TableCell className="text-center">{subscription.createdAt.toString()}</TableCell>
+                        <TableCell className="text-center">{subscription.startedAt.toString()}</TableCell>
                         <TableCell className="text-center">{subscription.active ? "Active" : "Deleted"}</TableCell>
+                        <TableCell className="text-center">${subscription.total}</TableCell>
                       </TableRow>
                     );
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                       No results.
                     </TableCell>
                   </TableRow>
