@@ -251,6 +251,9 @@ importers:
       '@acme/db':
         specifier: ^0.1.0
         version: link:../../packages/db
+      '@acme/email':
+        specifier: ^0.1.0
+        version: link:../../packages/email
       '@aws-sdk/client-s3':
         specifier: ^3.379.1
         version: 3.379.1
@@ -314,6 +317,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.6
         version: 1.0.6(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)
+      '@react-email/render':
+        specifier: 0.0.7
+        version: 0.0.7
       '@t3-oss/env-nextjs':
         specifier: ^0.3.1
         version: 0.3.1(typescript@5.0.4)(zod@3.21.4)

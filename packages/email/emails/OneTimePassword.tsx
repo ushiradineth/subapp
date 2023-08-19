@@ -1,10 +1,11 @@
 import { Body, Container, Head, Heading, Html, Img, Link, Section, Text } from "@react-email/components";
 
-interface PlaidVerifyIdentityEmailProps {
-  validationCode?: string;
+interface EmailProps {
+  validationCode: string;
+  senderEmail: string;
 }
 
-export function OneTimePassword({ validationCode = "123123" }: PlaidVerifyIdentityEmailProps) {
+export function OneTimePassword({ validationCode, senderEmail }: EmailProps) {
   return (
     <Html>
       <Head />
@@ -19,8 +20,8 @@ export function OneTimePassword({ validationCode = "123123" }: PlaidVerifyIdenti
           <Text style={paragraph}>Not expecting this email?</Text>
           <Text style={paragraph}>
             Contact{" "}
-            <Link href="mailto:subapp.ud@gmail.com" style={link}>
-              subapp.ud@gmail.com
+            <Link href={`mailto:${senderEmail}`} style={link}>
+              {senderEmail}
             </Link>{" "}
             if you did not request this code.
           </Text>
@@ -43,9 +44,9 @@ const container = {
   borderRadius: "5px",
   boxShadow: "0 5px 10px rgba(20,50,70,.2)",
   marginTop: "20px",
-  width: "360px",
+  width: "100%",
   margin: "0 auto",
-  padding: "50px",
+  padding: "20px 60px 48px",
 };
 
 const logo = {
