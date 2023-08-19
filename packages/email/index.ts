@@ -1,1 +1,1 @@
-export { OneTimePassword } from "./emails/OneTimePassword";
+export { OneTimePassword, SubscriptionReminder } from "./emails";
