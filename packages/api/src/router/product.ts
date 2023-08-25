@@ -288,7 +288,11 @@ export const productRouter = createTRPCRouter({
 
     const productSuggestion: { name: string; products: ForYouProduct[] }[] = [];
 
-    const subscriptions = await ctx.prisma.subscription.findMany({ where: { userId: ctx.auth.id }, select: { productId: true }, take: 2 });
+    const subscriptions = await ctx.prisma.subscription.findMany({
+      where: { userId: ctx.auth.id },
+      select: { product: { select: { id: true, name: true } } },
+      take: 2,
+    });
 
     for (const subscription of subscriptions) {
       const products: ForYouProduct[] = await ctx.prisma.product.findMany({
@@ -300,7 +304,7 @@ export const productRouter = createTRPCRouter({
                 not: ctx.auth.id,
               },
               productId: {
-                not: subscription.productId,
+                not: subscription.product?.id,
               },
             },
             some: {
@@ -308,7 +312,7 @@ export const productRouter = createTRPCRouter({
                 subscriptions: {
                   some: {
                     active: true,
-                    productId: subscription.productId,
+                    productId: subscription.product?.id,
                   },
                 },
               },
@@ -325,7 +329,7 @@ export const productRouter = createTRPCRouter({
       });
 
       productSuggestion.push({
-        name: (await ctx.prisma.product.findUnique({ where: { id: subscription.productId ?? "" }, select: { name: true } }))?.name ?? "",
+        name: subscription.product?.name ?? "",
         products,
       });
     }

@@ -1,6 +1,7 @@
 const path = require("path");
 const loadConfig = require("tailwindcss/loadConfig");
 process.env.TAMAGUI_TARGET = "native";
+process.env.EXPO_ROUTER_APP_ROOT = __dirname + "../../src/app";
 
 let _tailwindConfig = null;
 /**
@@ -35,7 +36,7 @@ module.exports = function (api) {
       [
         "transform-inline-environment-variables",
         {
-          include: "TAMAGUI_TARGET",
+          include: ["EXPO_ROUTER_APP_ROOT", "TAMAGUI_TARGET"],
         },
       ],
       [
