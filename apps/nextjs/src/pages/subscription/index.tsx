@@ -32,9 +32,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const searchQuery = {
     OR: [
-      { product: { OR: { id: { search }, name: { search } } } },
-      { user: { OR: { id: { search }, name: { search } } } },
-      { tier: { OR: { id: { search }, name: { search } } } },
+      { product: { OR: [{ id: { search } }, { name: { search } }] } },
+      { user: { OR: [{ id: { search } }, { name: { search } }] } },
+      { tier: { OR: [{ id: { search } }, { name: { search } }] } },
     ],
   };
 
@@ -64,7 +64,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       tier: {
         select: {
           name: true,
-
           price: true,
           period: true,
         },
