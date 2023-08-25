@@ -63,3 +63,10 @@ export const getPayload = (file: File, fields: { [key: string]: string }) => {
 export const getBucketUrl = (bucket: string) => {
   return `https://${bucket}.s3.ap-southeast-1.amazonaws.com`;
 };
+
+export const PERIODS = [
+  { period: 1, label: "Day", standard: "days" },
+  { period: 7, label: "Week", standard: "weeks" },
+  { period: 28, label: "Month", standard: "months" },
+  { period: 365, label: "Year", standard: "years" },
+];

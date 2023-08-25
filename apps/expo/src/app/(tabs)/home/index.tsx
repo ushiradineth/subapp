@@ -26,8 +26,8 @@ export default function Home() {
       refreshControl={<RefreshControl refreshing={isLoading || isRefetching} onRefresh={refetch} />}>
       <YStack space>
         <H1 className="pl-4 pt-4 text-xl font-semibold">Welcome, {auth.session?.name}</H1>
-        {data?.forYouProducts && <Slider items={data?.forYouProducts} title="Recommended for you" />}
-        {data?.trendingProducts && <Slider items={data?.trendingProducts} title="Trending now" />}
+        {data?.forYouProducts.length > 0 && <Slider items={data?.forYouProducts} title="Recommended for you" />}
+        {data?.trendingProducts.length > 0 && <Slider items={data?.trendingProducts} title="Trending now" />}
         {data?.forYouCategories[0] && (
           <Slider items={data?.forYouCategories[0].products} title={data.forYouCategories[0].products[0]?.category.name ?? ""} />
         )}
@@ -37,7 +37,7 @@ export default function Home() {
             title={`Because you are subscribed to ${data?.productSuggestion[0]?.name}`}
           />
         )}
-        {data?.mostPopularProducts && <Slider items={data?.mostPopularProducts} title="Top 10 products on SubM" />}
+        {data?.mostPopularProducts.length > 0 && <Slider items={data?.mostPopularProducts} title="Top 10 products on SubM" />}
         {data?.forYouCategories[1] && (
           <Slider items={data?.forYouCategories[1].products} title={data.forYouCategories[1].products[0]?.category.name ?? ""} />
         )}
@@ -47,7 +47,7 @@ export default function Home() {
             title={`Because you are subscribed to ${data?.productSuggestion[1]?.name}`}
           />
         )}
-        {data?.newProducts && <Slider items={data?.newProducts} title="New products" />}
+        {data?.newProducts.length > 0 && <Slider items={data?.newProducts} title="New products" />}
         {data?.forYouCategories
           ?.slice(2)
           .map(

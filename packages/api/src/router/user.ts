@@ -115,7 +115,7 @@ export const userRouter = createTRPCRouter({
     await email.sendEmail({
       receiver: input.email,
       subject: "One Time Password by SubM",
-      html: render(OneTimePassword({ validationCode: OTP })),
+      html: render(OneTimePassword({ validationCode: OTP, senderEmail: env.GMAIL_ADDRESS })),
     });
 
     const salt = bcrypt.genSaltSync(10);

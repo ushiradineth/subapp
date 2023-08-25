@@ -179,7 +179,7 @@ function AuthButton() {
         </MenubarItem>
       </Link>
     ),
-    [],
+    [session?.user.email, session?.user.id, session?.user.name, session?.user.role],
   );
 
   return (
