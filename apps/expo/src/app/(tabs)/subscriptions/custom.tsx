@@ -64,7 +64,11 @@ const Custom = () => {
         });
 
         try {
-          await axios.post(UploadPayload.url, getPayload(image, UploadPayload.fields));
+          await axios.post(UploadPayload.url, getPayload(image, UploadPayload.fields, `${id}.jpg`), {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
           router.back();
           Toast.show({ type: "success", text1: "Subscription has been created" });
         } catch (error) {

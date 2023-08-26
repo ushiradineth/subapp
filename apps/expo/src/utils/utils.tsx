@@ -1,4 +1,5 @@
 import { type ImagePickerAsset } from "expo-image-picker";
+import mime from "mime";
 import moment from "moment";
 
 export function formalizeDate(input: string | number | Date) {
@@ -39,16 +40,21 @@ export const PERIODS = [
   { period: 365, label: "Year", standard: "years" },
 ];
 
-export const getPayload = (file: ImagePickerAsset, fields: { [key: string]: string }) => {
+export const getPayload = (file: ImagePickerAsset, fields: { [key: string]: string }, fileName: string) => {
   const payload = new FormData();
 
   Object.entries(fields).forEach(([key, val]) => {
     payload.append(key, val);
   });
 
+  const newImageUri = "file:///" + file.uri.split("file:/").join("");
+
   // @ts-expect-error Works as intended
-  payload.append("file", file);
-  payload.append("contentType", "image/jpeg");
+  payload.append("file", {
+    uri: newImageUri,
+    type: mime.getType(newImageUri),
+    name: fileName,
+  });
 
   return payload;
 };

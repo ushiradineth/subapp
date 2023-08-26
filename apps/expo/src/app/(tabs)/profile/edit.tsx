@@ -65,7 +65,11 @@ const EditProfile = () => {
         });
 
         try {
-          await axios.post(UploadPayload.url, getPayload(image, UploadPayload.fields));
+          await axios.post(UploadPayload.url, getPayload(image, UploadPayload.fields, `${auth.session.id}.jpg`), {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
           router.back();
           Toast.show({ type: "success", text1: "Profile has been updated" });
         } catch (error) {

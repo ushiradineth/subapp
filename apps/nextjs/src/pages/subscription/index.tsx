@@ -38,20 +38,34 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ],
   };
 
+  const filter = {
+    product: {
+      name: {
+        not: undefined,
+      },
+    },
+  };
+
   const where =
     search !== ""
       ? session.user.role === "Admin"
-        ? searchQuery
+        ? { ...searchQuery, ...filter }
         : {
             product: {
+              name: {
+                not: undefined,
+              },
               vendorId: { equals: session?.user.id },
             },
             ...searchQuery,
           }
       : session.user.role === "Admin"
-      ? {}
+      ? { ...filter }
       : {
           product: {
+            name: {
+              not: undefined,
+            },
             vendorId: { equals: session?.user.id },
           },
         };
@@ -69,6 +83,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
       product: {
+        select: {
+          name: true,
+        },
+      },
+      template: {
         select: {
           name: true,
         },
@@ -113,6 +132,9 @@ interface SubscriptionType extends Subscription {
     price: number;
   };
   product: {
+    name: string;
+  };
+  template: {
     name: string;
   };
   user: {
@@ -170,10 +192,18 @@ export default function Subscriptions({ subscriptions, count, total }: pageProps
                           <Link href={`/user/${subscription.userId}`}>{subscription.user.name}</Link>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Link href={`/product/${subscription.productId}`}>{subscription.product.name}</Link>
+                          {subscription.product ? (
+                            <Link href={`/product/${subscription.productId}`}>{subscription.product.name}</Link>
+                          ) : (
+                            subscription.template.name
+                          )}
                         </TableCell>
                         <TableCell className="text-center">
-                          <Link href={`/product/${subscription.productId}/tier/${subscription.tierId}`}>{subscription.tier.name}</Link>
+                          {subscription.product ? (
+                            <Link href={`/product/${subscription.productId}/tier/${subscription.tierId}`}>{subscription.tier.name}</Link>
+                          ) : (
+                            "-"
+                          )}
                         </TableCell>
                         <TableCell className="text-center">{subscription.startedAt.toString()}</TableCell>
                         <TableCell className="text-center">{subscription.active ? "Active" : "Deleted"}</TableCell>
