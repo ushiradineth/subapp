@@ -180,7 +180,7 @@ export default function Product({ product, images, logo, views, uniqueVisitors, 
           {session?.user.role === "Admin" && !product.verified && (
             <Button
               loading={isLoading}
-              className="bg-bgc hover:bg-bgc active:bg-bgc flex items-center justify-center rounded-2xl border p-8 text-white "
+              className="bg-card hover:bg-card active:bg-card flex items-center justify-center rounded-2xl border p-8 text-white "
               onClick={() => verify({ id: product.id })}>
               Verify Product
             </Button>
@@ -188,7 +188,7 @@ export default function Product({ product, images, logo, views, uniqueVisitors, 
           <Link className="flex items-center justify-center rounded-2xl border p-4" href={`/product/${product.id}/tier`}>
             <div>See Tiers</div>
           </Link>
-          <div className="px-auto grid h-24 grid-cols-3 gap-2 pb-6 ">
+          <div className="px-auto col-span-2 grid h-24 grid-cols-3 gap-2 pb-6 ">
             <NumberCard number={views} text="Views" />
             <NumberCard number={uniqueVisitors} text="Unique Visitors" />
             <NumberCard number={uniqueVisitorsThisWeek} text="Unique Visitors This week" />

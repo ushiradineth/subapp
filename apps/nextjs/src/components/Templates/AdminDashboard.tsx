@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from "react";
 import Head from "next/head";
+import { Info } from "lucide-react";
 
 import { api } from "~/utils/api";
 import { trimString } from "~/lib/utils";
@@ -188,7 +189,11 @@ export const ChartCardCarousel = ({
       <h2 className="pt-8 text-2xl">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>{title}</TooltipTrigger>
+            <TooltipTrigger className="flex items-center justify-center gap-2">
+              {title}
+              <Info color="white" size={"20"} />
+            </TooltipTrigger>
+
             <TooltipContent>{hint}</TooltipContent>
           </Tooltip>
         </TooltipProvider>

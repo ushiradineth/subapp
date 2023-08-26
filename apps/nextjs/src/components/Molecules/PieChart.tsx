@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import { Pie, PieChart as PieChartRecharts, Tooltip } from "recharts";
 
 import { theme } from "~/utils/consts";
@@ -26,7 +27,9 @@ export default function PieChart({ id, title, truthy, falsity, height = 230, wid
     <Card className={hideCard ? "border-none" : ""}>
       {!hideCard && (
         <CardHeader className="flex items-center justify-center">
-          <CardTitle hint={hint}>{id}</CardTitle>
+          <CardTitle hint={hint} className="flex w-full items-center justify-center gap-2">
+            {id} {hint && <Info color="white" size={"20"} />}
+          </CardTitle>
         </CardHeader>
       )}
       {title && <CardDescription className="flex w-full items-center justify-center">{title}</CardDescription>}

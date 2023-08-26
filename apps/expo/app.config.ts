@@ -30,6 +30,7 @@ const defineConfig = (): ExpoConfig => ({
   android: {
     package: "com.ushiradineth.subm",
     versionCode: 1,
+    permissions: ["android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE"],
   },
   plugins: [
     [
