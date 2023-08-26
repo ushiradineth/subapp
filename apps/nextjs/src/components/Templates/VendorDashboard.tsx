@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import Head from "next/head";
+import { Info } from "lucide-react";
 
 import { api } from "~/utils/api";
 import { trimString } from "~/lib/utils";
@@ -75,7 +76,11 @@ export default function VendorDashboard() {
           <div className="flex flex-row gap-2 xl:flex-col">
             <Card>
               <CardHeader className="flex items-center justify-center">
-                <CardTitle hint={"User base of the products, Active or terminated subscriptions"}>User Active Rate</CardTitle>
+                <CardTitle
+                  className="flex items-center justify-center gap-2"
+                  hint={"User base of the products, Active or terminated subscriptions"}>
+                  User Active Rate <Info color="white" size={"20"} />
+                </CardTitle>
               </CardHeader>
               {data?.allProducts.length > 0 ? (
                 <Carousel indicators navButtons autoScroll>

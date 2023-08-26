@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { Info } from "lucide-react";
 import { Line, LineChart as LineChartRecharts, Tooltip, XAxis } from "recharts";
 
 import { theme } from "~/utils/consts";
@@ -37,8 +38,8 @@ export default function LineChart({
     <Card className={!mainCard ? "border-transparent" : ""} onClick={() => (href ? router.push(href) : null)}>
       <CardHeader>
         {mainCard ? (
-          <CardTitle className="flex w-full justify-center" hint={hint}>
-            {title}
+          <CardTitle className="flex w-full items-center justify-center gap-2" hint={hint}>
+            {title} {hint && <Info color="white" size={"20"} />}
           </CardTitle>
         ) : (
           <CardDescription className="flex w-full justify-center">{title}</CardDescription>
