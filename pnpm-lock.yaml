@@ -347,6 +347,9 @@ importers:
       '@types/yup':
         specifier: ^0.32.0
         version: 0.32.0
+      '@vercel/analytics':
+        specifier: ^1.0.2
+        version: 1.0.2
       axios:
         specifier: ^1.4.0
         version: 1.4.0
@@ -9013,6 +9016,10 @@ packages:
       '@urql/core': 2.3.6(graphql@15.8.0)
       graphql: 15.8.0
       wonka: 4.0.15
+    dev: false
+
+  /@vercel/analytics@1.0.2:
+    resolution: {integrity: sha512-BZFxVrv24VbNNl5xMxqUojQIegEeXMI6rX3rg1uVLYUEXsuKNBSAEQf4BWEcjQDp/8aYJOj6m8V4PUA3x/cxgg==}
     dev: false
 
   /@xmldom/xmldom@0.7.10:
