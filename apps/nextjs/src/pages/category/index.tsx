@@ -151,15 +151,6 @@ export default function Categories({ categories, count, total }: pageProps) {
               <TableCaption>
                 <p>Currently, a total of {total} Categories are on SubM</p>
               </TableCaption>
-              <TableCaption>
-                <PageNumbers
-                  count={count}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  pageNumber={pageNumber}
-                  path={router.asPath}
-                  params={router.query}
-                />
-              </TableCaption>
             </Table>
           </CardContent>
           {count !== 0 && count > ITEMS_PER_PAGE && (
