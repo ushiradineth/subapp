@@ -154,17 +154,6 @@ export default function Tiers({ tiers: serverTier, count }: pageProps) {
                   </TableRow>
                 )}
               </TableBody>
-
-              <TableCaption>
-                <PageNumbers
-                  count={count}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  pageNumber={pageNumber}
-                  path={router.asPath}
-                  params={router.query}
-                />
-              </TableCaption>
-
               <TableCaption className="gap-8">
                 <Link href={`/product/${router.query.id}/tier/new`}>
                   <Button className="gap-2">Add new Tier</Button>
