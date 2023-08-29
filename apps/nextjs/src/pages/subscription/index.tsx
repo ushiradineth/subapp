@@ -222,15 +222,6 @@ export default function Subscriptions({ subscriptions, count, total }: pageProps
               <TableCaption>
                 <p>Currently, a total of {total} Subscriptions are on SubM</p>
               </TableCaption>
-              <TableCaption>
-                <PageNumbers
-                  count={count}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  pageNumber={pageNumber}
-                  path={router.asPath}
-                  params={router.query}
-                />
-              </TableCaption>
             </Table>
           </CardContent>
           {count !== 0 && count > ITEMS_PER_PAGE && (
