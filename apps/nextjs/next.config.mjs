@@ -17,19 +17,19 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "subm-ushiradineth-user-icons.s3.ap-southeast-1.amazonaws.com",
+        hostname: "subm-user-icons.s3.ap-southeast-1.amazonaws.com",
       },
       {
         protocol: "https",
-        hostname: "subm-ushiradineth-product-logos.s3.ap-southeast-1.amazonaws.com",
+        hostname: "subm-product-logos.s3.ap-southeast-1.amazonaws.com",
       },
       {
         protocol: "https",
-        hostname: "subm-ushiradineth-product-images.s3.ap-southeast-1.amazonaws.com",
+        hostname: "subm-product-images.s3.ap-southeast-1.amazonaws.com",
       },
       {
         protocol: "https",
-        hostname: "subm-ushiradineth-category-icons.s3.ap-southeast-1.amazonaws.com",
+        hostname: "subm-category-icons.s3.ap-southeast-1.amazonaws.com",
       }
     ]
   },
