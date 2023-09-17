@@ -37,7 +37,9 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://subapp.vercel.app"
+        "EXPO_PUBLIC_API_URL": "https://subapp.vercel.app",
+        "sdk.dir": "/Users/ushira/Library/Android/sdk",
+        "ANDROID_HOME": "/Users/ushira/Library/Android/sdk"
       }
     }
   },
