@@ -2,7 +2,7 @@
 
 A Subscription Management Platform for Subscription Sellers to promote and sell their subscriptions and for Users to access the vast market of subscriptions. `NextJS` dashboard for Vendors and `React Native` Mobile App for Subscription Users
 
-## 📦 Technologies
+## Technologies
 
 - `Next.js`
 - `TypeScript`
@@ -23,7 +23,7 @@ A Subscription Management Platform for Subscription Sellers to promote and sell 
 - `Supabase`
 - `AWS S3`
 
-## 📚 Features
+## Features
 
 Here's what you can do with SubM:
 
@@ -37,7 +37,7 @@ Here's what you can do with SubM:
 
 - **Manage the platform**: Admins can manage all entities of SubM using the `NextJS` dashboard, including users, vendors, products and product requests etc.
 
-## 👩🏽‍🍳 The Process
+## The Process
 
 I started this project as the final year project for my Bachelors Degree, I did my initial research to find a market with a lack of automation of tasks and found the subscription market to be the right pick for this project, as there are no other apps that provides these features together.
 
@@ -53,7 +53,7 @@ Along the way, while building everything i documented the process as it was nece
 
 In the end I was able to use this project to get a job and get an `A` for the final year project :]
 
-## 📚 What I Learned
+## What I Learned
 
 During this project, I learned about running a structured and well documented project.
 
@@ -67,7 +67,7 @@ During this project, I learned about running a structured and well documented pr
 - This is also my first time using `Expo` `React Native`.
 - I was using an early version of `Expo Router` as that was the latest back then, which came with a few quirks, but i was able to get through then.
 
-## 💭 How can it be improved?
+## How can it be improved?
 
 - Add automated product scraping.
 - Add localization with more currencies.
@@ -76,7 +76,7 @@ During this project, I learned about running a structured and well documented pr
 - Add dark mode for the mobile app.
 - Add light mode for the dashboard.
 
-## 🚦 Running the Project
+## Running the Project
 
 To run the project in your local environment, follow these steps:
 
